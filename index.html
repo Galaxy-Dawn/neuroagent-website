@@ -1,0 +1,1135 @@
+<!DOCTYPE html>
+<html lang="en" data-lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<script>
+/* First-paint guard: resolve theme, language, and intro state before rendering. */
+(function () {
+  var root = document.documentElement;
+  var t = new URLSearchParams(location.search).get('theme');
+  if (!t) { try { t = localStorage.getItem('na-theme'); } catch (e) {} }
+  if (t !== 'light' && t !== 'dark') {
+    t = (window.matchMedia && matchMedia('(prefers-color-scheme: light)').matches) ? 'light' : 'dark';
+  }
+  root.dataset.theme = t;
+
+  var lang = new URLSearchParams(location.search).get('lang');
+  if (!lang) { try { lang = localStorage.getItem('na-lang'); } catch (e) {} }
+  if (lang !== 'zh') lang = 'en';
+  root.dataset.lang = lang;
+  root.lang = lang === 'zh' ? 'zh-CN' : 'en';
+
+  var reduceMotion = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var deepLink = location.hash && location.hash !== '#top';
+  var introSeen = false;
+  try { introSeen = sessionStorage.getItem('na-intro-v6-seen') === '1'; } catch (e) {}
+  if (!reduceMotion && !deepLink && !introSeen) root.classList.add('intro-pending');
+})();
+</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NeuroAgent — The auditable agent for neuroscience research</title>
+<meta name="description" content="NeuroAgent runs your research workflow as a staged, durable pipeline — every tool call, gate decision, and artifact is recorded, inspectable, and resumable.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600&family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&family=Noto+Serif+SC:wght@400;600&family=Noto+Sans+SC:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+/* ============ tokens ============ */
+:root {
+  --font-d-en: "Fraunces", "Noto Serif SC", serif;
+  --font-d-zh: "Noto Serif SC", "Fraunces", serif;
+  --font-b-en: "IBM Plex Sans", "Noto Sans SC", sans-serif;
+  --font-b-zh: "Noto Sans SC", "IBM Plex Sans", sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, monospace;
+  --r-lg: 10px; --r-md: 8px; --r-sm: 6px;
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-cinematic: cubic-bezier(.16, 1, .3, 1);
+}
+html[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #0a0e10; --bg-2: #0e1418;
+  --surface: rgba(255,255,255,.035); --surface-2: rgba(255,255,255,.065);
+  --stroke: rgba(233,241,236,.09); --stroke-strong: rgba(70,224,160,.30);
+  --text: #e9f1ec; --dim: #9db4a9; --faint: #758a80;
+  --accent: #46e0a0; --accent-soft: rgba(70,224,160,.12); --accent-ink: #08120d;
+  --wm-grad-2: #40b4e0;
+  --gate: #f0b64a; --gate-soft: rgba(240,182,74,.12); --danger: #e0604f; --danger-soft: rgba(224,96,79,.12);
+  --tertiary: #8db8f2; --tertiary-soft: rgba(141,184,242,.14);
+  --grid-line: rgba(70,224,160,.045);
+  --card-shadow: 0 24px 60px rgba(0,0,0,.38);
+  --nav-bg: rgba(10,14,16,.72);
+  --panel: #0e1518; --panel-raised: #121c20; --panel-edge: rgba(233,241,236,.12);
+  --cyan: #40b4e0; --cyan-soft: rgba(64,180,224,.12);
+  --skeleton: rgba(233,241,236,.08);
+}
+html[data-theme="light"] {
+  color-scheme: light;
+  --bg: #f4f1ea; --bg-2: #fbf9f4;
+  --surface: rgba(255,255,255,.62); --surface-2: rgba(255,255,255,.88);
+  --stroke: rgba(27,36,32,.10); --stroke-strong: rgba(14,159,110,.38);
+  --text: #1b2420; --dim: #54655c; --faint: #66766e;
+  --accent: #0a7d55; --accent-soft: rgba(10,125,85,.10); --accent-ink: #f7f5ee;
+  --wm-grad-2: #2f6f9e;
+  --gate: #8a5f14; --gate-soft: rgba(138,95,20,.12); --danger: #b03a2a; --danger-soft: rgba(176,58,42,.10);
+  --tertiary: #2f6f9e; --tertiary-soft: rgba(64,150,200,.12);
+  --grid-line: rgba(27,36,32,.045);
+  --card-shadow: 0 18px 44px rgba(27,36,32,.09);
+  --nav-bg: rgba(244,241,234,.78);
+  --panel: #f8faf8; --panel-raised: #ffffff; --panel-edge: rgba(27,36,32,.14);
+  --cyan: #2f6f9e; --cyan-soft: rgba(47,111,158,.10);
+  --skeleton: rgba(27,36,32,.10);
+}
+
+/* ============ base ============ */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-b-en);
+  font-weight: 400;
+  line-height: 1.65;
+  overflow-x: hidden;
+  transition: background-color .35s ease, color .35s ease;
+}
+html[data-lang="zh"] body { font-family: var(--font-b-zh); }
+/* restrained instrument grid */
+body::before {
+  content: ""; position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background:
+    linear-gradient(var(--grid-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+  background-size: 26px 26px, 26px 26px;
+  mask-image: linear-gradient(black 52%, transparent 94%);
+}
+main, nav, footer { position: relative; z-index: 1; }
+::selection { background: var(--accent); color: var(--accent-ink); }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 6px; }
+img, svg { display: block; }
+
+/* i18n */
+html[data-lang="en"] .lang-zh { display: none !important; }
+html[data-lang="zh"] .lang-en { display: none !important; }
+
+/* type */
+h1, h2, h3 { font-family: var(--font-d-en); font-weight: 400; line-height: 1.12; }
+html[data-lang="zh"] h1, html[data-lang="zh"] h2, html[data-lang="zh"] h3 { font-family: var(--font-d-zh); font-weight: 600; }
+.mono { font-family: var(--font-mono); }
+.section-label {
+  font-family: var(--font-mono); font-size: 11px; letter-spacing: .24em;
+  text-transform: uppercase; color: var(--accent);
+  display: flex; align-items: center; gap: 10px;
+}
+.section-label::before { content: ""; width: 30px; height: 1px; background: var(--accent); }
+.glass {
+  background: var(--panel);
+  border: 1px solid var(--panel-edge);
+  transition: background-color .35s ease, border-color .35s ease, transform .3s var(--ease-out), box-shadow .3s var(--ease-out);
+}
+
+/* ============ cinematic intro ============ */
+.intro-overlay {
+  display: none; position: fixed; inset: 0; z-index: 1000; overflow: hidden;
+  align-items: center; justify-content: center; background: var(--bg); color: var(--text);
+}
+html.intro-pending, html.intro-exiting { overflow: hidden; }
+html.intro-pending .intro-overlay, html.intro-exiting .intro-overlay { display: flex; }
+.intro-overlay::before {
+  content: ""; position: absolute; inset: 0; opacity: 0;
+  background-image: linear-gradient(var(--grid-line) 1px, transparent 1px), linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+.intro-scan {
+  position: absolute; left: 8vw; right: 8vw; top: 50%; height: 1px; background: var(--accent);
+  opacity: 0; transform: scaleX(0); transform-origin: center;
+}
+.intro-stage { position: relative; width: min(780px, 84vw); display: grid; justify-items: center; gap: 22px; }
+.intro-brain { width: clamp(82px, 10vw, 132px); color: var(--accent); filter: drop-shadow(0 0 18px var(--accent-soft)); }
+.intro-brain path { stroke-dasharray: 1; stroke-dashoffset: 1; }
+.intro-wordmark {
+  display: flex; align-items: baseline; font-family: var(--font-d-en); font-weight: 500;
+  font-size: clamp(46px, 9vw, 112px); line-height: 1.14; padding: .04em .03em .12em;
+  clip-path: inset(-.08em 100% -.18em -.04em);
+}
+.intro-wordmark .agent { color: var(--accent); }
+.intro-meta {
+  font-family: var(--font-mono); font-size: 13px; color: var(--dim); letter-spacing: .16em;
+  opacity: 0; transform: translateY(8px); text-transform: uppercase;
+}
+.intro-skip {
+  position: absolute; top: 24px; right: 28px; min-width: 44px; min-height: 44px; padding: 0 14px;
+  border: 1px solid var(--stroke); border-radius: 7px; background: transparent; color: var(--dim);
+  font: 11px var(--font-mono); cursor: pointer; opacity: 0; transition: color .2s, border-color .2s;
+}
+.intro-skip:hover, .intro-skip:focus-visible { color: var(--accent); border-color: var(--stroke-strong); }
+html.intro-running .intro-overlay::before { animation: intro-grid-in .875s ease forwards; }
+html.intro-running .intro-scan { animation: intro-scan-line 1.5s var(--ease-cinematic) .5625s forwards; }
+html.intro-running .intro-brain path { animation: intro-brain-draw 1.3125s var(--ease-cinematic) .3125s forwards; }
+html.intro-running .intro-wordmark { animation: intro-mark-in 1s var(--ease-cinematic) 1s forwards; }
+html.intro-running .intro-meta { animation: intro-meta-in 1s var(--ease-cinematic) 1.1875s forwards; }
+html.intro-running .intro-skip { animation: intro-fade-in .4375s ease .4375s forwards; }
+html.intro-exiting .intro-overlay { animation: intro-curtain-out 1.1s var(--ease-cinematic) forwards; }
+html.intro-exiting .intro-stage { animation: intro-stage-out .875s ease forwards; }
+@keyframes intro-grid-in { to { opacity: 1; } }
+@keyframes intro-scan-line { 0% { opacity: 0; transform: scaleX(0); } 35% { opacity: .8; } 100% { opacity: .12; transform: scaleX(1); } }
+@keyframes intro-brain-draw { to { stroke-dashoffset: 0; } }
+@keyframes intro-mark-in { to { clip-path: inset(-.08em 0 -.18em -.04em); } }
+@keyframes intro-meta-in { to { opacity: 1; transform: none; } }
+@keyframes intro-fade-in { to { opacity: 1; } }
+@keyframes intro-stage-out { to { opacity: 0; transform: translateY(-16px) scale(.985); } }
+@keyframes intro-curtain-out { to { clip-path: inset(0 0 100% 0); visibility: hidden; } }
+
+/* ============ nav ============ */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 50;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 15px 34px;
+  background: var(--nav-bg);
+  backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--stroke);
+  transition: padding .3s var(--ease-out), background-color .35s ease, border-color .35s ease;
+}
+nav.scrolled { padding: 9px 34px; }
+.nav-logo { font-family: var(--font-mono); font-size: 15px; font-weight: 500; color: var(--text); text-decoration: none; display: flex; align-items: center; gap: 9px; }
+.nav-logo .pip { width: 8px; height: 8px; background: var(--accent); border-radius: 2px; box-shadow: 0 0 10px var(--accent); animation: pip 3.2s ease-in-out infinite; }
+@keyframes pip { 0%,100% { opacity: 1; } 50% { opacity: .35; } }
+.nav-links { display: flex; gap: 4px; }
+.nav-links a {
+  color: var(--dim); text-decoration: none; font-size: 12.5px; font-family: var(--font-mono);
+  padding: 6px 11px; border-radius: 8px; transition: color .2s, background-color .2s;
+}
+.nav-links a:hover { color: var(--accent); }
+.nav-links a.active { color: var(--accent); background: var(--accent-soft); }
+.nav-right { display: flex; gap: 10px; align-items: center; }
+.icon-btn {
+  width: 40px; height: 40px; display: inline-flex; align-items: center; justify-content: center;
+  background: var(--surface); border: 1px solid var(--stroke); border-radius: 9px;
+  color: var(--dim); cursor: pointer; transition: all .2s;
+}
+.icon-btn:hover { color: var(--accent); border-color: var(--stroke-strong); }
+.icon-btn svg { width: 16px; height: 16px; }
+html[data-theme="dark"] .icon-sun { display: block; } html[data-theme="dark"] .icon-moon { display: none; }
+html[data-theme="light"] .icon-sun { display: none; } html[data-theme="light"] .icon-moon { display: block; }
+.lang-toggle {
+  height: 40px; padding: 0 13px; white-space: nowrap; font-family: var(--font-mono); font-size: 12px;
+  background: var(--surface); border: 1px solid var(--stroke); border-radius: 9px;
+  color: var(--dim); cursor: pointer; transition: all .2s;
+}
+.lang-toggle:hover { color: var(--accent); border-color: var(--stroke-strong); }
+.nav-gh {
+  font-family: var(--font-mono); font-size: 12px; color: var(--accent-ink); background: var(--accent);
+  padding: 11px 16px; border-radius: 9px; text-decoration: none; font-weight: 500; transition: box-shadow .25s, transform .25s;
+}
+.nav-gh:hover { box-shadow: 0 0 22px var(--accent-soft), 0 4px 18px rgba(0,0,0,.25); transform: translateY(-1px); }
+.nav-menu-btn, .mobile-nav-gh { display: none; }
+.nav-menu-btn .icon-close { display: none; }
+@media (max-width: 920px) {
+  .nav-links { display: none; }
+  .nav-menu-btn { display: inline-flex; width: 44px; height: 44px; }
+  .nav-gh { display: none; }
+  nav.menu-open .nav-links {
+    position: absolute; top: calc(100% + 8px); left: 20px; right: 20px;
+    display: grid; gap: 2px; padding: 8px;
+    background: var(--bg-2); border: 1px solid var(--stroke); border-radius: 10px;
+    box-shadow: var(--card-shadow);
+  }
+  nav.menu-open .nav-links a {
+    min-height: 44px; display: flex; align-items: center; padding: 10px 12px; border-radius: 6px;
+  }
+  nav.menu-open .mobile-nav-gh { display: flex; color: var(--text); border-top: 1px solid var(--stroke); border-radius: 0; margin-top: 4px; }
+  nav.menu-open .nav-right > :not(.nav-menu-btn) { display: none; }
+  nav.menu-open .nav-menu-btn .icon-menu { display: none; }
+  nav.menu-open .nav-menu-btn .icon-close { display: block; }
+}
+@media (max-width: 600px) {
+  nav { padding: 10px 20px; }
+  nav.scrolled { padding: 8px 20px; }
+  .nav-right { gap: 8px; }
+  .nav-logo { font-size: 13px; }
+  .icon-btn, .lang-toggle { min-width: 44px; height: 44px; }
+}
+
+/* ============ hero ============ */
+.hero { min-height: 100vh; display: flex; flex-direction: column; justify-content: flex-start; padding: 120px 34px 36px; max-width: 1200px; margin: 0 auto; }
+.hero-eyebrow { font-family: var(--font-mono); font-size: 12px; letter-spacing: .22em; color: var(--accent); margin-bottom: 18px; opacity: 0; transform: translateY(16px); }
+.hero-eyebrow::before { content: ""; display: inline-block; width: 0; height: 1px; margin: 0 12px 3px 0; background: var(--accent); vertical-align: middle; }
+.wordmark { display: flex; align-items: center; gap: .12em; font-family: var(--font-d-en); font-weight: 550; font-size: clamp(50px, 14vw, 205px); letter-spacing: -0.025em; line-height: 1.25; margin: 0 0 34px; white-space: nowrap; opacity: 0; transform: translateY(30px); }
+.wordmark-brain { height: .72em; width: auto; flex: none; color: var(--accent); }
+.wm-neuro { color: var(--text); }
+.wm-agent { color: var(--accent); }
+.hero h1, .hero-tagline { font-size: clamp(26px, 3.4vw, 44px); letter-spacing: -0.01em; opacity: 0; transform: translateY(24px); }
+.hero h1 em { font-style: normal; color: var(--accent); }
+.hero-sub { margin-top: 24px; font-size: clamp(15px, 1.6vw, 18px); color: var(--dim); max-width: 56rem; opacity: 0; transform: translateY(20px); }
+.hero-cta { margin-top: 40px; display: flex; gap: 14px; align-items: center; opacity: 0; transform: translateY(18px); }
+.btn-primary {
+  font-family: var(--font-mono); font-size: 14px; background: var(--accent); color: var(--accent-ink);
+  padding: 14px 28px; text-decoration: none; border-radius: 11px; font-weight: 500;
+  transition: box-shadow .3s, transform .3s var(--ease-out);
+}
+.btn-primary:hover { box-shadow: 0 0 0 4px var(--accent-soft), 0 10px 30px rgba(0,0,0,.28); transform: translateY(-2px); }
+.btn-ghost {
+  font-family: var(--font-mono); font-size: 14px; color: var(--text); padding: 14px 28px; text-decoration: none;
+  border: 1px solid var(--stroke); border-radius: 11px; background: var(--surface);
+  backdrop-filter: blur(8px); transition: border-color .25s, color .25s, transform .3s var(--ease-out);
+}
+.btn-ghost:hover { border-color: var(--stroke-strong); color: var(--accent); transform: translateY(-2px); }
+html:not(.intro-pending) .hero-eyebrow { animation: hero-enter .65s var(--ease-cinematic) .05s forwards; }
+html:not(.intro-pending) .hero-eyebrow::before { animation: hero-rule-in .7s var(--ease-cinematic) .2s forwards; }
+html:not(.intro-pending) .wordmark { animation: hero-enter .85s var(--ease-cinematic) .12s forwards; }
+html:not(.intro-pending) .hero h1 { animation: hero-enter .75s var(--ease-cinematic) .28s forwards; }
+html:not(.intro-pending) .hero-sub { animation: hero-enter .75s var(--ease-cinematic) .4s forwards; }
+html:not(.intro-pending) .hero-cta { animation: hero-enter .75s var(--ease-cinematic) .52s forwards; }
+@keyframes hero-enter { to { opacity: 1; transform: none; } }
+@keyframes hero-rule-in { to { width: 30px; } }
+@keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+
+/* runtime stage figure (academic style) */
+.hero-figure { margin-top: 48px; opacity: 0; transform: translateY(22px); }
+html:not(.intro-pending) .hero-figure { animation: hero-enter .85s var(--ease-cinematic) .68s forwards; }
+.figure-caption { font-family: var(--font-mono); font-size: 11px; color: var(--faint); letter-spacing: .12em; margin-bottom: 8px; }
+.figure-scroll { overflow-x: auto; }
+.figure-canvas { display: block; width: 100%; min-width: 780px; height: auto; }
+.dg-region { fill: none; stroke: var(--stroke); stroke-width: 1; stroke-dasharray: 6 7; }
+.dg-region-label { fill: var(--faint); font-family: var(--font-mono); font-size: 10.5px; letter-spacing: .16em; }
+.dg-node rect { fill: var(--accent-soft); stroke: var(--stroke-strong); stroke-width: 1.2; }
+.dg-node.lock rect, .dg-node.gate rect { fill: var(--gate-soft); stroke: var(--gate); }
+.dg-node.out rect { fill: var(--tertiary-soft); stroke: var(--tertiary); }
+.dg-node.out text { fill: var(--tertiary); }
+.dg-node.out .dg-icon { stroke: var(--tertiary); }
+.dg-node.direct rect { fill: none; stroke: var(--faint); stroke-width: 1; stroke-dasharray: 4 4; }
+.dg-node.direct text { fill: var(--faint); }
+.dg-node text { fill: var(--text); font-family: var(--font-b-en); font-weight: 400; font-size: 20px; letter-spacing: 0; }
+.dg-sub { fill: var(--dim); font-family: var(--font-b-en); font-weight: 400; font-size: 20px; letter-spacing: 0; }
+html[data-lang="zh"] .dg-node text, html[data-lang="zh"] .dg-sub { font-family: var(--font-b-zh); font-size: 20px; }
+.dg-name, .dg-sub { text-anchor: middle; }
+.dg-icon { fill: none; stroke: var(--accent); stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.dg-icon.dim { stroke: var(--faint); }
+.dg-num circle { fill: var(--bg); stroke: var(--stroke-strong); stroke-width: 1.2; }
+.dg-num text { fill: var(--dim); font-family: var(--font-mono); font-size: 11.5px; }
+.dg-arrow { stroke: var(--accent); stroke-width: 1.4; opacity: .75; }
+.dg-loop { fill: none; stroke: var(--gate); stroke-width: 1.3; stroke-dasharray: 5 5; opacity: .85; }
+.dg-loop-label { fill: var(--gate); font-family: var(--font-mono); font-size: 11.5px; letter-spacing: .1em; }
+.dg-branch { stroke: var(--faint); stroke-width: 1.1; stroke-dasharray: 4 4; }
+.dg-lane { stroke: var(--faint); stroke-width: 1; stroke-dasharray: 2 5; opacity: .7; }
+.dg-tick { stroke: var(--faint); stroke-width: 1; stroke-dasharray: 2 4; opacity: .6; }
+.dg-artifact { fill: var(--accent); font-family: var(--font-mono); font-size: 18px; }
+.dg-artifact .dg-icon { stroke: var(--accent); }
+.dg-artifact text { fill: var(--accent); }
+.dg-artifact-dim { fill: var(--faint); font-family: var(--font-mono); font-size: 16px; }
+.dg-pulse { fill: var(--accent); filter: drop-shadow(0 0 5px var(--accent)); }
+.dg-node { opacity: 0; transform-box: fill-box; transform-origin: center; }
+.dg-arrow { stroke-dasharray: 1000; stroke-dashoffset: 1000; }
+.dg-artifact { opacity: 0; }
+html:not(.intro-pending) .dg-node { animation: flow-node-in .5s var(--ease-cinematic) calc(.85s + var(--node-i, 0) * .09s) forwards; }
+html:not(.intro-pending) .dg-arrow { animation: flow-line-in 1.3s var(--ease-cinematic) 1s forwards; }
+html:not(.intro-pending) .dg-artifact { animation: intro-fade-in .55s ease 1.65s forwards; }
+@keyframes flow-node-in { from { opacity: 0; transform: translateY(9px) scale(.97); } to { opacity: 1; transform: none; } }
+@keyframes flow-line-in { to { stroke-dashoffset: 0; } }
+
+/* ============ sections ============ */
+section { max-width: 1200px; margin: 0 auto; padding: 96px 34px 26px; }
+#problem { padding-top: 56px; }
+section[id] { scroll-margin-top: 72px; }
+.anchor-alias { display: block; height: 0; scroll-margin-top: 72px; }
+section h2 { font-size: clamp(29px, 3.8vw, 48px); max-width: 22ch; margin-top: 18px; letter-spacing: -0.01em; }
+html[data-lang="zh"] section h2 { max-width: 44ch; }
+section h2 em { font-style: normal; color: var(--accent); }
+html[data-lang="zh"] h1 em, html[data-lang="zh"] h2 em { font-style: normal; }
+@media (min-width: 721px) {
+  html[data-lang="zh"] section h2 em { white-space: nowrap; }
+}
+.section-intro { color: var(--dim); max-width: 68ch; margin-top: 20px; font-size: 16px; }
+#how .section-intro { max-width: 88ch; }
+.reveal { opacity: 1; }
+.reveal > .section-label, .reveal > h2, .reveal > .section-intro { opacity: 0; transform: translateY(18px); transition: opacity .72s var(--ease-cinematic), transform .72s var(--ease-cinematic); }
+.reveal > .section-label { transition-delay: .02s; }
+.reveal > h2 { transition-delay: .1s; }
+.reveal > .section-intro { transition-delay: .17s; }
+.reveal > .section-label::before { transform: scaleX(0); transform-origin: left; transition: transform .7s var(--ease-cinematic) .08s; }
+.reveal.in > .section-label, .reveal.in > h2, .reveal.in > .section-intro { opacity: 1; transform: none; }
+.reveal.in > .section-label::before { transform: scaleX(1); }
+.reveal .stagger > * { opacity: 0; transform: translateY(22px) scale(.985); transition: opacity .7s var(--ease-cinematic), transform .7s var(--ease-cinematic); }
+.reveal.in .stagger > * { opacity: 1; transform: none; }
+.reveal.in .stagger > *:nth-child(1) { transition-delay: .05s; }
+.reveal.in .stagger > *:nth-child(2) { transition-delay: .12s; }
+.reveal.in .stagger > *:nth-child(3) { transition-delay: .19s; }
+.reveal.in .stagger > *:nth-child(4) { transition-delay: .26s; }
+.reveal.in .stagger > *:nth-child(5) { transition-delay: .33s; }
+.reveal.in .stagger > *:nth-child(6) { transition-delay: .40s; }
+
+/* problem */
+.pain-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-top: 54px; }
+@media (max-width: 860px) { .pain-grid { grid-template-columns: 1fr; } }
+.pain-card {
+  position: relative; overflow: hidden; border-radius: var(--r-lg); padding: 30px 26px 32px; font-size: 15px; color: var(--dim);
+  border-left: 2px solid var(--danger); box-shadow: none;
+}
+.pain-card::after { content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 1px; background: var(--danger); transform: scaleX(0); transform-origin: left; transition: transform .55s var(--ease-cinematic); }
+.pain-card:hover { transform: translateY(-3px); box-shadow: var(--card-shadow); border-color: var(--danger); background: var(--panel-raised); }
+.pain-card:hover::after { transform: scaleX(1); }
+.pain-card .idx { font-family: var(--font-mono); font-size: 10px; color: var(--danger); letter-spacing: .18em; display: flex; align-items: center; gap: 9px; margin-bottom: 18px; }
+.pain-card .idx::before { content: ""; width: 6px; height: 6px; border: 1px solid var(--danger); border-radius: 50%; box-shadow: 0 0 10px var(--danger-soft); }
+
+/* mechanism pillars */
+.mechanism-grid { position: relative; margin-top: 56px; display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+.mechanism-grid::before, .mechanism-grid::after { content: ""; position: absolute; z-index: 0; background: var(--stroke-strong); opacity: .35; }
+.mechanism-grid::before { top: 50%; left: 0; right: 0; height: 1px; }
+.mechanism-grid::after { top: 0; bottom: 0; left: 50%; width: 1px; }
+@media (max-width: 720px) { .mechanism-grid { grid-template-columns: 1fr; } .mechanism-grid::before, .mechanism-grid::after { display: none; } }
+.mechanism-card { position: relative; z-index: 1; overflow: hidden; border-radius: var(--r-lg); padding: 34px 30px 36px; }
+.mechanism-card::before { content: ""; position: absolute; top: 0; left: 0; width: 84px; height: 2px; background: var(--accent); transform: scaleX(.28); transform-origin: left; transition: transform .55s var(--ease-cinematic); }
+.mechanism-card:hover { transform: translateY(-3px); box-shadow: var(--card-shadow); border-color: var(--stroke-strong); background: var(--panel-raised); }
+.mechanism-card:hover::before { transform: scaleX(1); }
+.mechanism-card .tag { position: absolute; top: 17px; right: 22px; display: block; font-family: var(--font-mono); font-size: 48px; line-height: 1; color: var(--faint); opacity: .13; letter-spacing: 0; }
+.mechanism-card h3 { position: relative; font-size: 21px; margin: 18px 0 12px; padding-right: 70px; }
+.mechanism-card p { font-size: 14px; color: var(--dim); line-height: 1.7; max-width: 44ch; }
+
+/* neuro */
+.neuro-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-top: 54px; }
+@media (max-width: 860px) { .neuro-grid { grid-template-columns: 1fr; } }
+.neuro-card { --card-accent: var(--accent); position: relative; border-radius: var(--r-lg); overflow: hidden; }
+.neuro-card.encoding { --card-accent: var(--cyan); }
+.neuro-card.decoding { --card-accent: var(--gate); }
+.neuro-card::before { content: ""; position: absolute; inset: 0 auto 0 0; width: 2px; background: var(--card-accent); opacity: .75; }
+.neuro-card:hover { transform: translateY(-3px); box-shadow: var(--card-shadow); border-color: var(--card-accent); background: var(--panel-raised); }
+.neuro-card .body { padding: 28px 26px 30px; }
+.task-index { display: block; margin-bottom: 22px; font: 12px var(--font-mono); color: var(--card-accent); }
+.neuro-card h3 { font-size: 18px; margin-bottom: 10px; }
+.neuro-card p { font-size: 13.5px; color: var(--dim); }
+
+/* cases */
+.case-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-top: 54px; }
+@media (max-width: 860px) { .case-grid { grid-template-columns: 1fr; } }
+.case-card { position: relative; border-radius: var(--r-lg); overflow: hidden; }
+.case-card:hover { transform: translateY(-3px); border-color: var(--stroke-strong); box-shadow: var(--card-shadow); }
+.case-media { position: relative; isolation: isolate; aspect-ratio: 16 / 9; overflow: hidden; border-bottom: 1px solid var(--stroke); background: var(--bg-2); display: flex; flex-direction: column; gap: 10px; align-items: center; justify-content: center; font-family: var(--font-mono); font-size: 11px; color: var(--faint); letter-spacing: .1em; }
+.case-media::before { content: ""; position: absolute; inset: 0; z-index: -1; opacity: .55; background-image: linear-gradient(var(--grid-line) 1px, transparent 1px), linear-gradient(90deg, var(--grid-line) 1px, transparent 1px); background-size: 24px 24px; }
+.case-media svg { width: 42px; height: 42px; color: var(--accent); opacity: .85; transition: transform .3s var(--ease-out); }
+.case-card:hover .case-media svg { transform: scale(1.08); }
+.case-timeline { position: absolute; left: 18px; right: 18px; bottom: 18px; height: 1px; background: var(--stroke-strong); }
+.case-timeline i { display: block; width: 18%; height: 1px; background: var(--accent); }
+.case-time { position: absolute; right: 18px; bottom: 24px; font-size: 9px; color: var(--dim); letter-spacing: .06em; }
+.case-card header { padding: 20px 26px; border-bottom: 1px solid var(--stroke); display: flex; justify-content: space-between; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.case-card header h3 { font-size: 18px; }
+.chip { font-family: var(--font-mono); font-size: 10px; color: var(--gate); border: 1px solid var(--gate); background: var(--gate-soft); padding: 4px 11px; border-radius: 20px; letter-spacing: .1em; white-space: nowrap; }
+.case-rows { padding: 10px 26px 22px; }
+.case-row { display: grid; grid-template-columns: 118px 1fr; gap: 14px; padding: 14px 0; border-bottom: 1px solid var(--stroke); font-size: 13.5px; align-items: center; }
+.case-row:last-child { border-bottom: none; }
+.case-row .k { font-family: var(--font-mono); font-size: 10.5px; color: var(--accent); letter-spacing: .1em; }
+.skel { height: 2px; border-radius: 2px; background: var(--skeleton); max-width: 260px; }
+.skel.w70 { max-width: 200px; } .skel.w50 { max-width: 150px; }
+.case-community { grid-column: 1 / -1; border: 1px dashed var(--stroke-strong); border-radius: var(--r-lg); padding: 24px; font: 13px var(--font-mono); color: var(--dim); text-align: center; background: transparent; }
+
+/* evidence */
+.evidence-table { margin-top: 50px; border-radius: var(--r-lg); overflow: hidden; }
+.ev-row { display: grid; grid-template-columns: 1fr 1.5fr 26px; align-items: center; border-bottom: 1px solid var(--stroke); transition: background-color .2s; }
+.ev-row:last-child { border-bottom: none; }
+.ev-row:hover { background: var(--accent-soft); }
+.ev-row > div { padding: 19px 24px; font-size: 14px; }
+.ev-row .claim { color: var(--text); font-weight: 400; }
+.ev-row .proof { font-family: var(--font-mono); font-size: 12px; color: var(--accent); word-break: break-all; }
+.ev-row .proof a { color: var(--accent); text-decoration: none; border-bottom: 1px dotted var(--stroke-strong); }
+.ev-row .proof a:hover { color: var(--text); }
+.ev-row .arrow { color: var(--faint); transition: transform .25s var(--ease-out), color .25s; padding-right: 18px; }
+.ev-row:hover .arrow { transform: translateX(4px); color: var(--accent); }
+@media (max-width: 720px) { .ev-row { grid-template-columns: 1fr; } .ev-row .arrow { display: none; } }
+
+/* quickstart */
+.qs-steps { position: relative; margin-top: 42px; max-width: 860px; }
+.qs-steps::before { content: ""; position: absolute; z-index: 2; top: 0; left: 0; width: 100px; height: 2px; background: var(--accent); }
+.qs { padding: 20px; border-bottom: 1px solid var(--stroke); transition: background-color .25s ease; }
+.qs:hover { background: var(--surface); }
+.qs:last-child { border-bottom: none; }
+.qs .t { display: flex; gap: 12px; align-items: baseline; font-size: 15.5px; }
+.qs .num { flex: none; font-family: var(--font-mono); font-size: 11px; color: var(--faint); letter-spacing: .08em; }
+.term { border-radius: var(--r-md); overflow: hidden; }
+.term-bar { display: flex; align-items: center; gap: 7px; padding: 9px 14px; border-bottom: 1px solid var(--stroke); }
+.term-bar i { width: 9px; height: 9px; border-radius: 50%; background: var(--faint); opacity: .5; }
+.term-bar i:nth-child(1) { background: var(--danger); opacity: .8; }
+.term-bar i:nth-child(2) { background: var(--gate); opacity: .8; }
+.term-bar i:nth-child(3) { background: var(--accent); opacity: .8; }
+.term-body { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 10px; padding: 11px 12px; font-family: var(--font-mono); font-size: 12px; color: var(--accent); background: var(--accent-soft); border-left: 2px solid var(--accent); border-radius: 4px; }
+.term-body code { min-width: 0; flex: 1; white-space: nowrap; overflow-x: auto; display: block; }
+.copy-btn { flex: none; width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center; background: transparent; border: 1px solid var(--stroke); border-radius: 7px; color: var(--faint); cursor: pointer; transition: all .2s; }
+.copy-btn:hover { color: var(--accent); border-color: var(--stroke-strong); }
+.copy-btn svg { width: 13px; height: 13px; }
+.copy-btn.done { color: var(--accent); border-color: var(--accent); }
+
+/* honesty */
+.not-list { margin-top: 44px; display: grid; max-width: 880px; border-top: 1px solid var(--stroke); }
+.not-item { display: grid; grid-template-columns: 42px 30px 1fr; gap: 12px; align-items: start; padding: 22px 4px; border: none; border-bottom: 1px solid var(--stroke); border-radius: 0; background: transparent; font-size: 15px; color: var(--dim); }
+.not-item:hover { background: transparent; transform: translateX(4px); }
+.boundary-index { font: 10px var(--font-mono); color: var(--faint); letter-spacing: .08em; padding-top: 3px; }
+.not-item .x { width: 18px; height: 18px; display: inline-flex; align-items: center; justify-content: center; color: var(--gate); border: 1px solid var(--gate); border-radius: 50%; font: 10px var(--font-mono); }
+.reveal.in .pain-card, .reveal.in .mechanism-card, .reveal.in .neuro-card, .reveal.in .case-card { transition: background-color .35s ease, border-color .35s ease, transform .3s var(--ease-out), box-shadow .3s var(--ease-out); transition-delay: 0s; }
+.reveal.in .not-item { transition: transform .25s var(--ease-out), border-color .25s ease; transition-delay: 0s; }
+.reveal.in .qs { transition: background-color .25s ease; transition-delay: 0s; }
+.reveal.in .pain-card:hover, .reveal.in .mechanism-card:hover, .reveal.in .neuro-card:hover, .reveal.in .case-card:hover { transform: translateY(-3px); }
+.reveal.in .not-item:hover { transform: translateX(4px); }
+
+/* faq */
+.faq-list { margin-top: 32px; max-width: 840px; }
+.faq-item { border-bottom: 1px solid var(--stroke); }
+.faq-item summary {
+  cursor: pointer; list-style: none; padding: 23px 6px 23px 16px; font-size: 17px;
+  font-family: var(--font-d-en); display: flex; justify-content: space-between; align-items: center;
+  border-left: 2px solid transparent; transition: color .2s, border-color .2s, padding-left .25s var(--ease-out);
+}
+html[data-lang="zh"] .faq-item summary { font-family: var(--font-d-zh); }
+.faq-item summary:hover { color: var(--accent); border-left-color: var(--accent); padding-left: 22px; }
+.faq-item summary::-webkit-details-marker { display: none; }
+.faq-item summary::after { content: "+"; font-family: var(--font-mono); color: var(--accent); font-size: 19px; transition: transform .3s var(--ease-out); }
+.faq-item[open] summary::after { transform: rotate(45deg); }
+.faq-item .a { padding: 0 6px 26px 16px; color: var(--dim); font-size: 15px; max-width: 68ch; }
+.faq-item[open] .a { animation: faq-answer-in .42s var(--ease-cinematic) both; }
+@keyframes faq-answer-in { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: none; } }
+
+/* footer */
+footer { border-top: 1px solid var(--stroke); margin-top: 130px; padding: 46px 34px 54px; transition: border-color .35s ease; }
+.foot-inner { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; }
+.foot-inner .l { font-family: var(--font-mono); font-size: 12px; color: var(--faint); }
+.foot-inner .r { display: flex; gap: 22px; }
+.foot-inner a { color: var(--dim); font-family: var(--font-mono); font-size: 12px; text-decoration: none; }
+.foot-inner a:hover { color: var(--accent); }
+
+/* hero brain */
+.logo-brain { width: 18px; height: 18px; color: var(--accent); }
+
+@media (max-width: 600px) {
+  .hero, section { padding-left: 20px; padding-right: 20px; }
+  .hero { padding-top: 104px; }
+  .wordmark { font-size: clamp(38px, 14vw, 58px); }
+  section { padding-top: 72px; }
+  .pain-grid, .mechanism-grid, .neuro-grid, .case-grid { gap: 12px; margin-top: 40px; }
+  .pain-card, .mechanism-card { padding: 22px 20px; }
+  .mechanism-card .tag { top: 15px; right: 18px; font-size: 40px; }
+  .neuro-card .body { padding: 22px 20px 24px; }
+  .case-card header { padding: 18px 20px; }
+  .case-rows { padding: 8px 20px 18px; }
+  .case-row { grid-template-columns: 96px 1fr; gap: 10px; }
+  .case-community { padding: 22px 20px; }
+  .qs { padding: 18px 20px; }
+  .not-item { grid-template-columns: 34px 26px 1fr; gap: 9px; padding: 18px 0; }
+  .intro-stage { width: calc(100vw - 40px); gap: 18px; }
+  .intro-wordmark { font-size: clamp(42px, 16vw, 64px); }
+  .intro-meta { max-width: 28ch; font-size: 12px; text-align: center; line-height: 1.6; }
+  .intro-skip { top: 14px; right: 16px; }
+}
+
+/* reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+  .intro-overlay { display: none !important; }
+  .hero-eyebrow, .wordmark, .hero h1, .hero-sub, .hero-cta, .hero-figure,
+  .reveal > .section-label, .reveal > h2, .reveal > .section-intro, .reveal .stagger > *,
+  .dg-node, .dg-artifact { opacity: 1 !important; transform: none !important; }
+  .hero-eyebrow::before { width: 30px !important; }
+  .reveal > .section-label::before { transform: none !important; }
+  .dg-arrow { stroke-dashoffset: 0 !important; }
+}
+</style>
+<noscript><style>
+.intro-overlay { display: none !important; }
+.hero-eyebrow, .wordmark, .hero h1, .hero-sub, .hero-cta, .hero-badges, .hero-figure,
+.reveal, .reveal > .section-label, .reveal > h2, .reveal > .section-intro, .reveal .stagger > *, .dg-node, .dg-artifact {
+  opacity: 1 !important; transform: none !important; animation: none !important;
+}
+.hero-eyebrow::before { width: 30px !important; }
+.reveal > .section-label::before { transform: none !important; }
+.dg-arrow { stroke-dashoffset: 0 !important; }
+</style></noscript>
+</head>
+<body>
+<div class="intro-overlay" id="introOverlay">
+  <button class="intro-skip" id="introSkip" type="button"><span class="lang-en">Skip intro</span><span class="lang-zh">跳过</span></button>
+  <div class="intro-scan" aria-hidden="true"></div>
+  <div class="intro-stage" aria-hidden="true">
+    <svg class="intro-brain" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <path pathLength="1" d="M12 18V5"/><path pathLength="1" d="M15 13a4.17 4.17 0 0 1-3-4 4.17 4.17 0 0 1-3 4"/><path pathLength="1" d="M17.598 6.5A3 3 0 1 0 12 5a3 3 0 1 0-5.598 1.5"/><path pathLength="1" d="M17.997 5.125a4 4 0 0 1 2.526 5.77"/><path pathLength="1" d="M18 18a4 4 0 0 0 2-7.464"/><path pathLength="1" d="M19.967 17.483A4 4 0 1 1 12 18a4 4 0 1 1-7.967-.517"/><path pathLength="1" d="M6 18a4 4 0 0 1-2-7.464"/>
+    </svg>
+    <div class="intro-wordmark"><span>Neuro</span><span class="agent">Agent</span></div>
+    <div class="intro-meta"><span class="lang-en">Neural research runtime · initializing</span><span class="lang-zh">神经科研运行时 · 正在初始化</span></div>
+  </div>
+</div>
+<nav id="nav">
+  <a class="nav-logo" href="#top"><svg aria-hidden="true" class="logo-brain" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 18V5"/><path d="M15 13a4.17 4.17 0 0 1-3-4 4.17 4.17 0 0 1-3 4"/><path d="M17.598 6.5A3 3 0 1 0 12 5a3 3 0 1 0-5.598 1.5"/><path d="M17.997 5.125a4 4 0 0 1 2.526 5.77"/><path d="M18 18a4 4 0 0 0 2-7.464"/><path d="M19.967 17.483A4 4 0 1 1 12 18a4 4 0 1 1-7.967-.517"/><path d="M6 18a4 4 0 0 1-2-7.464"/></svg>NeuroAgent</a>
+  <div class="nav-links" id="navLinks">
+    <a href="#problem"><span class="lang-en">Problem</span><span class="lang-zh">痛点</span></a>
+    <a href="#how"><span class="lang-en">How it works</span><span class="lang-zh">机制</span></a>
+    <a href="#neuro"><span class="lang-en">Tasks</span><span class="lang-zh">任务</span></a>
+    <a href="#cases"><span class="lang-en">Cases</span><span class="lang-zh">案例</span></a>
+    <a href="#quickstart"><span class="lang-en">Quick start</span><span class="lang-zh">上手</span></a>
+    <a href="#faq">FAQ</a>
+    <a class="mobile-nav-gh" href="https://github.com/yzz673/independent-neuro-agent" target="_blank" rel="noopener">GitHub</a>
+  </div>
+  <div class="nav-right">
+    <button class="icon-btn" id="themeToggle" aria-label="Toggle theme">
+      <svg aria-hidden="true" class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.6 4.6l1.8 1.8M17.6 17.6l1.8 1.8M4.6 19.4l1.8-1.8M17.6 6.4l1.8-1.8"/></svg>
+      <svg aria-hidden="true" class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4 8.5 8.5 0 1 0 20 14.5z"/></svg>
+    </button>
+    <button class="lang-toggle" id="langToggle" aria-label="Switch language">中 / EN</button>
+    <a class="nav-gh" href="https://github.com/yzz673/independent-neuro-agent" target="_blank" rel="noopener">GitHub</a>
+    <button class="icon-btn nav-menu-btn" id="navMenuToggle" aria-label="Open navigation" aria-controls="navLinks" aria-expanded="false">
+      <svg aria-hidden="true" class="icon-menu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      <svg aria-hidden="true" class="icon-close" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+  </div>
+</nav>
+
+<main id="top">
+<!-- ===================== HERO ===================== -->
+<header class="hero">
+  <div class="hero-eyebrow">
+    <span class="lang-en">LOCAL &amp; OPEN · STAGE-CENTRIC · DURABLE RUNS</span>
+    <span class="lang-zh">本地开源 · 阶段驱动 · 可持久化运行</span>
+  </div>
+  <div class="wordmark" aria-label="NeuroAgent">
+    <svg aria-hidden="true" class="wordmark-brain" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 18V5"/><path d="M15 13a4.17 4.17 0 0 1-3-4 4.17 4.17 0 0 1-3 4"/><path d="M17.598 6.5A3 3 0 1 0 12 5a3 3 0 1 0-5.598 1.5"/><path d="M17.997 5.125a4 4 0 0 1 2.526 5.77"/><path d="M18 18a4 4 0 0 0 2-7.464"/><path d="M19.967 17.483A4 4 0 1 1 12 18a4 4 0 1 1-7.967-.517"/><path d="M6 18a4 4 0 0 1-2-7.464"/></svg><span class="wm-neuro">Neuro</span><span class="wm-agent">Agent</span>
+  </div>
+  <h1>
+    <span class="lang-en">The <em>auditable</em> agent for neuroscience research.</span>
+    <span class="lang-zh">为<em>神经科学</em>研究而生，能<em>长流程自主运行</em>、全程<em>可审计</em>的智能体。</span>
+  </h1>
+  <p class="hero-sub">
+    <span class="lang-en">NeuroAgent executes research workflows as staged, durable pipelines. Every tool call, gate decision, and artifact is recorded and can be inspected, resumed, rolled back, or replayed.</span>
+    <span class="lang-zh">NeuroAgent 将科研工作流执行为阶段化、可持久化的流水线。每一次工具调用、每一项门控决策、每一份产物均有记录，并可检查、恢复、回退与复现。</span>
+  </p>
+  <div class="hero-cta">
+    <a class="btn-primary" href="https://github.com/yzz673/independent-neuro-agent" target="_blank" rel="noopener">GitHub</a>
+    <a class="btn-ghost" href="#quickstart"><span class="lang-en">Quick start</span><span class="lang-zh">快速上手</span></a>
+  </div>
+
+  <div class="hero-figure">
+    <div class="figure-caption"><span class="lang-en">Fig. 1 · Runtime stage flow</span><span class="lang-zh">图 1 · 运行时阶段流程</span></div>
+    <div class="figure-scroll">
+    <svg class="figure-canvas" viewBox="0 0 1200 560" role="img" aria-label="Runtime stage flow: task lock, literature, hypothesis, design, implement, analysis, claim gate, output; claim gate may revisit design; state persisted per stage. 运行时阶段流程：任务锁定、文献、假设、设计、实现、分析、声明门控、交付，声明门控可回炉至设计，每阶段落盘。">
+      <defs>
+        <marker id="dgArr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M0 0 L10 5 L0 10 z" fill="var(--accent)"/>
+        </marker>
+        <marker id="dgArrGate" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M0 0 L10 5 L0 10 z" fill="var(--gate)"/>
+        </marker>
+      </defs>
+      <rect class="dg-region" x="18" y="70" width="1164" height="300" rx="16"/>
+      <text class="dg-region-label lang-en" x="38" y="62">STAGED RUNTIME</text>
+      <text class="dg-region-label lang-zh" x="38" y="62">阶段化运行时</text>
+      <path class="dg-loop" d="M700 268 C 780 226 880 218 950 168" marker-end="url(#dgArrGate)"/>
+      <text class="dg-loop-label lang-en" x="742" y="212" text-anchor="middle">revisit / refine</text>
+      <text class="dg-loop-label lang-zh" x="742" y="212" text-anchor="middle">回炉修订</text>
+      <path class="dg-arrow" d="M960 162 V190 H150 V264" fill="none" marker-end="url(#dgArr)"/>
+      <path class="dg-branch" d="M50 140 H40 V466 H48" fill="none" marker-end="url(#dgArr)"/>
+      <path id="dgPath" d="M150 126 H960 V190 H150 V306 H960" fill="none" stroke="none"/>
+      <line class="dg-tick" x1="150" y1="342" x2="150" y2="380"/>
+      <line class="dg-tick" x1="420" y1="342" x2="420" y2="380"/>
+      <line class="dg-tick" x1="690" y1="342" x2="690" y2="380"/>
+      <line class="dg-tick" x1="960" y1="342" x2="960" y2="380"/>
+      <line class="dg-lane" x1="50" y1="384" x2="1150" y2="384"/>
+      <text class="dg-artifact-dim lang-en" x="1150" y="376" text-anchor="end">persisted per stage</text>
+      <text class="dg-artifact-dim lang-zh" x="1150" y="376" text-anchor="end">每阶段落盘</text>
+      <g class="dg-node direct" style="--node-i: 1">
+        <rect x="50" y="430" width="200" height="72" rx="12"/>
+        <g class="dg-icon dim" transform="translate(88 466) scale(1.15)"><rect x="-8" y="-6.5" width="16" height="13" rx="2"/><path d="M-4.5 -2l2.6 2.6-2.6 2.6M0 4.5h5.5"/></g>
+        <text class="dg-name lang-en" x="150" y="463">DIRECT QA</text>
+        <text class="dg-name lang-zh" x="150" y="463">直接回答</text>
+        <text class="dg-sub lang-en" x="150" y="487">no stage</text>
+        <text class="dg-sub lang-zh" x="150" y="487">轻量问答</text>
+      </g>
+      <g class="dg-artifact" transform="translate(440 462)"><g class="dg-icon" transform="translate(0 0) scale(1.15)"><path d="M-5 -7.5h7.5L6 -4v11.5h-11z M2.5 -7.5V-4H6"/></g><text x="16" y="4">checkpoint.json ×8</text></g>
+      <text class="dg-artifact-dim" x="640" y="466">→</text>
+      <g class="dg-artifact" transform="translate(680 462)"><g class="dg-icon" transform="translate(0 0) scale(1.15)"><path d="M-5 -7.5h7.5L6 -4v11.5h-11z M2.5 -7.5V-4H6"/></g><text x="16" y="4">run_manifest.json</text></g>
+      <text class="dg-artifact-dim" x="890" y="466">→</text>
+      <g class="dg-artifact" transform="translate(930 462)"><g class="dg-icon" transform="translate(0 0) scale(1.15)"><path d="M-5 -7.5h7.5L6 -4v11.5h-11z M2.5 -7.5V-4H6"/></g><text x="16" y="4">final_package.json ✓</text></g>
+      <line class="dg-arrow" x1="252" y1="126" x2="318" y2="126" marker-end="url(#dgArr)"/>
+      <line class="dg-arrow" x1="522" y1="126" x2="588" y2="126" marker-end="url(#dgArr)"/>
+      <line class="dg-arrow" x1="792" y1="126" x2="858" y2="126" marker-end="url(#dgArr)"/>
+      <line class="dg-arrow" x1="252" y1="306" x2="318" y2="306" marker-end="url(#dgArr)"/>
+      <line class="dg-arrow" x1="522" y1="306" x2="588" y2="306" marker-end="url(#dgArr)"/>
+      <line class="dg-arrow" x1="792" y1="306" x2="858" y2="306" marker-end="url(#dgArr)"/>
+      <g class="dg-node lock" style="--node-i: 0">
+        <rect x="50" y="90" width="200" height="72" rx="12"/>
+        <g class="dg-icon" transform="translate(82 126) scale(1.15)"><rect x="-6" y="-1.5" width="12" height="9.5" rx="2"/><path d="M-2.8 -1.5v-3.4a2.8 2.8 0 0 1 5.6 0v3.4"/></g>
+        <text class="dg-name lang-en" x="150" y="121">TASK LOCK</text>
+        <text class="dg-name lang-zh" x="150" y="121">任务锁定</text>
+        <text class="dg-sub lang-en" x="150" y="146">task bounds</text>
+        <text class="dg-sub lang-zh" x="150" y="146">目标输入</text>
+        <g class="dg-num"><circle cx="60" cy="90" r="10"/><text x="60" y="93.5" text-anchor="middle">1</text></g>
+      </g>
+      <g class="dg-node" style="--node-i: 1">
+        <rect x="320" y="90" width="200" height="72" rx="12"/>
+        <g class="dg-icon" transform="translate(352 126) scale(1.15)"><path d="M0 -5.5C-2.6 -7.5 -6 -7.5 -8 -6.2v12C-6 4.5 -2.6 4.5 0 6.5c2.6 -2 6 -2 8 .7v-12C6 -7.5 2.6 -7.5 0 -5.5z M0 -5.5v12"/></g>
+        <text class="dg-name lang-en" x="420" y="121">LITERATURE</text>
+        <text class="dg-name lang-zh" x="420" y="121">文献综述</text>
+        <text class="dg-sub lang-en" x="420" y="146">papers</text>
+        <text class="dg-sub lang-zh" x="420" y="146">论文证据</text>
+        <g class="dg-num"><circle cx="330" cy="90" r="10"/><text x="330" y="93.5" text-anchor="middle">2</text></g>
+      </g>
+      <g class="dg-node" style="--node-i: 2">
+        <rect x="590" y="90" width="200" height="72" rx="12"/>
+        <g class="dg-icon" transform="translate(622 126) scale(1.15)"><path d="M0 -8a6 6 0 0 1 3.3 10.6c-.6.6-1.3 1.3-1.3 2.6h-4c0-1.3-.7-2-1.3-2.6A6 6 0 0 1 0 -8z M-2 8h4"/></g>
+        <text class="dg-name lang-en" x="690" y="121">HYPOTHESIS</text>
+        <text class="dg-name lang-zh" x="690" y="121">假设形成</text>
+        <text class="dg-sub lang-en" x="690" y="146">question</text>
+        <text class="dg-sub lang-zh" x="690" y="146">问题假设</text>
+        <g class="dg-num"><circle cx="600" cy="90" r="10"/><text x="600" y="93.5" text-anchor="middle">3</text></g>
+      </g>
+      <g class="dg-node" style="--node-i: 3">
+        <rect x="860" y="90" width="200" height="72" rx="12"/>
+        <g class="dg-icon" transform="translate(892 126) scale(1.15)"><path d="M-6.5 6.5l1.3-4L3.8-8.5l2.7 2.7L-2.5 5.2z M3.8-8.5l2-2a1.8 1.8 0 0 1 2.6 2.6l-2 2"/></g>
+        <text class="dg-name lang-en" x="960" y="121">DESIGN</text>
+        <text class="dg-name lang-zh" x="960" y="121">实验设计</text>
+        <text class="dg-sub lang-en" x="960" y="146">paradigm</text>
+        <text class="dg-sub lang-zh" x="960" y="146">范式方案</text>
+        <g class="dg-num"><circle cx="870" cy="90" r="10"/><text x="870" y="93.5" text-anchor="middle">4</text></g>
+      </g>
+      <g class="dg-node" style="--node-i: 4">
+        <rect x="50" y="270" width="200" height="72" rx="12"/>
+        <g class="dg-icon" transform="translate(82 306) scale(1.15)"><rect x="-8" y="-6.5" width="16" height="13" rx="2"/><path d="M-4.5 -2l2.6 2.6-2.6 2.6M0 4.5h5.5"/></g>
+        <text class="dg-name lang-en" x="150" y="301">IMPLEMENT</text>
+        <text class="dg-name lang-zh" x="150" y="301">实现执行</text>
+        <text class="dg-sub lang-en" x="150" y="326">tool run</text>
+        <text class="dg-sub lang-zh" x="150" y="326">工具运行</text>
+        <g class="dg-num"><circle cx="60" cy="270" r="10"/><text x="60" y="273.5" text-anchor="middle">5</text></g>
+      </g>
+      <g class="dg-node" style="--node-i: 5">
+        <rect x="320" y="270" width="200" height="72" rx="12"/>
+        <g class="dg-icon" transform="translate(352 306) scale(1.15)"><path d="M-8 6.5h16M-5 6.5V-1M-1.5 6.5v-5.5M2.5 6.5V-6M6 6.5v-3"/></g>
+        <text class="dg-name lang-en" x="420" y="301">ANALYSIS</text>
+        <text class="dg-name lang-zh" x="420" y="301">结果分析</text>
+        <text class="dg-sub lang-en" x="420" y="326">stats audit</text>
+        <text class="dg-sub lang-zh" x="420" y="326">统计审计</text>
+        <g class="dg-num"><circle cx="330" cy="270" r="10"/><text x="330" y="273.5" text-anchor="middle">6</text></g>
+      </g>
+      <g class="dg-node gate" style="--node-i: 6">
+        <rect x="590" y="270" width="200" height="72" rx="12"/>
+        <g class="dg-icon" transform="translate(622 306) scale(1.15)"><path d="M0 -8l6.5 2.6v4c0 4.6-2.6 7.2-6.5 9.2-3.9-2-6.5-4.6-6.5-9.2v-4z M-2.6-.6l2 2L3.4-2.8"/></g>
+        <text class="dg-name lang-en" x="690" y="301">CLAIM GATE</text>
+        <text class="dg-name lang-zh" x="690" y="301">结论门控</text>
+        <text class="dg-sub lang-en" x="690" y="326">claim check</text>
+        <text class="dg-sub lang-zh" x="690" y="326">证据审查</text>
+        <g class="dg-num"><circle cx="600" cy="270" r="10"/><text x="600" y="273.5" text-anchor="middle">7</text></g>
+      </g>
+      <g class="dg-node out" style="--node-i: 7">
+        <rect x="860" y="270" width="200" height="72" rx="12"/>
+        <g class="dg-icon" transform="translate(892 306) scale(1.15)"><path d="M-6.5-5.2h13v11.7h-13z M-6.5-5.2L0-8.5l6.5 3.3 M0-2v-6.5"/></g>
+        <text class="dg-name lang-en" x="960" y="301">OUTPUT</text>
+        <text class="dg-name lang-zh" x="960" y="301">最终交付</text>
+        <text class="dg-sub lang-en" x="960" y="326">artifact pack</text>
+        <text class="dg-sub lang-zh" x="960" y="326">产物打包</text>
+        <g class="dg-num"><circle cx="870" cy="270" r="10"/><text x="870" y="273.5" text-anchor="middle">8</text></g>
+      </g>
+      <circle class="dg-pulse" r="4"><animateMotion dur="9s" repeatCount="indefinite"><mpath href="#dgPath"/></animateMotion></circle>
+    </svg>
+    </div>
+  </div>
+
+</header>
+
+<!-- ===================== PROBLEM ===================== -->
+<section id="problem" class="reveal">
+  <div class="section-label"><span class="lang-en">01 · Problem</span><span class="lang-zh">01 · 痛点</span></div>
+  <h2>
+    <span class="lang-en">Current agents still lack <em>neuroscience background knowledge</em>, <em>autonomous long-workflow research capability</em>, and <em>reproducibility review mechanisms</em>.</span>
+    <span class="lang-zh">现有智能体仍缺少<em>神经科学背景知识</em>、<em>长流程自主科研能力</em>与<em>可重复性审查机制</em>。</span>
+  </h2>
+  <div class="pain-grid stagger">
+    <div class="pain-card glass">
+      <span class="idx"><span class="lang-en">GAP · 01</span><span class="lang-zh">短板 · 01</span></span>
+      <span class="lang-en">General-purpose agents lack neuroscience domain knowledge, making it difficult to reason about paradigm constraints, brain-signal characteristics, and domain-specific methods for preprocessing, modeling, and statistical analysis.</span>
+      <span class="lang-zh">通用智能体缺少神经科学领域知识，难以准确把握范式约束、脑信号特性，以及预处理、建模与统计分析方法。</span>
+    </div>
+    <div class="pain-card glass">
+      <span class="idx"><span class="lang-en">GAP · 02</span><span class="lang-zh">短板 · 02</span></span>
+      <span class="lang-en">They struggle to autonomously advance long research workflows from literature, hypotheses, and paradigm design to implementation, analysis, and claim review.</span>
+      <span class="lang-zh">它们难以自主推进从文献、假设、范式设计到实现、分析和结论审查的长流程科研任务。</span>
+    </div>
+    <div class="pain-card glass">
+      <span class="idx"><span class="lang-en">GAP · 03</span><span class="lang-zh">短板 · 03</span></span>
+      <span class="lang-en">Tool calls, key decisions, inputs, outputs, and intermediate artifacts lack structured records, making reproducibility review difficult.</span>
+      <span class="lang-zh">工具调用、关键决策、输入输出与中间产物缺少结构化记录，难以接受可重复性审查。</span>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== HOW IT WORKS ===================== -->
+<section id="how" class="reveal">
+  <span id="features" class="anchor-alias" aria-hidden="true"></span>
+  <div class="section-label"><span class="lang-en">02 · How it works</span><span class="lang-zh">02 · 机制</span></div>
+  <h2>
+    <span class="lang-en">Domain knowledge, research skills, and governed execution form the <em>research engine</em>.</span>
+    <span class="lang-zh">领域知识、科研技能与受控运行共同构成<em>科研引擎</em>。</span>
+  </h2>
+  <p class="section-intro">
+    <span class="lang-en">NeuroAgent combines neuroscience knowledge, research skills, runtime orchestration, and durable state in one system. It can answer lightweight questions directly or execute selected stages for complex work, while keeping the full run inspectable and replayable.</span>
+    <span class="lang-zh">NeuroAgent 将领域知识、科研技能、运行编排与持久化状态组合在同一系统中；它既可直接回答轻量问题，也可按任务需要执行指定阶段，并保留完整运行的检查、恢复与回放能力。</span>
+  </p>
+  <div class="mechanism-grid stagger">
+    <div class="mechanism-card glass">
+      <span class="tag">01</span>
+      <h3><span class="lang-en">Neuroscience knowledge and skills</span><span class="lang-zh">神经科学知识与技能</span></h3>
+      <p><span class="lang-en">Paper-distilled knowledge and bundled skills support literature work, brain-data intake, preprocessing, modeling strategy, analysis, writing, and review.</span>
+      <span class="lang-zh">由论文蒸馏的领域知识与内置技能覆盖文献、脑数据审计、预处理、建模策略、结果分析、写作与审查。</span></p>
+    </div>
+    <div class="mechanism-card glass">
+      <span class="tag">02</span>
+      <h3><span class="lang-en">Adaptive execution modes</span><span class="lang-zh">自适应运行模式</span></h3>
+      <p><span class="lang-en">The same interface supports direct answers, user-selected stages, and full staged execution, so lightweight questions and long autonomous tasks do not require separate tools.</span>
+      <span class="lang-zh">同一界面支持直接回答、用户选择阶段执行与完整阶段化执行，轻量问题和长流程任务不需要切换工具。</span></p>
+    </div>
+    <div class="mechanism-card glass">
+      <span class="tag">03</span>
+      <h3><span class="lang-en">Local governed execution</span><span class="lang-zh">本地受控执行</span></h3>
+      <p><span class="lang-en">Runs execute locally with OpenAI-compatible or Anthropic-compatible providers, explicit permission contracts, and sandbox-aware tool behavior.</span>
+      <span class="lang-zh">运行在本地执行，支持 OpenAI 或 Anthropic 兼容 provider，并通过显式权限契约与沙箱感知工具行为控制风险。</span></p>
+    </div>
+    <div class="mechanism-card glass">
+      <span class="tag">04</span>
+      <h3><span class="lang-en">Durable, auditable runs</span><span class="lang-zh">持久化与可追溯</span></h3>
+      <p><span class="lang-en">Sessions, stage artifacts, transcripts, checkpoints, manifests, and final packages are persisted for inspection, resume, rollback, and replay.</span>
+      <span class="lang-zh">Session、阶段产物、交互记录、checkpoint、manifest 与最终产物包均会持久化，用于检查、恢复、回退与回放。</span></p>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== FOR NEURO ===================== -->
+<section id="neuro" class="reveal">
+  <div class="section-label"><span class="lang-en">03 · Supported neuroscience tasks</span><span class="lang-zh">03 · 支持的神经科学任务</span></div>
+  <h2>
+    <span class="lang-en">From paradigm design to <em>neural encoding</em> and <em>neural decoding</em>.</span>
+    <span class="lang-zh">覆盖<em>范式设计</em>、<em>神经编码</em>与<em>神经解码</em>。</span>
+  </h2>
+  <div class="neuro-grid stagger">
+    <div class="neuro-card paradigm glass">
+      <div class="body">
+        <span class="task-index">1</span>
+        <h3><span class="lang-en">Paradigm design</span><span class="lang-zh">范式设计</span></h3>
+        <p><span class="lang-en">NeuroAgent can help specify task structure, stimuli, events, labels, subject/session layout, split protocol, and leakage boundaries before data processing begins.</span>
+        <span class="lang-zh">NeuroAgent 可辅助定义任务结构、刺激、事件、标签、被试/会话层级、数据划分协议与泄漏边界，在处理数据之前固定实验范式。</span></p>
+      </div>
+    </div>
+    <div class="neuro-card encoding glass">
+      <div class="body">
+        <span class="task-index">2</span>
+        <h3><span class="lang-en">Neural encoding</span><span class="lang-zh">神经编码</span></h3>
+        <p><span class="lang-en">Encoding workflows can connect stimuli, behavior, representations, and neural responses, then keep preprocessing, feature construction, model fitting, and result interpretation in one staged record.</span>
+        <span class="lang-zh">神经编码流程可连接刺激、行为、表征与神经响应，并将预处理、特征构建、模型拟合与结果解释保存在同一阶段化记录中。</span></p>
+      </div>
+    </div>
+    <div class="neuro-card decoding glass">
+      <div class="body">
+        <span class="task-index">3</span>
+        <h3><span class="lang-en">Neural decoding</span><span class="lang-zh">神经解码</span></h3>
+        <p><span class="lang-en">Neural decoding workflows cover target definition, preprocessing, model selection, training, evaluation, analysis, and claim review for EEG, sEEG, ECoG, and related brain-signal tasks.</span>
+        <span class="lang-zh">神经解码流程覆盖目标定义、预处理、模型选择、训练、评估、分析与结论审查，适用于 EEG、sEEG、ECoG 等脑信号任务。</span></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== CASES ===================== -->
+<section id="cases" class="reveal">
+  <div class="section-label"><span class="lang-en">04 · Cases</span><span class="lang-zh">04 · 案例</span></div>
+  <h2>
+    <span class="lang-en">Real runs, <em>replayed</em>.</span>
+    <span class="lang-zh">真实运行的<em>复现</em>。</span>
+  </h2>
+  <p class="section-intro">
+    <span class="lang-en">Each case will pair a short run recording with the task, pipeline, key decisions, and deliverables from an auditable research workflow.</span>
+    <span class="lang-zh">每个案例将以短录屏配合任务、执行链路、关键决策与交付物，展示一次可追溯的科研运行。</span>
+  </p>
+  <div class="case-grid stagger">
+    <div class="case-card glass">
+      <div class="case-media">
+        <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M10 9l5 3-5 3z" fill="currentColor" stroke="none"/></svg>
+        <span><span class="lang-en">Demo recording pending</span><span class="lang-zh">演示录屏待补</span></span>
+        <span class="case-time">00:00 / --:--</span><span class="case-timeline" aria-hidden="true"><i></i></span>
+      </div>
+      <header>
+        <h3><span class="lang-en">Cross-subject EEG speech decoding</span><span class="lang-zh">跨被试 EEG 语音解码</span></h3>
+        <span class="chip"><span class="lang-en">material pending</span><span class="lang-zh">素材就位中</span></span>
+      </header>
+      <div class="case-rows">
+        <div class="case-row"><span class="k"><span class="lang-en">TASK</span><span class="lang-zh">任务</span></span><div class="skel"></div></div>
+        <div class="case-row"><span class="k"><span class="lang-en">PIPELINE</span><span class="lang-zh">链路</span></span><div class="skel w70"></div></div>
+        <div class="case-row"><span class="k"><span class="lang-en">DECISIONS</span><span class="lang-zh">关键决策</span></span><div class="skel"></div></div>
+        <div class="case-row"><span class="k"><span class="lang-en">DELIVERABLES</span><span class="lang-zh">交付物</span></span><div class="skel w50"></div></div>
+      </div>
+    </div>
+    <div class="case-card glass">
+      <div class="case-media">
+        <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M10 9l5 3-5 3z" fill="currentColor" stroke="none"/></svg>
+        <span><span class="lang-en">Demo recording pending</span><span class="lang-zh">演示录屏待补</span></span>
+        <span class="case-time">00:00 / --:--</span><span class="case-timeline" aria-hidden="true"><i></i></span>
+      </div>
+      <header>
+        <h3><span class="lang-en">BCI seizure detection demo</span><span class="lang-zh">BCI 癫痫检测公开示例</span></h3>
+        <span class="chip"><span class="lang-en">material pending</span><span class="lang-zh">素材就位中</span></span>
+      </header>
+      <div class="case-rows">
+        <div class="case-row"><span class="k"><span class="lang-en">TASK</span><span class="lang-zh">任务</span></span><div class="skel"></div></div>
+        <div class="case-row"><span class="k"><span class="lang-en">PIPELINE</span><span class="lang-zh">链路</span></span><div class="skel w70"></div></div>
+        <div class="case-row"><span class="k"><span class="lang-en">DECISIONS</span><span class="lang-zh">关键决策</span></span><div class="skel"></div></div>
+        <div class="case-row"><span class="k"><span class="lang-en">DELIVERABLES</span><span class="lang-zh">交付物</span></span><div class="skel w50"></div></div>
+      </div>
+    </div>
+    <div class="case-community">
+      <span class="lang-en">Reproducible runs from user pipelines will be featured here.</span>
+      <span class="lang-zh">来自用户流水线的可重复运行将在此收录。</span>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== QUICK START ===================== -->
+<section id="quickstart" class="reveal">
+  <div class="section-label"><span class="lang-en">05 · Quick start</span><span class="lang-zh">05 · 上手</span></div>
+  <h2>
+    <span class="lang-en">From installation to <em>a staged run</em>.</span>
+    <span class="lang-zh">从安装到<em>一次阶段化运行</em>。</span>
+  </h2>
+  <div class="qs-steps term glass stagger">
+    <div class="term-bar"><i></i><i></i><i></i></div>
+    <div class="qs">
+      <div class="t"><span class="num">01</span><span><span class="lang-en">Install the release package.</span><span class="lang-zh">安装发行包。</span></span></div>
+      <div class="term-body"><code>curl -fsSL https://github.com/yzz673/independent-neuro-agent/releases/download/neuro-agent-v0.1.0/install.sh | bash -s -- --release neuro-agent-v0.1.0 --yes</code>
+      <button class="copy-btn" data-copy="curl -fsSL https://github.com/yzz673/independent-neuro-agent/releases/download/neuro-agent-v0.1.0/install.sh | bash -s -- --release neuro-agent-v0.1.0 --yes" aria-label="Copy"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg></button></div>
+    </div>
+    <div class="qs">
+      <div class="t"><span class="num">02</span><span><span class="lang-en">Configure an OpenAI-compatible or Anthropic-compatible LLM provider.</span><span class="lang-zh">配置 OpenAI 或 Anthropic 兼容的 LLM 服务商。</span></span></div>
+      <div class="term-body"><code>neuro-agent setup &amp;&amp; neuro-agent doctor</code>
+      <button class="copy-btn" data-copy="neuro-agent setup && neuro-agent doctor" aria-label="Copy"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg></button></div>
+    </div>
+    <div class="qs">
+      <div class="t"><span class="num">03</span><span><span class="lang-en">Run the bundled BCI demonstration to observe a complete staged pipeline.</span><span class="lang-zh">运行随附的 BCI 公开示例，观察一条完整的阶段流水线。</span></span></div>
+      <div class="term-body"><code>neuro-agent run --task ~/.neuro-agent/tasks/public_bci_demo.yaml</code>
+      <button class="copy-btn" data-copy="neuro-agent run --task ~/.neuro-agent/tasks/public_bci_demo.yaml" aria-label="Copy"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg></button></div>
+    </div>
+    <div class="qs">
+      <div class="t"><span class="num">04</span><span><span class="lang-en">Point the agent at your own dataset. When required information is missing, it will request clarification before proceeding.</span><span class="lang-zh">将智能体指向你自己的数据集。缺少必要信息时，它会先请求澄清，再继续执行。</span></span></div>
+      <div class="term-body"><code><span class="lang-en"># EEG / BCI data</span><span class="lang-zh"># EEG / BCI 数据</span></code></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== HONESTY ===================== -->
+<section id="honesty" class="reveal">
+  <div class="section-label"><span class="lang-en">06 · Boundaries</span><span class="lang-zh">06 · 边界</span></div>
+  <h2>
+    <span class="lang-en">What NeuroAgent is <em>not</em>.</span>
+    <span class="lang-zh">NeuroAgent <em>不是</em>什么。</span>
+  </h2>
+  <div class="not-list stagger">
+    <div class="not-item"><span class="boundary-index">01</span><span class="x">✕</span><span><span class="lang-en">It is not a lightweight chat interface; for casual question answering, a chatbot is the more suitable tool.</span><span class="lang-zh">它不是轻量级对话界面；若只需要日常问答，聊天机器人是更合适的工具。</span></span></div>
+    <div class="not-item"><span class="boundary-index">02</span><span class="x">✕</span><span><span class="lang-en">It is not a one-click analyzer that works across every dataset and environment without configuration; each run still needs explicit data, compute, and permission boundaries.</span><span class="lang-zh">它不是无需配置即可适配所有数据和环境的一键分析工具；每次运行仍需明确数据、计算环境与权限边界。</span></span></div>
+    <div class="not-item"><span class="boundary-index">03</span><span class="x">✕</span><span><span class="lang-en">It does not replace scientific judgment. It makes research runs auditable; interpretation remains the researcher's responsibility.</span><span class="lang-zh">它不能替代科学判断。它让科研运行可审计；解释与判断仍是研究者的责任。</span></span></div>
+  </div>
+</section>
+
+<!-- ===================== FAQ ===================== -->
+<section id="faq" class="reveal">
+  <div class="section-label"><span class="lang-en">07 · FAQ</span><span class="lang-zh">07 · 常见问题</span></div>
+  <h2><span class="lang-en">Frequently asked questions.</span><span class="lang-zh">常见问题。</span></h2>
+  <div class="faq-list">
+    <details class="faq-item">
+      <summary><span class="lang-en">Is NeuroAgent a model?</span><span class="lang-zh">NeuroAgent 是模型吗？</span></summary>
+      <div class="a"><span class="lang-en">No. It is an agent runtime; users supply their own LLM provider.</span><span class="lang-zh">不是。它是智能体运行时，模型由用户自己的服务商提供。</span></div>
+    </details>
+    <details class="faq-item">
+      <summary><span class="lang-en">Does it require a GPU cluster?</span><span class="lang-zh">需要 GPU 集群吗？</span></summary>
+      <div class="a"><span class="lang-en">No. It is local-first; compute-intensive steps run as tools on the user's own machines.</span><span class="lang-zh">不需要。NeuroAgent 本地优先；计算密集型步骤作为工具在用户自己的机器上执行。</span></div>
+    </details>
+    <details class="faq-item">
+      <summary><span class="lang-en">What happens when a run is interrupted?</span><span class="lang-zh">运行中断了怎么办？</span></summary>
+      <div class="a"><span class="lang-en">It can be resumed from the most recent checkpoint, rolled back to an earlier stage, or replayed in full.</span><span class="lang-zh">可从最近的检查点恢复、回退到更早的阶段，或完整复现该次运行。</span></div>
+    </details>
+    <details class="faq-item">
+      <summary><span class="lang-en">Can it run unattended?</span><span class="lang-zh">能无人值守吗？</span></summary>
+      <div class="a"><span class="lang-en">Yes. In dont_ask permission mode, actions that would normally require approval are denied instead of interrupting the user.</span><span class="lang-zh">可以。在 dont_ask 权限模式下，需要确认的操作会被直接拒绝，不会中断执行等待用户。</span></div>
+    </details>
+    <details class="faq-item">
+      <summary><span class="lang-en">Is it restricted to neuroscience?</span><span class="lang-zh">只能用于神经科学吗？</span></summary>
+      <div class="a"><span class="lang-en">No. The runtime is general-purpose; the bundled task families and demonstrations focus on neuroscience research.</span><span class="lang-zh">不是。运行时是通用的；随仓库发布的任务族与示例聚焦于神经科学研究。</span></div>
+    </details>
+    <details class="faq-item">
+      <summary><span class="lang-en">License?</span><span class="lang-zh">许可证？</span></summary>
+      <div class="a"><span class="lang-en">[ to be confirmed ]</span><span class="lang-zh">[ 待确认 ]</span></div>
+    </details>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="foot-inner">
+    <div class="l">NeuroAgent</div>
+    <div class="r">
+      <a href="#quickstart"><span class="lang-en">Quick start</span><span class="lang-zh">快速上手</span></a>
+      <a href="#faq">FAQ</a>
+      <a href="https://github.com/yzz673/independent-neuro-agent" target="_blank" rel="noopener">GitHub</a>
+      <a href="https://github.com/yzz673/independent-neuro-agent/tree/develop-00/docs" target="_blank" rel="noopener">Docs</a>
+      <a href="https://github.com/yzz673/independent-neuro-agent/tree/develop-00/docs/install.md" target="_blank" rel="noopener">Install</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function () {
+  var root = document.documentElement;
+  var reduceMotion = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (reduceMotion) {
+    document.querySelectorAll('animateMotion').forEach(function (m) { m.remove(); });
+  }
+
+  /* ---------- cinematic intro ---------- */
+  var introOverlay = document.getElementById('introOverlay');
+  var introSkip = document.getElementById('introSkip');
+  var introExitTimer;
+  var introCompleteTimer;
+  var introSafetyTimer;
+  function clearIntroTimers() {
+    clearTimeout(introExitTimer);
+    clearTimeout(introCompleteTimer);
+    clearTimeout(introSafetyTimer);
+  }
+  function completeIntro() {
+    clearIntroTimers();
+    root.classList.remove('intro-pending', 'intro-running', 'intro-exiting');
+    root.classList.add('intro-complete');
+    introOverlay.hidden = true;
+  }
+  function beginIntroExit() {
+    if (!root.classList.contains('intro-pending')) return;
+    root.classList.remove('intro-pending');
+    root.classList.add('intro-exiting');
+    introCompleteTimer = setTimeout(completeIntro, 1125);
+  }
+  if (root.classList.contains('intro-pending')) {
+    try { sessionStorage.setItem('na-intro-v6-seen', '1'); } catch (e) {}
+    root.classList.add('intro-running');
+    introExitTimer = setTimeout(beginIntroExit, 2625);
+    introSafetyTimer = setTimeout(completeIntro, 4750);
+    introSkip.addEventListener('click', completeIntro);
+    document.addEventListener('keydown', function (event) {
+      if (event.key === 'Escape' && !introOverlay.hidden) completeIntro();
+    });
+  } else {
+    introOverlay.hidden = true;
+  }
+
+  /* ---------- theme ---------- */
+  var themeBtn = document.getElementById('themeToggle');
+  var themeManual = false;
+  function applyTheme(t, manual) {
+    root.dataset.theme = t;
+    if (manual) {
+      themeManual = true;
+      try { localStorage.setItem('na-theme', t); } catch (e) {}
+      var url = new URL(location.href);
+      url.searchParams.set('theme', t);
+      history.replaceState(null, '', url.toString());
+    }
+  }
+  var initialTheme = new URLSearchParams(location.search).get('theme');
+  if (!initialTheme) { try { initialTheme = localStorage.getItem('na-theme'); } catch (e) {} }
+  if (initialTheme === 'light' || initialTheme === 'dark') themeManual = true;
+  themeBtn.addEventListener('click', function () {
+    applyTheme(root.dataset.theme === 'dark' ? 'light' : 'dark', true);
+  });
+  if (window.matchMedia) {
+    matchMedia('(prefers-color-scheme: light)').addEventListener('change', function (e) {
+      if (!themeManual) applyTheme(e.matches ? 'light' : 'dark', false);
+    });
+  }
+
+  /* ---------- language ---------- */
+  var langBtn = document.getElementById('langToggle');
+  function applyLang(lang) {
+    root.dataset.lang = lang;
+    root.lang = lang === 'zh' ? 'zh-CN' : 'en';
+    langBtn.textContent = lang === 'zh' ? 'EN / 中' : '中 / EN';
+    try { localStorage.setItem('na-lang', lang); } catch (e) {}
+    var url = new URL(location.href);
+    url.searchParams.set('lang', lang);
+    history.replaceState(null, '', url.toString());
+  }
+  var initialLang = new URLSearchParams(location.search).get('lang');
+  if (!initialLang) { try { initialLang = localStorage.getItem('na-lang'); } catch (e) {} }
+  if (initialLang !== 'zh') initialLang = 'en';
+  applyLang(initialLang);
+  langBtn.addEventListener('click', function () {
+    applyLang(root.dataset.lang === 'zh' ? 'en' : 'zh');
+  });
+
+  /* ---------- scroll reveal ---------- */
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (entry) {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('in');
+        io.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.reveal').forEach(function (el) { io.observe(el); });
+
+  /* ---------- navigation ---------- */
+  var nav = document.getElementById('nav');
+  var menuBtn = document.getElementById('navMenuToggle');
+  function setNavMenu(open) {
+    nav.classList.toggle('menu-open', open);
+    menuBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    menuBtn.setAttribute('aria-label', open ? 'Close navigation' : 'Open navigation');
+  }
+  menuBtn.addEventListener('click', function () {
+    setNavMenu(!nav.classList.contains('menu-open'));
+  });
+  document.querySelectorAll('#navLinks a').forEach(function (a) {
+    a.addEventListener('click', function () { setNavMenu(false); });
+  });
+  document.addEventListener('click', function (event) {
+    if (nav.classList.contains('menu-open') && !nav.contains(event.target)) setNavMenu(false);
+  });
+  document.addEventListener('keydown', function (event) {
+    if (event.key === 'Escape') setNavMenu(false);
+  });
+  addEventListener('resize', function () {
+    if (innerWidth > 920) setNavMenu(false);
+  });
+
+  /* ---------- nav shrink + active link ---------- */
+  addEventListener('scroll', function () {
+    nav.classList.toggle('scrolled', scrollY > 24);
+  }, { passive: true });
+  var links = Array.prototype.slice.call(document.querySelectorAll('#navLinks a[href^="#"]'));
+  var linkByHash = {};
+  links.forEach(function (a) { linkByHash[a.getAttribute('href').slice(1)] = a; });
+  var sectionObserver = new IntersectionObserver(function (entries) {
+    entries.forEach(function (entry) {
+      if (entry.isIntersecting) {
+        links.forEach(function (a) { a.classList.remove('active'); });
+        var link = linkByHash[entry.target.id];
+        if (link) link.classList.add('active');
+      }
+    });
+  }, { rootMargin: '-30% 0px -60% 0px' });
+  document.querySelectorAll('section[id]').forEach(function (s) { sectionObserver.observe(s); });
+
+  /* ---------- copy buttons ---------- */
+  document.querySelectorAll('.copy-btn').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var text = btn.dataset.copy;
+      function mark() {
+        btn.classList.add('done');
+        setTimeout(function () { btn.classList.remove('done'); }, 1400);
+      }
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(mark, mark);
+      } else {
+        var ta = document.createElement('textarea');
+        ta.value = text; document.body.appendChild(ta); ta.select();
+        try { document.execCommand('copy'); } catch (e) {}
+        document.body.removeChild(ta); mark();
+      }
+    });
+  });
+})();
+</script>
+</body>
+</html>
