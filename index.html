@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-lang="en" data-theme="dark">
+<html lang="zh-CN" data-lang="zh" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <script>
@@ -8,14 +8,12 @@
   var root = document.documentElement;
   var t = new URLSearchParams(location.search).get('theme');
   if (!t) { try { t = localStorage.getItem('na-theme'); } catch (e) {} }
-  if (t !== 'light' && t !== 'dark') {
-    t = (window.matchMedia && matchMedia('(prefers-color-scheme: light)').matches) ? 'light' : 'dark';
-  }
+  if (t !== 'light' && t !== 'dark') t = 'dark';
   root.dataset.theme = t;
 
   var lang = new URLSearchParams(location.search).get('lang');
   if (!lang) { try { lang = localStorage.getItem('na-lang'); } catch (e) {} }
-  if (lang !== 'zh') lang = 'en';
+  if (lang !== 'zh' && lang !== 'en') lang = 'zh';
   root.dataset.lang = lang;
   root.lang = lang === 'zh' ? 'zh-CN' : 'en';
 
@@ -1016,28 +1014,18 @@ footer { border-top: 1px solid var(--stroke); margin-top: 130px; padding: 46px 3
 
   /* ---------- theme ---------- */
   var themeBtn = document.getElementById('themeToggle');
-  var themeManual = false;
   function applyTheme(t, manual) {
     root.dataset.theme = t;
     if (manual) {
-      themeManual = true;
       try { localStorage.setItem('na-theme', t); } catch (e) {}
       var url = new URL(location.href);
       url.searchParams.set('theme', t);
       history.replaceState(null, '', url.toString());
     }
   }
-  var initialTheme = new URLSearchParams(location.search).get('theme');
-  if (!initialTheme) { try { initialTheme = localStorage.getItem('na-theme'); } catch (e) {} }
-  if (initialTheme === 'light' || initialTheme === 'dark') themeManual = true;
   themeBtn.addEventListener('click', function () {
     applyTheme(root.dataset.theme === 'dark' ? 'light' : 'dark', true);
   });
-  if (window.matchMedia) {
-    matchMedia('(prefers-color-scheme: light)').addEventListener('change', function (e) {
-      if (!themeManual) applyTheme(e.matches ? 'light' : 'dark', false);
-    });
-  }
 
   /* ---------- language ---------- */
   var langBtn = document.getElementById('langToggle');
@@ -1052,7 +1040,7 @@ footer { border-top: 1px solid var(--stroke); margin-top: 130px; padding: 46px 3
   }
   var initialLang = new URLSearchParams(location.search).get('lang');
   if (!initialLang) { try { initialLang = localStorage.getItem('na-lang'); } catch (e) {} }
-  if (initialLang !== 'zh') initialLang = 'en';
+  if (initialLang !== 'zh' && initialLang !== 'en') initialLang = 'zh';
   applyLang(initialLang);
   langBtn.addEventListener('click', function () {
     applyLang(root.dataset.lang === 'zh' ? 'en' : 'zh');
