@@ -249,7 +249,7 @@ html[data-theme="light"] .icon-sun { display: none; } html[data-theme="light"] .
 }
 
 /* ============ hero ============ */
-.hero { min-height: 100vh; display: flex; flex-direction: column; justify-content: flex-start; padding: 120px 34px 36px; max-width: 1200px; margin: 0 auto; }
+.hero { min-height: 88svh; display: flex; flex-direction: column; justify-content: center; padding: 112px 34px 72px; max-width: 1200px; margin: 0 auto; }
 .hero-eyebrow { font-family: var(--font-mono); font-size: 12px; letter-spacing: .22em; color: var(--accent); margin-bottom: 18px; opacity: 0; transform: translateY(16px); }
 .hero-eyebrow::before { content: ""; display: inline-block; width: 0; height: 1px; margin: 0 12px 3px 0; background: var(--accent); vertical-align: middle; }
 .wordmark { display: flex; align-items: center; gap: .12em; font-family: var(--font-d-en); font-weight: 550; font-size: clamp(50px, 14vw, 205px); letter-spacing: -0.025em; line-height: 1.25; margin: 0 0 34px; white-space: nowrap; opacity: 0; transform: translateY(30px); }
@@ -287,8 +287,7 @@ html:not(.intro-pending) .hero-cta { animation: hero-enter .75s var(--ease-cinem
   position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
   overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;
 }
-.hero-figure { margin-top: 48px; opacity: 0; transform: translateY(22px); }
-html:not(.intro-pending) .hero-figure { animation: hero-enter .85s var(--ease-cinematic) .68s forwards; }
+.mechanism-figure { margin-top: 32px; }
 .runtime-flow { position: relative; margin: 0; padding: 18px 0 0; border-top: 1px solid var(--stroke); }
 .flow-caption-bar { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 10px; }
 .figure-caption { font-family: var(--font-mono); font-size: 13.75px; color: var(--faint); letter-spacing: .12em; }
@@ -382,6 +381,274 @@ html[data-lang="zh"] .flow-stage-name { font-family: var(--font-b-zh); }
   font: 500 15.625px/1.55 var(--font-mono); letter-spacing: .02em; text-align: center;
 }
 
+/* paper-derived knowledge figure */
+.knowledge-flow {
+  position: relative; margin: 78px 0 0; padding: 18px 0 0; border-top: 1px solid var(--stroke);
+}
+.kb-figure-intro {
+  max-width: 78ch; margin: 4px 0 24px; color: var(--dim); font-size: 15px; line-height: 1.7;
+}
+.kb-shell {
+  display: grid; grid-template-columns: 170px minmax(0, 1fr) 210px;
+  align-items: center; gap: 20px; min-height: 460px;
+}
+.kb-phase-label {
+  margin-bottom: 12px; color: var(--faint); font: 500 11.25px/1.2 var(--font-mono);
+  letter-spacing: .14em; text-align: center;
+}
+.kb-source-wrap, .kb-release-wrap { position: relative; z-index: 3; min-width: 0; height: 440px; }
+.kb-source-wrap .kb-phase-label, .kb-release-wrap .kb-phase-label {
+  position: absolute; z-index: 2; top: 72px; left: 0; right: 0; margin: 0;
+}
+.kb-source, .kb-release {
+  position: absolute; top: 50%; left: 0; right: 0; min-height: 174px;
+  display: grid; align-content: center; transform: translateY(-50%);
+  background: var(--panel); border: 1px solid var(--panel-edge); border-radius: 8px;
+  box-shadow: 0 12px 30px rgba(0,0,0,.12);
+  transition: border-color .25s, background-color .25s, box-shadow .25s, transform .25s var(--ease-out);
+}
+.kb-source { padding: 18px 16px; }
+.kb-source::after, .kb-release::before {
+  content: ""; position: absolute; top: calc(50% - 1px); width: 21px; height: 2px;
+  background: var(--accent); opacity: .7;
+}
+.kb-source::after { left: 100%; }
+.kb-release::before { right: 100%; }
+.kb-source-row, .kb-release-row { display: grid; gap: 5px; }
+.kb-source-divider, .kb-release-divider {
+  height: 1px; margin: 15px 0; background: var(--stroke-strong); opacity: .65;
+}
+.kb-eyebrow {
+  color: var(--faint); font: 500 10px/1.3 var(--font-mono); letter-spacing: .12em;
+}
+.kb-source-title, .kb-release-title {
+  color: var(--text); font: 500 16px/1.3 var(--font-b-en); overflow-wrap: anywhere;
+}
+html[data-lang="zh"] .kb-source-title, html[data-lang="zh"] .kb-release-title { font-family: var(--font-b-zh); }
+.kb-source-meta, .kb-release-meta, .kb-node-meta {
+  color: var(--dim); font: 400 10.625px/1.5 var(--font-mono); overflow-wrap: anywhere;
+}
+.kb-lens { position: relative; z-index: 2; min-width: 0; height: 440px; }
+.kb-lens-svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.kb-path-base, .kb-path {
+  fill: none; stroke-linecap: round; stroke-linejoin: round;
+}
+.kb-path-base { stroke: var(--stroke-strong); stroke-width: 1.4; opacity: .3; }
+.kb-path { stroke-width: 2.2; opacity: .72; transition: opacity .25s, stroke-width .25s, filter .25s; }
+.kb-path--method { stroke: var(--cyan); }
+.kb-path--strategy { stroke: var(--gate); }
+.kb-path.is-running, .kb-path.is-complete, .knowledge-flow[data-preview-lane="method"] .kb-path--method,
+.knowledge-flow[data-preview-lane="strategy"] .kb-path--strategy {
+  opacity: 1; stroke-width: 3; filter: drop-shadow(0 0 5px currentColor);
+}
+.knowledge-flow[data-preview-lane="method"] .kb-path--strategy,
+.knowledge-flow[data-preview-lane="strategy"] .kb-path--method { opacity: .24; }
+.kb-pulse { opacity: 0; transition: opacity .15s; }
+.kb-pulse--method { fill: var(--cyan); filter: drop-shadow(0 0 6px var(--cyan)); }
+.kb-pulse--strategy { fill: var(--gate); filter: drop-shadow(0 0 6px var(--gate)); }
+.kb-pulse.is-visible { opacity: 1; }
+.kb-lens-center {
+  position: absolute; z-index: 1; left: 50%; top: 50%; transform: translate(-50%, -50%);
+  color: var(--dim); font: 600 15.625px/1.4 var(--font-b-en); letter-spacing: 0;
+  text-align: center; white-space: nowrap;
+}
+html[data-lang="zh"] .kb-lens-center { font-family: var(--font-b-zh); }
+.kb-lane { position: absolute; inset: 0; z-index: 2; pointer-events: none; }
+.kb-lane-label {
+  position: absolute; left: 50%; transform: translateX(-50%); pointer-events: auto;
+  font: 600 16.25px/1.25 var(--font-b-en); letter-spacing: 0; white-space: nowrap;
+  transition: opacity .25s, color .25s;
+}
+html[data-lang="zh"] .kb-lane-label { font-family: var(--font-b-zh); }
+.kb-lane--method .kb-lane-label { top: 2px; color: var(--cyan); }
+.kb-lane--strategy .kb-lane-label { bottom: 2px; color: var(--gate); }
+.kb-node {
+  position: absolute; width: 126px; min-height: 80px; padding: 11px 12px;
+  display: grid; align-content: center; gap: 5px; transform: translate(-50%, -50%);
+  pointer-events: auto; background: var(--panel); border: 1px solid var(--panel-edge); border-radius: 8px;
+  box-shadow: 0 10px 24px rgba(0,0,0,.12); opacity: .68;
+  transition: opacity .25s, transform .25s var(--ease-out), border-color .25s, background-color .25s, box-shadow .25s;
+}
+.kb-node[data-kb-step="1"] { left: 15%; }
+.kb-node[data-kb-step="2"] { left: 38.3%; }
+.kb-node[data-kb-step="3"] { left: 61.7%; }
+.kb-node[data-kb-step="4"] { left: 85%; width: 138px; }
+.kb-lane--method .kb-node[data-kb-step="1"], .kb-lane--method .kb-node[data-kb-step="4"] { top: 35%; }
+.kb-lane--method .kb-node[data-kb-step="2"], .kb-lane--method .kb-node[data-kb-step="3"] { top: 17%; }
+.kb-lane--strategy .kb-node[data-kb-step="1"], .kb-lane--strategy .kb-node[data-kb-step="4"] { top: 65%; }
+.kb-lane--strategy .kb-node[data-kb-step="2"], .kb-lane--strategy .kb-node[data-kb-step="3"] { top: 83%; }
+.kb-node-code { font: 500 10.625px/1 var(--font-mono); letter-spacing: .08em; }
+.kb-lane--method .kb-node-code { color: var(--cyan); }
+.kb-lane--strategy .kb-node-code { color: var(--gate); }
+.kb-node-name {
+  color: var(--text); font: 500 13.75px/1.3 var(--font-b-en); overflow-wrap: anywhere;
+}
+html[data-lang="zh"] .kb-node-name { font-family: var(--font-b-zh); }
+.kb-node[data-kb-step="4"] .kb-node-name { font-size: 15px; font-weight: 600; }
+.kb-node.is-active, .kb-node.is-complete, .kb-node:hover { opacity: 1; transform: translate(-50%, calc(-50% - 2px)); }
+.kb-lane--method .kb-node.is-active, .kb-lane--method .kb-node:hover {
+  border-color: var(--cyan); background: color-mix(in srgb, var(--panel) 90%, var(--cyan) 10%);
+  box-shadow: 0 0 0 3px var(--cyan-soft), 0 14px 30px rgba(0,0,0,.18);
+}
+.kb-lane--strategy .kb-node.is-active, .kb-lane--strategy .kb-node:hover {
+  border-color: var(--gate); background: color-mix(in srgb, var(--panel) 90%, var(--gate) 10%);
+  box-shadow: 0 0 0 3px var(--gate-soft), 0 14px 30px rgba(0,0,0,.18);
+}
+.kb-lane--method .kb-node.is-complete { border-color: color-mix(in srgb, var(--cyan) 58%, transparent); }
+.kb-lane--strategy .kb-node.is-complete { border-color: color-mix(in srgb, var(--gate) 58%, transparent); }
+.knowledge-flow[data-preview-lane="method"] .kb-lane--strategy,
+.knowledge-flow[data-preview-lane="strategy"] .kb-lane--method { opacity: .35; }
+.knowledge-flow[data-preview-lane] .kb-lane { transition: opacity .25s; }
+.kb-junction { fill: var(--accent); filter: drop-shadow(0 0 5px var(--accent)); }
+.kb-release {
+  min-height: 184px; padding: 18px;
+  border-color: color-mix(in srgb, var(--accent) 46%, transparent);
+  background: var(--panel);
+}
+.kb-release-kicker { color: var(--accent); font: 500 10px/1.2 var(--font-mono); letter-spacing: .12em; }
+.kb-release-row--method .kb-release-kicker { color: var(--cyan); }
+.kb-release-row--strategy .kb-release-kicker { color: var(--gate); }
+.kb-agent-endpoint {
+  position: absolute; top: calc(50% + 116px); left: 0; right: 0;
+  margin: 0; padding-top: 20px; color: var(--text);
+  border-top: 1px solid var(--stroke-strong); text-align: center;
+  transition: color .25s, border-color .25s, filter .25s, transform .25s var(--ease-out);
+}
+.kb-agent-wordmark { font: 500 20px/1.2 var(--font-d-en); }
+.kb-agent-wordmark span { color: var(--accent); }
+.kb-agent-label { margin-top: 5px; color: var(--dim); font: 500 10.625px/1.4 var(--font-mono); }
+.kb-source:hover, .kb-source.is-active, .kb-source.is-complete,
+.kb-release:hover, .kb-release.is-active, .kb-release.is-complete,
+.knowledge-flow[data-kb-state="complete"] .kb-release {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft), 0 16px 34px rgba(0,0,0,.18);
+}
+.kb-agent-endpoint.is-active, .kb-agent-endpoint.is-complete {
+  color: var(--accent); border-color: var(--accent); transform: translateY(-2px);
+  filter: drop-shadow(0 0 8px var(--accent-soft));
+}
+.kb-trace-note {
+  margin-top: 20px; padding: 17px 20px; border-block: 1px solid var(--stroke-strong);
+  color: var(--text); background: color-mix(in srgb, var(--panel) 90%, var(--accent) 10%);
+  font: 500 14.375px/1.6 var(--font-mono); letter-spacing: .01em; text-align: center;
+}
+
+/* built-in research skills figure */
+.skill-flow { position: relative; margin: 32px 0 0; padding: 18px 0 0; border-top: 1px solid var(--stroke); }
+.skill-figure-intro { max-width: 78ch; margin: 4px 0 28px; color: var(--dim); font-size: 15px; line-height: 1.7; }
+.skill-shell {
+  display: grid; grid-template-columns: 180px minmax(0, 1fr) 240px;
+  align-items: stretch; gap: 28px; min-height: 520px;
+}
+.skill-context-wrap, .skill-output-wrap { position: relative; z-index: 3; display: grid; align-content: center; min-width: 0; }
+.skill-phase-label {
+  margin-bottom: 12px; color: var(--faint); font: 500 11.25px/1.2 var(--font-mono);
+  letter-spacing: .14em; text-align: center;
+}
+.skill-context, .skill-bundle {
+  position: relative; display: grid; align-content: center; padding: 20px 18px;
+  background: var(--panel); border: 1px solid var(--panel-edge); border-radius: 8px;
+  box-shadow: 0 12px 30px rgba(0,0,0,.12);
+  transition: border-color .25s, box-shadow .25s, background-color .25s;
+}
+.skill-context { gap: 0; }
+.skill-context.is-active, .skill-context.is-complete {
+  border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft), 0 16px 34px rgba(0,0,0,.18);
+}
+.skill-context-title, .skill-bundle-title {
+  color: var(--text); font: 600 16px/1.3 var(--font-b-en);
+}
+html[data-lang="zh"] .skill-context-title, html[data-lang="zh"] .skill-bundle-title { font-family: var(--font-b-zh); }
+.skill-context-list { display: grid; margin-top: 14px; }
+.skill-context-row {
+  display: grid; gap: 3px; padding: 10px 0; border-top: 1px solid var(--stroke);
+}
+.skill-context-key { color: var(--faint); font: 500 9.375px/1.2 var(--font-mono); letter-spacing: .1em; }
+.skill-context-value { color: var(--dim); font-size: 12.5px; line-height: 1.45; }
+.skill-library { position: relative; z-index: 2; min-width: 0; display: grid; align-content: center; }
+.skill-library-head {
+  display: flex; align-items: baseline; justify-content: space-between; gap: 16px;
+  margin-bottom: 14px; color: var(--text);
+}
+.skill-library-title { font: 600 16.25px/1.3 var(--font-b-en); }
+html[data-lang="zh"] .skill-library-title { font-family: var(--font-b-zh); }
+.skill-library-count { color: var(--accent); font: 500 11.25px/1.2 var(--font-mono); }
+.skill-groups { display: grid; gap: 9px; }
+.skill-group {
+  --skill-accent: var(--accent); position: relative; min-height: 72px; padding: 12px 14px 12px 16px;
+  display: grid; grid-template-columns: 118px minmax(0, 1fr); align-items: center; gap: 14px;
+  border-left: 2px solid var(--skill-accent); background: color-mix(in srgb, var(--panel) 96%, var(--skill-accent) 4%);
+  opacity: .66; transition: opacity .25s, background-color .25s, box-shadow .25s, transform .25s var(--ease-out);
+}
+.skill-group[data-skill-group="brain"] { --skill-accent: var(--cyan); }
+.skill-group[data-skill-group="analysis"] { --skill-accent: var(--gate); }
+.skill-group[data-skill-group="writing"] { --skill-accent: var(--tertiary); }
+.skill-group[data-skill-group="review"] { --skill-accent: var(--danger); }
+.skill-group.is-scanning, .skill-group.is-selected, .skill-group:hover {
+  opacity: 1; transform: translateX(3px);
+  background: color-mix(in srgb, var(--panel) 90%, var(--skill-accent) 10%);
+  box-shadow: 0 8px 20px rgba(0,0,0,.12);
+}
+.skill-flow[data-preview-group] .skill-group { opacity: .24; }
+.skill-flow[data-preview-group="design"] .skill-group[data-skill-group="design"],
+.skill-flow[data-preview-group="brain"] .skill-group[data-skill-group="brain"],
+.skill-flow[data-preview-group="analysis"] .skill-group[data-skill-group="analysis"],
+.skill-flow[data-preview-group="writing"] .skill-group[data-skill-group="writing"],
+.skill-flow[data-preview-group="review"] .skill-group[data-skill-group="review"] { opacity: 1; }
+.skill-group-name { color: var(--text); font: 600 13.75px/1.3 var(--font-b-en); }
+html[data-lang="zh"] .skill-group-name { font-family: var(--font-b-zh); }
+.skill-items { display: flex; flex-wrap: wrap; gap: 6px; min-width: 0; }
+.skill-item {
+  min-height: 30px; display: inline-flex; align-items: center; padding: 5px 8px;
+  color: var(--dim); border: 1px solid var(--panel-edge); border-radius: 5px;
+  background: var(--bg-2); font: 500 10.625px/1.25 var(--font-mono);
+  transition: color .2s, border-color .2s, background-color .2s, box-shadow .2s, transform .2s var(--ease-out);
+}
+.skill-item.is-selected, .skill-item:hover {
+  color: var(--text); border-color: var(--skill-accent);
+  background: color-mix(in srgb, var(--panel) 88%, var(--skill-accent) 12%);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--skill-accent) 18%, transparent);
+  transform: translateY(-1px);
+}
+.skill-group-route {
+  position: absolute; left: calc(100% + 2px); top: 50%; width: 26px; height: 2px;
+  background: var(--skill-accent); opacity: 0; transform: scaleX(0); transform-origin: left;
+  transition: opacity .25s, transform .42s var(--ease-cinematic);
+}
+.skill-group.is-selected .skill-group-route { opacity: .8; transform: scaleX(1); }
+.skill-bundle { min-height: 344px; }
+.skill-bundle.is-active, .skill-bundle.is-complete {
+  border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft), 0 16px 34px rgba(0,0,0,.18);
+}
+.skill-bundle-kicker { color: var(--accent); font: 500 10px/1.2 var(--font-mono); letter-spacing: .12em; }
+.skill-bundle-slots { display: grid; gap: 7px; margin-top: 16px; }
+.skill-bundle-slot {
+  min-height: 36px; display: flex; align-items: center; gap: 9px; padding: 8px 10px;
+  color: var(--dim); border-left: 2px solid var(--stroke-strong); background: var(--bg-2);
+  font-size: 12.5px; opacity: .42; transform: translateX(7px);
+  transition: opacity .25s, transform .25s var(--ease-out), color .25s, border-color .25s;
+}
+.skill-bundle-slot::before { content: attr(data-skill-order); color: var(--faint); font: 500 10px var(--font-mono); }
+.skill-bundle-slot.is-active, .skill-bundle-slot.is-complete {
+  opacity: 1; transform: none; color: var(--text); border-color: var(--accent);
+}
+.skill-bundle-divider { height: 1px; margin: 18px 0; background: var(--stroke-strong); }
+.skill-stage-title { color: var(--text); font: 600 14.375px/1.3 var(--font-b-en); }
+html[data-lang="zh"] .skill-stage-title { font-family: var(--font-b-zh); }
+.skill-stage-outputs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 5px; margin-top: 12px; }
+.skill-stage-output {
+  min-height: 50px; display: grid; place-items: center; padding: 6px;
+  color: var(--dim); border: 1px solid var(--stroke); text-align: center;
+  font: 500 9.375px/1.35 var(--font-mono); opacity: .48;
+  transition: opacity .25s, color .25s, border-color .25s, background-color .25s;
+}
+.skill-stage-output.is-complete { opacity: 1; color: var(--text); border-color: var(--accent); background: var(--accent-soft); }
+.skill-trace-note {
+  margin-top: 20px; padding: 17px 20px; border-block: 1px solid var(--stroke-strong);
+  color: var(--text); background: color-mix(in srgb, var(--panel) 90%, var(--accent) 10%);
+  font: 500 14.375px/1.6 var(--font-mono); letter-spacing: 0; text-align: center;
+}
+
 /* ============ sections ============ */
 section { max-width: 1200px; margin: 0 auto; padding: 96px 34px 26px; }
 #problem { padding-top: 56px; }
@@ -426,19 +693,28 @@ html[data-lang="zh"] h1 em, html[data-lang="zh"] h2 em { font-style: normal; }
 .pain-card .idx { font-family: var(--font-mono); font-size: 10px; color: var(--danger); letter-spacing: .18em; display: flex; align-items: center; gap: 9px; margin-bottom: 18px; }
 .pain-card .idx::before { content: ""; width: 6px; height: 6px; border: 1px solid var(--danger); border-radius: 50%; box-shadow: 0 0 10px var(--danger-soft); }
 
-/* mechanism pillars */
-.mechanism-grid { position: relative; margin-top: 56px; display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
-.mechanism-grid::before, .mechanism-grid::after { content: ""; position: absolute; z-index: 0; background: var(--stroke-strong); opacity: .35; }
-.mechanism-grid::before { top: 50%; left: 0; right: 0; height: 1px; }
-.mechanism-grid::after { top: 0; bottom: 0; left: 50%; width: 1px; }
-@media (max-width: 720px) { .mechanism-grid { grid-template-columns: 1fr; } .mechanism-grid::before, .mechanism-grid::after { display: none; } }
-.mechanism-card { position: relative; z-index: 1; overflow: hidden; border-radius: var(--r-lg); padding: 34px 30px 36px; }
-.mechanism-card::before { content: ""; position: absolute; top: 0; left: 0; width: 84px; height: 2px; background: var(--accent); transform: scaleX(.28); transform-origin: left; transition: transform .55s var(--ease-cinematic); }
-.mechanism-card:hover { transform: translateY(-3px); box-shadow: var(--card-shadow); border-color: var(--stroke-strong); background: var(--panel-raised); }
-.mechanism-card:hover::before { transform: scaleX(1); }
-.mechanism-card .tag { position: absolute; top: 17px; right: 22px; display: block; font-family: var(--font-mono); font-size: 48px; line-height: 1; color: var(--faint); opacity: .13; letter-spacing: 0; }
-.mechanism-card h3 { position: relative; font-size: 21px; margin: 18px 0 12px; padding-right: 70px; }
-.mechanism-card p { font-size: 14px; color: var(--dim); line-height: 1.7; max-width: 44ch; }
+/* mechanism chapters */
+.mechanism-index {
+  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); margin-top: 48px;
+  border-block: 1px solid var(--stroke-strong);
+}
+.mechanism-index-item {
+  min-width: 0; padding: 18px 20px; display: grid; grid-template-columns: 32px minmax(0, 1fr); gap: 12px;
+  border-right: 1px solid var(--stroke); background: color-mix(in srgb, var(--panel) 94%, transparent);
+}
+.mechanism-index-item:last-child { border-right: 0; }
+.mechanism-index-number { color: var(--accent); font: 500 11.25px/1.4 var(--font-mono); }
+.mechanism-index-copy { display: grid; gap: 4px; }
+.mechanism-index-action { color: var(--text); font-size: 13.75px; font-weight: 600; }
+.mechanism-index-name { color: var(--dim); font-size: 12.5px; line-height: 1.45; }
+.mechanism-chapter { margin-top: 96px; padding-top: 28px; border-top: 1px solid var(--stroke); }
+.mechanism-chapter-head {
+  display: grid; grid-template-columns: 112px minmax(0, 1fr); gap: 28px; align-items: start;
+}
+.mechanism-chapter-label { color: var(--accent); font: 500 11.25px/1.4 var(--font-mono); letter-spacing: .1em; }
+.mechanism-chapter-title { font-size: clamp(25px, 3vw, 38px); letter-spacing: 0; }
+.mechanism-chapter-copy { max-width: 72ch; margin-top: 12px; color: var(--dim); font-size: 15px; line-height: 1.75; }
+.mechanism-chapter .knowledge-flow { margin-top: 32px; }
 
 /* neuro */
 .neuro-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-top: 54px; }
@@ -517,10 +793,10 @@ html[data-lang="zh"] h1 em, html[data-lang="zh"] h2 em { font-style: normal; }
 .not-item:hover { background: transparent; transform: translateX(4px); }
 .boundary-index { font: 10px var(--font-mono); color: var(--faint); letter-spacing: .08em; padding-top: 3px; }
 .not-item .x { width: 18px; height: 18px; display: inline-flex; align-items: center; justify-content: center; color: var(--gate); border: 1px solid var(--gate); border-radius: 50%; font: 10px var(--font-mono); }
-.reveal.in .pain-card, .reveal.in .mechanism-card, .reveal.in .neuro-card, .reveal.in .case-card { transition: background-color .35s ease, border-color .35s ease, transform .3s var(--ease-out), box-shadow .3s var(--ease-out); transition-delay: 0s; }
+  .reveal.in .pain-card, .reveal.in .neuro-card, .reveal.in .case-card { transition: background-color .35s ease, border-color .35s ease, transform .3s var(--ease-out), box-shadow .3s var(--ease-out); transition-delay: 0s; }
 .reveal.in .not-item { transition: transform .25s var(--ease-out), border-color .25s ease; transition-delay: 0s; }
 .reveal.in .qs { transition: background-color .25s ease; transition-delay: 0s; }
-.reveal.in .pain-card:hover, .reveal.in .mechanism-card:hover, .reveal.in .neuro-card:hover, .reveal.in .case-card:hover { transform: translateY(-3px); }
+  .reveal.in .pain-card:hover, .reveal.in .neuro-card:hover, .reveal.in .case-card:hover { transform: translateY(-3px); }
 .reveal.in .not-item:hover { transform: translateX(4px); }
 
 /* faq */
@@ -552,6 +828,10 @@ footer { border-top: 1px solid var(--stroke); margin-top: 130px; padding: 46px 3
 .logo-brain { width: 18px; height: 18px; color: var(--accent); }
 
 @media (max-width: 820px) {
+  .mechanism-index { grid-template-columns: 1fr; }
+  .mechanism-index-item { border-right: 0; border-bottom: 1px solid var(--stroke); }
+  .mechanism-index-item:last-child { border-bottom: 0; }
+  .mechanism-chapter-head { grid-template-columns: 1fr; gap: 8px; }
   .flow-shell { grid-template-columns: 1fr; gap: 8px; min-height: 0; margin-bottom: 0; }
   .flow-phase { width: min(100%, 620px); margin: 0 auto; gap: 10px; }
   .flow-shell-links { display: none; }
@@ -565,16 +845,50 @@ footer { border-top: 1px solid var(--stroke); margin-top: 130px; padding: 46px 3
   }
   .flow-phase-label { text-align: left; }
   .flow-stage--wide { min-height: 82px; }
+  .kb-shell { grid-template-columns: 1fr; gap: 22px; min-height: 0; }
+  .kb-source-wrap, .kb-release-wrap {
+    width: min(100%, 620px); height: auto; margin: 0 auto; display: grid;
+  }
+  .kb-source-wrap .kb-phase-label, .kb-release-wrap .kb-phase-label {
+    position: static; inset: auto; margin-bottom: 12px;
+  }
+  .kb-source, .kb-release { position: relative; inset: auto; min-height: 0; transform: none; }
+  .kb-source::after, .kb-release::before { display: none; }
+  .kb-lens { width: min(100%, 620px); height: auto; margin: 0 auto; display: grid; gap: 18px; }
+  .kb-lens-svg, .kb-lens-center { display: none; }
+  .kb-lane {
+    position: relative; inset: auto; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px; padding: 14px 0 0 14px; border-left: 2px solid; pointer-events: auto;
+  }
+  .kb-lane--method { border-color: var(--cyan); }
+  .kb-lane--strategy { border-color: var(--gate); }
+  .kb-lane-label { position: static; grid-column: 1 / -1; transform: none; }
+  .kb-lane--method .kb-lane-label, .kb-lane--strategy .kb-lane-label { inset: auto; }
+  .kb-node, .kb-node[data-kb-step] {
+    position: relative; inset: auto; width: auto; min-height: 80px; transform: none;
+  }
+  .kb-node.is-active, .kb-node.is-complete, .kb-node:hover { transform: translateY(-2px); }
+  .kb-agent-endpoint { position: relative; inset: auto; margin-top: 16px; }
+  .skill-shell { grid-template-columns: 1fr; gap: 22px; min-height: 0; }
+  .skill-context-wrap, .skill-library, .skill-output-wrap { width: min(100%, 620px); margin: 0 auto; }
+  .skill-context { grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr); gap: 18px; }
+  .skill-context-list { margin-top: 0; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .skill-context-row { padding: 7px 0; }
+  .skill-group-route { display: none; }
+  .skill-bundle { min-height: 0; }
 }
 
 @media (max-width: 600px) {
   .hero, section { padding-left: 20px; padding-right: 20px; }
-  .hero { padding-top: 104px; }
+  .hero { min-height: 88svh; padding-top: 104px; padding-bottom: 58px; }
   .wordmark { font-size: clamp(38px, 14vw, 58px); }
   section { padding-top: 72px; }
-  .pain-grid, .mechanism-grid, .neuro-grid, .case-grid { gap: 12px; margin-top: 40px; }
-  .pain-card, .mechanism-card { padding: 22px 20px; }
-  .mechanism-card .tag { top: 15px; right: 18px; font-size: 40px; }
+  .pain-grid, .neuro-grid, .case-grid { gap: 12px; margin-top: 40px; }
+  .pain-card { padding: 22px 20px; }
+  .mechanism-index { margin-top: 36px; }
+  .mechanism-index-item { padding: 15px 12px; }
+  .mechanism-chapter { margin-top: 72px; padding-top: 22px; }
+  .mechanism-chapter-title { font-size: 25px; }
   .neuro-card .body { padding: 22px 20px 24px; }
   .case-card header { padding: 18px 20px; }
   .case-rows { padding: 8px 20px 18px; }
@@ -588,7 +902,7 @@ footer { border-top: 1px solid var(--stroke); margin-top: 130px; padding: 46px 3
   .intro-meta-zh { font-size: 15px; }
   .intro-meta-en { font-size: 12px; }
   .intro-skip { top: 14px; right: 16px; }
-  .hero-figure { margin-top: 38px; }
+  .mechanism-figure { margin-top: 24px; }
   .runtime-flow { padding-top: 14px; }
   .flow-caption-bar { margin-bottom: 2px; }
   .flow-replay { width: 44px; height: 44px; }
@@ -613,6 +927,27 @@ footer { border-top: 1px solid var(--stroke); margin-top: 130px; padding: 46px 3
   .flow-branch-label { font-size: 10px; }
   .flow-branch-label--revisit { display: none; }
   .flow-persistence { padding: 14px 12px; font-size: 13.75px; }
+  .knowledge-flow { margin-top: 58px; padding-top: 14px; }
+  .kb-figure-intro { margin-bottom: 20px; font-size: 14px; }
+  .kb-shell { gap: 18px; }
+  .kb-source { padding: 17px 16px; }
+  .kb-lane { gap: 8px; padding-left: 10px; }
+  .kb-node, .kb-node[data-kb-step] { min-height: 78px; padding: 10px; }
+  .kb-node-name { font-size: 13.125px; }
+  html[data-lang="en"] .kb-node-name { font-size: 12.5px; }
+  .kb-release { padding: 18px 16px; }
+  .kb-trace-note { padding: 14px 12px; font-size: 12.5px; }
+  .skill-flow { padding-top: 14px; }
+  .skill-figure-intro { margin-bottom: 20px; font-size: 14px; }
+  .skill-context { grid-template-columns: 1fr; gap: 0; padding: 18px 16px; }
+  .skill-context-list { margin-top: 12px; }
+  .skill-group { grid-template-columns: 1fr; gap: 8px; padding: 12px; }
+  .skill-library-head { align-items: center; }
+  .skill-item { font-size: 10px; }
+  .skill-bundle { padding: 18px 16px; }
+  .skill-stage-outputs { grid-template-columns: 1fr; }
+  .skill-stage-output { min-height: 38px; }
+  .skill-trace-note { padding: 14px 12px; font-size: 12.5px; }
 }
 
 /* reduced motion */
@@ -620,16 +955,19 @@ footer { border-top: 1px solid var(--stroke); margin-top: 130px; padding: 46px 3
   html { scroll-behavior: auto; }
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
   .intro-overlay { display: none !important; }
-  .hero-eyebrow, .wordmark, .hero h1, .hero-sub, .hero-cta, .hero-figure,
+  .hero-eyebrow, .wordmark, .hero h1, .hero-sub, .hero-cta,
   .reveal > .section-label, .reveal > h2, .reveal > .section-intro, .reveal .stagger > * { opacity: 1 !important; transform: none !important; }
   .hero-eyebrow::before { width: 30px !important; }
   .reveal > .section-label::before { transform: none !important; }
   .flow-pulse { display: none !important; }
+  .kb-pulse { display: none !important; }
+  .kb-node, .kb-path, .kb-source, .kb-release,
+  .skill-context, .skill-group, .skill-item, .skill-bundle-slot, .skill-stage-output { opacity: 1 !important; transition: none !important; transform: none !important; }
 }
 </style>
 <noscript><style>
 .intro-overlay { display: none !important; }
-.hero-eyebrow, .wordmark, .hero h1, .hero-sub, .hero-cta, .hero-badges, .hero-figure,
+.hero-eyebrow, .wordmark, .hero h1, .hero-sub, .hero-cta, .hero-badges,
 .reveal, .reveal > .section-label, .reveal > h2, .reveal > .section-intro, .reveal .stagger > * {
   opacity: 1 !important; transform: none !important; animation: none !important;
 }
@@ -697,8 +1035,71 @@ footer { border-top: 1px solid var(--stroke); margin-top: 130px; padding: 46px 3
     <a class="btn-primary" href="https://github.com/yzz673/independent-neuro-agent" target="_blank" rel="noopener">GitHub</a>
     <a class="btn-ghost" href="#quickstart"><span class="lang-en">Quick start</span><span class="lang-zh">快速上手</span></a>
   </div>
+</header>
 
-  <div class="hero-figure">
+<!-- ===================== PROBLEM ===================== -->
+<section id="problem" class="reveal">
+  <div class="section-label"><span class="lang-en">01 · Problem</span><span class="lang-zh">01 · 痛点</span></div>
+  <h2>
+    <span class="lang-en">Current agents still lack <em>neuroscience background knowledge</em>, <em>autonomous long-workflow research capability</em>, and <em>reproducibility review mechanisms</em>.</span>
+    <span class="lang-zh">现有智能体仍缺少<em>神经科学背景知识</em>、<em>长流程自主科研能力</em>与<em>可重复性审查机制</em>。</span>
+  </h2>
+  <div class="pain-grid stagger">
+    <div class="pain-card glass">
+      <span class="idx"><span class="lang-en">GAP · 01</span><span class="lang-zh">短板 · 01</span></span>
+      <span class="lang-en">General-purpose agents lack neuroscience domain knowledge, making it difficult to reason about paradigm constraints, brain-signal characteristics, and domain-specific methods for preprocessing, modeling, and statistical analysis.</span>
+      <span class="lang-zh">通用智能体缺少神经科学领域知识，难以准确把握范式约束、脑信号特性，以及预处理、建模与统计分析方法。</span>
+    </div>
+    <div class="pain-card glass">
+      <span class="idx"><span class="lang-en">GAP · 02</span><span class="lang-zh">短板 · 02</span></span>
+      <span class="lang-en">They struggle to autonomously advance long research workflows from literature, hypotheses, and paradigm design to implementation, analysis, and claim review.</span>
+      <span class="lang-zh">它们难以自主推进从文献、假设、范式设计到实现、分析和结论审查的长流程科研任务。</span>
+    </div>
+    <div class="pain-card glass">
+      <span class="idx"><span class="lang-en">GAP · 03</span><span class="lang-zh">短板 · 03</span></span>
+      <span class="lang-en">Tool calls, key decisions, inputs, outputs, and intermediate artifacts lack structured records, making reproducibility review difficult.</span>
+      <span class="lang-zh">工具调用、关键决策、输入输出与中间产物缺少结构化记录，难以接受可重复性审查。</span>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== HOW IT WORKS ===================== -->
+<section id="how" class="reveal">
+  <span id="features" class="anchor-alias" aria-hidden="true"></span>
+  <div class="section-label"><span class="lang-en">02 · How it works</span><span class="lang-zh">02 · 机制</span></div>
+  <h2>
+    <span class="lang-en">A research agent must advance the process, ground decisions in evidence, and know <em>how to do the work</em>.</span>
+    <span class="lang-zh">一个科研智能体，需要会推进流程、能调用领域知识，也要掌握<em>具体科研方法</em>。</span>
+  </h2>
+  <p class="section-intro">
+    <span class="lang-en">The workflow determines what happens next, the knowledge base supplies evidence, and built-in research skills turn each stage into concrete procedures, checks, and deliverables.</span>
+    <span class="lang-zh">工作流决定研究如何推进，知识库提供判断依据，内置科研技能则把每个阶段落实为具体步骤、检查标准和交付要求。</span>
+  </p>
+  <div class="mechanism-index" aria-label="Three NeuroAgent mechanisms">
+    <div class="mechanism-index-item">
+      <span class="mechanism-index-number">01</span>
+      <span class="mechanism-index-copy"><strong class="mechanism-index-action"><span class="lang-en">Advance the research</span><span class="lang-zh">推进研究</span></strong><span class="mechanism-index-name"><span class="lang-en">Staged iterative workflow</span><span class="lang-zh">分阶段循环式科研工作流</span></span></span>
+    </div>
+    <div class="mechanism-index-item">
+      <span class="mechanism-index-number">02</span>
+      <span class="mechanism-index-copy"><strong class="mechanism-index-action"><span class="lang-en">Supply evidence</span><span class="lang-zh">提供依据</span></strong><span class="mechanism-index-name"><span class="lang-en">Neuroscience knowledge base</span><span class="lang-zh">神经科学知识库</span></span></span>
+    </div>
+    <div class="mechanism-index-item">
+      <span class="mechanism-index-number">03</span>
+      <span class="mechanism-index-copy"><strong class="mechanism-index-action"><span class="lang-en">Standardize the method</span><span class="lang-zh">规范做法</span></strong><span class="mechanism-index-name"><span class="lang-en">Built-in research skills</span><span class="lang-zh">内置科研技能</span></span></span>
+    </div>
+  </div>
+
+  <div class="mechanism-chapter" id="mechanism-workflow" data-mechanism="workflow">
+    <div class="mechanism-chapter-head">
+      <div class="mechanism-chapter-label"><span class="lang-en">MECHANISM · 01</span><span class="lang-zh">机制 · 01</span></div>
+      <div>
+        <h3 class="mechanism-chapter-title"><span class="lang-en">Staged iterative research workflow</span><span class="lang-zh">分阶段循环式科研工作流</span></h3>
+        <p class="mechanism-chapter-copy"><span class="lang-en">Complex work is divided into inspectable stages. Analysis and review can send the run back to the hypothesis, method, experiment, or implementation stage before it continues.</span><span class="lang-zh">复杂科研任务被拆成可检查的阶段。分析与评审可以要求回到假设、方法、实验或实现阶段，修正后再继续推进。</span></p>
+      </div>
+    </div>
+
+  <div class="mechanism-figure">
     <figure class="runtime-flow" id="runtimeFlow" data-flow-state="idle" aria-labelledby="runtimeFlowCaption" aria-describedby="runtimeFlowSummary">
       <div class="flow-caption-bar">
         <figcaption class="figure-caption" id="runtimeFlowCaption"><span class="lang-en">Fig. 1 · Iterative research workflow</span><span class="lang-zh">图 1 · 循环式科研工作流</span></figcaption>
@@ -819,72 +1220,234 @@ footer { border-top: 1px solid var(--stroke); margin-top: 130px; padding: 46px 3
       <div class="sr-only" id="flowStatus" aria-live="polite"></div>
     </figure>
   </div>
-
-</header>
-
-<!-- ===================== PROBLEM ===================== -->
-<section id="problem" class="reveal">
-  <div class="section-label"><span class="lang-en">01 · Problem</span><span class="lang-zh">01 · 痛点</span></div>
-  <h2>
-    <span class="lang-en">Current agents still lack <em>neuroscience background knowledge</em>, <em>autonomous long-workflow research capability</em>, and <em>reproducibility review mechanisms</em>.</span>
-    <span class="lang-zh">现有智能体仍缺少<em>神经科学背景知识</em>、<em>长流程自主科研能力</em>与<em>可重复性审查机制</em>。</span>
-  </h2>
-  <div class="pain-grid stagger">
-    <div class="pain-card glass">
-      <span class="idx"><span class="lang-en">GAP · 01</span><span class="lang-zh">短板 · 01</span></span>
-      <span class="lang-en">General-purpose agents lack neuroscience domain knowledge, making it difficult to reason about paradigm constraints, brain-signal characteristics, and domain-specific methods for preprocessing, modeling, and statistical analysis.</span>
-      <span class="lang-zh">通用智能体缺少神经科学领域知识，难以准确把握范式约束、脑信号特性，以及预处理、建模与统计分析方法。</span>
-    </div>
-    <div class="pain-card glass">
-      <span class="idx"><span class="lang-en">GAP · 02</span><span class="lang-zh">短板 · 02</span></span>
-      <span class="lang-en">They struggle to autonomously advance long research workflows from literature, hypotheses, and paradigm design to implementation, analysis, and claim review.</span>
-      <span class="lang-zh">它们难以自主推进从文献、假设、范式设计到实现、分析和结论审查的长流程科研任务。</span>
-    </div>
-    <div class="pain-card glass">
-      <span class="idx"><span class="lang-en">GAP · 03</span><span class="lang-zh">短板 · 03</span></span>
-      <span class="lang-en">Tool calls, key decisions, inputs, outputs, and intermediate artifacts lack structured records, making reproducibility review difficult.</span>
-      <span class="lang-zh">工具调用、关键决策、输入输出与中间产物缺少结构化记录，难以接受可重复性审查。</span>
-    </div>
   </div>
-</section>
 
-<!-- ===================== HOW IT WORKS ===================== -->
-<section id="how" class="reveal">
-  <span id="features" class="anchor-alias" aria-hidden="true"></span>
-  <div class="section-label"><span class="lang-en">02 · How it works</span><span class="lang-zh">02 · 机制</span></div>
-  <h2>
-    <span class="lang-en">Domain knowledge, research skills, and governed execution form the <em>research engine</em>.</span>
-    <span class="lang-zh">领域知识、科研技能与受控运行共同构成<em>科研引擎</em>。</span>
-  </h2>
-  <p class="section-intro">
-    <span class="lang-en">NeuroAgent combines neuroscience knowledge, research skills, runtime orchestration, and durable state in one system. It can answer lightweight questions directly or execute selected stages for complex work, while keeping the full run inspectable and replayable.</span>
-    <span class="lang-zh">NeuroAgent 将领域知识、科研技能、运行编排与持久化状态组合在同一系统中；它既可直接回答轻量问题，也可按任务需要执行指定阶段，并保留完整运行的检查、恢复与回放能力。</span>
-  </p>
-  <div class="mechanism-grid stagger">
-    <div class="mechanism-card glass">
-      <span class="tag">01</span>
-      <h3><span class="lang-en">Neuroscience knowledge and skills</span><span class="lang-zh">神经科学知识与技能</span></h3>
-      <p><span class="lang-en">Paper-distilled knowledge and bundled skills support literature work, brain-data intake, preprocessing, modeling strategy, analysis, writing, and review.</span>
-      <span class="lang-zh">由论文蒸馏的领域知识与内置技能覆盖文献、脑数据审计、预处理、建模策略、结果分析、写作与审查。</span></p>
+  <div class="mechanism-chapter" id="mechanism-knowledge" data-mechanism="knowledge">
+    <div class="mechanism-chapter-head">
+      <div class="mechanism-chapter-label"><span class="lang-en">MECHANISM · 02</span><span class="lang-zh">机制 · 02</span></div>
+      <div>
+        <h3 class="mechanism-chapter-title"><span class="lang-en">Neuroscience knowledge base</span><span class="lang-zh">神经科学知识库</span></h3>
+        <p class="mechanism-chapter-copy"><span class="lang-en">Paper evidence is organized along two complementary paths into method knowledge and research strategies. Every conclusion retains a route back to its source papers.</span><span class="lang-zh">论文证据沿两条路径整理为方法知识和研究策略，供不同研究阶段检索使用，同时保留回到原始论文的证据链。</span></p>
+      </div>
     </div>
-    <div class="mechanism-card glass">
-      <span class="tag">02</span>
-      <h3><span class="lang-en">Adaptive execution modes</span><span class="lang-zh">自适应运行模式</span></h3>
-      <p><span class="lang-en">The same interface supports direct answers, user-selected stages, and full staged execution, so lightweight questions and long autonomous tasks do not require separate tools.</span>
-      <span class="lang-zh">同一界面支持直接回答、用户选择阶段执行与完整阶段化执行，轻量问题和长流程任务不需要切换工具。</span></p>
+
+  <figure class="knowledge-flow" id="knowledgeFlow" data-kb-state="idle" aria-labelledby="knowledgeFlowCaption" aria-describedby="knowledgeFlowSummary">
+    <div class="flow-caption-bar">
+      <figcaption class="figure-caption" id="knowledgeFlowCaption"><span class="lang-en">Fig. 2 · Paper-derived knowledge factory</span><span class="lang-zh">图 2 · 论文驱动的知识库构建</span></figcaption>
+      <button class="flow-replay" id="knowledgeReplay" type="button" disabled aria-label="Replay knowledge build" title="Replay knowledge build">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11a8 8 0 1 0-2.35 5.65"/><path d="M20 4v7h-7"/></svg>
+      </button>
     </div>
-    <div class="mechanism-card glass">
-      <span class="tag">03</span>
-      <h3><span class="lang-en">Local governed execution</span><span class="lang-zh">本地受控执行</span></h3>
-      <p><span class="lang-en">Runs execute locally with OpenAI-compatible or Anthropic-compatible providers, explicit permission contracts, and sandbox-aware tool behavior.</span>
-      <span class="lang-zh">运行在本地执行，支持 OpenAI 或 Anthropic 兼容 provider，并通过显式权限契约与沙箱感知工具行为控制风险。</span></p>
+    <p class="kb-figure-intro">
+      <span class="lang-en">Papers are not compressed into summaries. They are progressively distilled into research knowledge that can be retrieved, expanded, and traced back to evidence.</span>
+      <span class="lang-zh">论文先被整理为结构化证据，再沿两条路径逐步归纳为方法知识和研究策略；每条结论都能找到原始依据。</span>
+    </p>
+    <p class="sr-only" id="knowledgeFlowSummary">
+      <span class="lang-en">A shared paper corpus becomes structured evidence, then follows two parallel paths. Method evidence is routed, grouped, and distilled into reusable patterns and method knowledge. Research construction evidence becomes paper blueprints, strategy profiles, and transferable cross-paper strategies. Both packages enter one versioned, verifiable knowledge release for NeuroAgent.</span>
+      <span class="lang-zh">论文语料先整理为结构化证据，再沿两条路径处理：一条汇总同类案例，归纳出可复用的方法知识；另一条比较论文的研究设计，提炼出可迁移的研究策略。两类知识经过统一校验和版本管理后，供 NeuroAgent 检索使用。</span>
+    </p>
+
+    <div class="kb-shell">
+      <div class="kb-source-wrap">
+        <div class="kb-phase-label"><span class="lang-en">SOURCE EVIDENCE</span><span class="lang-zh">论文证据</span></div>
+        <div class="kb-source" data-kb-source>
+          <div class="kb-source-row">
+            <span class="kb-eyebrow"><span class="lang-en">PAPER CORPUS</span><span class="lang-zh">原始资料</span></span>
+            <span class="kb-source-title"><span class="lang-en">Paper Corpus</span><span class="lang-zh">论文语料</span></span>
+            <span class="kb-source-meta"><span class="lang-en">PDF · Markdown · Metadata</span><span class="lang-zh">论文全文 · 基本信息 · 结构标记</span></span>
+          </div>
+          <div class="kb-source-divider" aria-hidden="true"></div>
+          <div class="kb-source-row">
+            <span class="kb-eyebrow"><span class="lang-en">STRUCTURED EVIDENCE</span><span class="lang-zh">统一整理</span></span>
+            <span class="kb-source-title"><span class="lang-en">Structured Evidence</span><span class="lang-zh">结构化论文证据</span></span>
+            <span class="kb-source-meta"><span class="lang-en">Research facts · Methods · Construction logic</span><span class="lang-zh">研究事实 · 方法细节 · 论证思路</span></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="kb-lens">
+        <svg class="kb-lens-svg" viewBox="0 0 660 440" preserveAspectRatio="none" aria-hidden="true">
+          <path class="kb-path-base" d="M0 220 C88 54 208 56 330 56 C452 56 572 54 660 220"/>
+          <path class="kb-path-base" d="M0 220 C88 386 208 384 330 384 C452 384 572 386 660 220"/>
+          <path class="kb-path kb-path--method" id="kbMethodPath" d="M0 220 C88 54 208 56 330 56 C452 56 572 54 660 220"/>
+          <path class="kb-path kb-path--strategy" id="kbStrategyPath" d="M0 220 C88 386 208 384 330 384 C452 384 572 386 660 220"/>
+          <circle class="kb-junction" cx="0" cy="220" r="4"/>
+          <circle class="kb-junction" cx="660" cy="220" r="4"/>
+          <circle class="kb-pulse kb-pulse--method" id="kbMethodPulse" cx="0" cy="0" r="4"/>
+          <circle class="kb-pulse kb-pulse--strategy" id="kbStrategyPulse" cx="0" cy="0" r="4"/>
+        </svg>
+
+        <div class="kb-lens-center"><span class="lang-en">LAYERED DISTILLATION</span><span class="lang-zh">分层蒸馏</span></div>
+
+        <div class="kb-lane kb-lane--method" data-kb-lane="method">
+          <div class="kb-lane-label"><span class="lang-en">METHOD KNOWLEDGE</span><span class="lang-zh">方法知识</span></div>
+          <div class="kb-node" data-kb-lane="method" data-kb-step="1">
+            <span class="kb-node-code">M01</span>
+            <span class="kb-node-name lang-en">Evidence Routing</span><span class="kb-node-name lang-zh">证据归类</span>
+          </div>
+          <div class="kb-node" data-kb-lane="method" data-kb-step="2">
+            <span class="kb-node-code">M02</span>
+            <span class="kb-node-name lang-en">Case Grouping</span><span class="kb-node-name lang-zh">汇总同类案例</span>
+          </div>
+          <div class="kb-node" data-kb-lane="method" data-kb-step="3">
+            <span class="kb-node-code">M03</span>
+            <span class="kb-node-name lang-en">Pattern Induction</span><span class="kb-node-name lang-zh">归纳共性规律</span>
+          </div>
+          <div class="kb-node" data-kb-lane="method" data-kb-step="4">
+            <span class="kb-node-code">M04</span>
+            <span class="kb-node-name lang-en">Method Knowledge</span><span class="kb-node-name lang-zh">形成方法知识</span>
+            <span class="kb-node-meta"><span class="lang-en">Subtarget · Pattern · Case</span><span class="lang-zh">研究问题 · 共性规律 · 论文案例</span></span>
+          </div>
+        </div>
+
+        <div class="kb-lane kb-lane--strategy" data-kb-lane="strategy">
+          <div class="kb-lane-label"><span class="lang-en">RESEARCH STRATEGY</span><span class="lang-zh">研究策略</span></div>
+          <div class="kb-node" data-kb-lane="strategy" data-kb-step="1">
+            <span class="kb-node-code">R01</span>
+            <span class="kb-node-name lang-en">Paper Blueprint</span><span class="kb-node-name lang-zh">梳理论文框架</span>
+          </div>
+          <div class="kb-node" data-kb-lane="strategy" data-kb-step="2">
+            <span class="kb-node-code">R02</span>
+            <span class="kb-node-name lang-en">Strategy Profile</span><span class="kb-node-name lang-zh">提炼研究思路</span>
+          </div>
+          <div class="kb-node" data-kb-lane="strategy" data-kb-step="3">
+            <span class="kb-node-code">R03</span>
+            <span class="kb-node-name lang-en">Cross-paper Distillation</span><span class="kb-node-name lang-zh">比较多篇论文</span>
+          </div>
+          <div class="kb-node" data-kb-lane="strategy" data-kb-step="4">
+            <span class="kb-node-code">R04</span>
+            <span class="kb-node-name lang-en">Research Strategies</span><span class="kb-node-name lang-zh">形成研究策略</span>
+            <span class="kb-node-meta"><span class="lang-en">Archetype · Dimension · Supporting Paper</span><span class="lang-zh">研究类型 · 设计要点 · 参考论文</span></span>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="kb-release-wrap">
+        <div class="kb-phase-label"><span class="lang-en">DELIVER</span><span class="lang-zh">交付</span></div>
+        <div class="kb-release" data-kb-release>
+          <div class="kb-release-row kb-release-row--method">
+            <span class="kb-release-kicker"><span class="lang-en">METHOD KNOWLEDGE</span><span class="lang-zh">方法知识</span></span>
+            <span class="kb-release-title"><span class="lang-en">Method Knowledge Base</span><span class="lang-zh">方法知识库</span></span>
+            <span class="kb-release-meta"><span class="lang-en">Questions · Patterns · Cases</span><span class="lang-zh">研究问题 · 共性规律 · 论文案例</span></span>
+          </div>
+          <div class="kb-release-divider" aria-hidden="true"></div>
+          <div class="kb-release-row kb-release-row--strategy">
+            <span class="kb-release-kicker"><span class="lang-en">RESEARCH STRATEGY</span><span class="lang-zh">研究策略</span></span>
+            <span class="kb-release-title"><span class="lang-en">Research Strategy Knowledge Base</span><span class="lang-zh">研究策略库</span></span>
+            <span class="kb-release-meta"><span class="lang-en">Archetypes · Design dimensions · Source papers</span><span class="lang-zh">研究类型 · 设计要点 · 参考论文</span></span>
+          </div>
+        </div>
+        <div class="kb-agent-endpoint">
+          <div class="kb-agent-wordmark">Neuro<span>Agent</span></div>
+          <div class="kb-agent-label"><span class="lang-en">NeuroAgent Retrieval</span><span class="lang-zh">供 NeuroAgent 检索</span></div>
+        </div>
+      </div>
     </div>
-    <div class="mechanism-card glass">
-      <span class="tag">04</span>
-      <h3><span class="lang-en">Durable, auditable runs</span><span class="lang-zh">持久化与可追溯</span></h3>
-      <p><span class="lang-en">Sessions, stage artifacts, transcripts, checkpoints, manifests, and final packages are persisted for inspection, resume, rollback, and replay.</span>
-      <span class="lang-zh">Session、阶段产物、交互记录、checkpoint、manifest 与最终产物包均会持久化，用于检查、恢复、回退与回放。</span></p>
+
+    <div class="kb-trace-note"><span class="lang-en">Layered distillation without losing evidence: method knowledge traces back to patterns and cases, while research strategies trace back to supporting papers.</span><span class="lang-zh">知识经过提炼，但证据链始终保留：方法知识可以回看归纳过程和论文案例，研究策略可以回看作为依据的论文。</span></div>
+    <div class="sr-only" id="knowledgeFlowStatus" aria-live="polite"></div>
+  </figure>
+  </div>
+
+  <div class="mechanism-chapter" id="mechanism-skills" data-mechanism="skills">
+    <div class="mechanism-chapter-head">
+      <div class="mechanism-chapter-label"><span class="lang-en">MECHANISM · 03</span><span class="lang-zh">机制 · 03</span></div>
+      <div>
+        <h3 class="mechanism-chapter-title"><span class="lang-en">Built-in research skills</span><span class="lang-zh">内置科研技能</span></h3>
+        <p class="mechanism-chapter-copy"><span class="lang-en">Research skills are reusable working procedures rather than fixed workflow stages. NeuroAgent selects the skills needed by the current task and stage, then carries their steps, checks, and delivery requirements into execution.</span><span class="lang-zh">科研技能不是固定流程中的某一个步骤，而是一套可以按需调用的做事规范。NeuroAgent 会结合当前任务和所处阶段，选择需要的技能，并把操作步骤、检查标准和交付要求带入本轮执行。</span></p>
+      </div>
     </div>
+
+    <figure class="skill-flow" id="skillFlow" data-skill-state="idle" aria-labelledby="skillFlowCaption" aria-describedby="skillFlowSummary">
+      <div class="flow-caption-bar">
+        <figcaption class="figure-caption" id="skillFlowCaption"><span class="lang-en">Fig. 3 · Task-driven research skill assembly</span><span class="lang-zh">图 3 · 按任务装配的科研技能</span></figcaption>
+        <button class="flow-replay" id="skillReplay" type="button" disabled aria-label="Replay skill assembly" title="Replay skill assembly">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11a8 8 0 1 0-2.35 5.65"/><path d="M20 4v7h-7"/></svg>
+        </button>
+      </div>
+      <p class="skill-figure-intro">
+        <span class="lang-en">The built-in catalog contains 39 research and engineering skills. The example below shows how a task can draw procedures from several groups and assemble them for one stage.</span>
+        <span class="lang-zh">系统内置 39 项科研与工程技能。下面以一个任务为例，展示不同类别的技能如何被选中，并组合成当前阶段需要的工作方法。</span>
+      </p>
+      <p class="sr-only" id="skillFlowSummary">
+        <span class="lang-en">The current research goal and stage are matched against five skill groups. Selected skills are assembled into one working bundle that supplies procedures, checks, and output requirements to the current workflow stage.</span>
+        <span class="lang-zh">当前研究目标和所处阶段会与五类科研技能进行匹配。选中的技能被组合为本轮工作方法，并向当前阶段提供操作步骤、检查标准和输出要求。</span>
+      </p>
+
+      <div class="skill-shell">
+        <div class="skill-context-wrap">
+          <div class="skill-phase-label"><span class="lang-en">CURRENT CONTEXT</span><span class="lang-zh">当前任务</span></div>
+          <div class="skill-context" data-skill-context>
+            <div class="skill-context-title"><span class="lang-en">Neural decoding study</span><span class="lang-zh">脑信号解码研究</span></div>
+            <div class="skill-context-list">
+              <div class="skill-context-row"><span class="skill-context-key"><span class="lang-en">GOAL</span><span class="lang-zh">研究目标</span></span><span class="skill-context-value"><span class="lang-en">Build a robust decoding model</span><span class="lang-zh">建立稳健的解码模型</span></span></div>
+              <div class="skill-context-row"><span class="skill-context-key"><span class="lang-en">STAGE</span><span class="lang-zh">当前阶段</span></span><span class="skill-context-value"><span class="lang-en">Method design</span><span class="lang-zh">方法设计</span></span></div>
+              <div class="skill-context-row"><span class="skill-context-key"><span class="lang-en">DATA</span><span class="lang-zh">数据类型</span></span><span class="skill-context-value">EEG · sEEG · ECoG</span></div>
+              <div class="skill-context-row"><span class="skill-context-key"><span class="lang-en">DELIVER</span><span class="lang-zh">交付要求</span></span><span class="skill-context-value"><span class="lang-en">Reproducible analysis plan</span><span class="lang-zh">可复现的分析方案</span></span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="skill-library">
+          <div class="skill-library-head">
+            <div class="skill-library-title"><span class="lang-en">Built-in research skill library</span><span class="lang-zh">内置科研技能库</span></div>
+            <div class="skill-library-count"><span class="lang-en">39 SKILLS</span><span class="lang-zh">39 项技能</span></div>
+          </div>
+          <div class="skill-groups">
+            <div class="skill-group" data-skill-group="design">
+              <div class="skill-group-name"><span class="lang-en">Research design</span><span class="lang-zh">研究设计</span></div>
+              <div class="skill-items"><span class="skill-item"><span class="lang-en">Research questions</span><span class="lang-zh">研究选题</span></span><span class="skill-item" data-skill-pick="1"><span class="lang-en">Method selection</span><span class="lang-zh">方法选择</span></span><span class="skill-item"><span class="lang-en">Research planning</span><span class="lang-zh">研究计划</span></span></div>
+              <span class="skill-group-route" aria-hidden="true"></span>
+            </div>
+            <div class="skill-group" data-skill-group="brain">
+              <div class="skill-group-name"><span class="lang-en">Brain data processing</span><span class="lang-zh">脑数据处理</span></div>
+              <div class="skill-items"><span class="skill-item" data-skill-pick="2"><span class="lang-en">Data audit</span><span class="lang-zh">数据审计</span></span><span class="skill-item"><span class="lang-en">Signal preprocessing</span><span class="lang-zh">信号预处理</span></span><span class="skill-item"><span class="lang-en">Tool workflows</span><span class="lang-zh">工具流程</span></span></div>
+              <span class="skill-group-route" aria-hidden="true"></span>
+            </div>
+            <div class="skill-group" data-skill-group="analysis">
+              <div class="skill-group-name"><span class="lang-en">Modeling and analysis</span><span class="lang-zh">建模与分析</span></div>
+              <div class="skill-items"><span class="skill-item" data-skill-pick="3"><span class="lang-en">Decoding strategy</span><span class="lang-zh">解码策略</span></span><span class="skill-item"><span class="lang-en">Results analysis</span><span class="lang-zh">结果分析</span></span><span class="skill-item"><span class="lang-en">Scientific figures</span><span class="lang-zh">科研图表</span></span></div>
+              <span class="skill-group-route" aria-hidden="true"></span>
+            </div>
+            <div class="skill-group" data-skill-group="writing">
+              <div class="skill-group-name"><span class="lang-en">Paper writing</span><span class="lang-zh">论文写作</span></div>
+              <div class="skill-items"><span class="skill-item"><span class="lang-en">Paper structure</span><span class="lang-zh">论文组织</span></span><span class="skill-item"><span class="lang-en">Academic polishing</span><span class="lang-zh">学术润色</span></span><span class="skill-item"><span class="lang-en">Data statements</span><span class="lang-zh">数据声明</span></span></div>
+              <span class="skill-group-route" aria-hidden="true"></span>
+            </div>
+            <div class="skill-group" data-skill-group="review">
+              <div class="skill-group-name"><span class="lang-en">Review and reproducibility</span><span class="lang-zh">审查与复现</span></div>
+              <div class="skill-items"><span class="skill-item"><span class="lang-en">Citation checks</span><span class="lang-zh">引用核验</span></span><span class="skill-item"><span class="lang-en">Paper self-review</span><span class="lang-zh">论文自审</span></span><span class="skill-item" data-skill-pick="4"><span class="lang-en">Run verification</span><span class="lang-zh">运行验证</span></span></div>
+              <span class="skill-group-route" aria-hidden="true"></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="skill-output-wrap">
+          <div class="skill-phase-label"><span class="lang-en">ACTIVE ASSEMBLY</span><span class="lang-zh">本轮技能组合</span></div>
+          <div class="skill-bundle" data-skill-bundle>
+            <div class="skill-bundle-kicker"><span class="lang-en">SELECTED FOR THIS STAGE</span><span class="lang-zh">按当前阶段选择</span></div>
+            <div class="skill-bundle-title"><span class="lang-en">Working method bundle</span><span class="lang-zh">本轮工作方法</span></div>
+            <div class="skill-bundle-slots">
+              <div class="skill-bundle-slot" data-skill-order="01"><span class="lang-en">Method selection</span><span class="lang-zh">方法选择</span></div>
+              <div class="skill-bundle-slot" data-skill-order="02"><span class="lang-en">Brain-data audit</span><span class="lang-zh">脑数据审计</span></div>
+              <div class="skill-bundle-slot" data-skill-order="03"><span class="lang-en">Decoding strategy</span><span class="lang-zh">解码建模策略</span></div>
+              <div class="skill-bundle-slot" data-skill-order="04"><span class="lang-en">Run verification</span><span class="lang-zh">运行验证</span></div>
+            </div>
+            <div class="skill-bundle-divider" aria-hidden="true"></div>
+            <div class="skill-stage-title"><span class="lang-en">Delivered into the current stage</span><span class="lang-zh">带入当前科研阶段</span></div>
+            <div class="skill-stage-outputs">
+              <div class="skill-stage-output"><span class="lang-en">Procedures</span><span class="lang-zh">操作步骤</span></div>
+              <div class="skill-stage-output"><span class="lang-en">Checks</span><span class="lang-zh">检查清单</span></div>
+              <div class="skill-stage-output"><span class="lang-en">Outputs</span><span class="lang-zh">输出规范</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="skill-trace-note"><span class="lang-en">The knowledge base answers “what supports this decision”; research skills answer “how should this work be done”. Both are called by the current stage as needed.</span><span class="lang-zh">知识库回答“判断依据是什么”，科研技能回答“具体应该怎么做”；两者都由当前阶段按需调用。</span></div>
+      <div class="sr-only" id="skillFlowStatus" aria-live="polite"></div>
+    </figure>
   </div>
 </section>
 
@@ -1134,6 +1697,8 @@ footer { border-top: 1px solid var(--stroke); margin-top: 130px; padding: 46px 3
     url.searchParams.set('lang', lang);
     history.replaceState(null, '', url.toString());
     updateFlowControlLabels();
+    updateKbControlLabels();
+    updateSkillControlLabels();
   }
   var initialLang = new URLSearchParams(location.search).get('lang');
   if (!initialLang) { try { initialLang = localStorage.getItem('na-lang'); } catch (e) {} }
@@ -1416,6 +1981,359 @@ footer { border-top: 1px solid var(--stroke); margin-top: 130px; padding: 46px 3
   updateFlowShellPaths();
   window.addEventListener('resize', updateFlowShellPaths);
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(updateFlowShellPaths);
+
+  /* ---------- paper-derived knowledge flow ---------- */
+  var knowledgeFlow = document.getElementById('knowledgeFlow');
+  var knowledgeReplay = document.getElementById('knowledgeReplay');
+  var knowledgeStatus = document.getElementById('knowledgeFlowStatus');
+  var knowledgeSource = knowledgeFlow.querySelector('[data-kb-source]');
+  var knowledgeRelease = knowledgeFlow.querySelector('[data-kb-release]');
+  var knowledgeAgent = knowledgeFlow.querySelector('.kb-agent-endpoint');
+  var kbMethodPath = document.getElementById('kbMethodPath');
+  var kbStrategyPath = document.getElementById('kbStrategyPath');
+  var kbMethodPulse = document.getElementById('kbMethodPulse');
+  var kbStrategyPulse = document.getElementById('kbStrategyPulse');
+  var kbNodes = Array.prototype.slice.call(knowledgeFlow.querySelectorAll('.kb-node'));
+  var kbRunToken = 0;
+  var kbAnimations = [];
+  var kbWaiters = [];
+
+  function updateKbControlLabels() {
+    if (!knowledgeFlow || !knowledgeReplay) return;
+    var zh = root.dataset.lang === 'zh';
+    var label = zh ? '重播知识库构建' : 'Replay knowledge build';
+    knowledgeReplay.setAttribute('aria-label', label);
+    knowledgeReplay.title = label;
+  }
+
+  function announceKnowledge(zh, en) {
+    knowledgeStatus.textContent = root.dataset.lang === 'zh' ? zh : en;
+  }
+
+  function cancelKnowledgeSequence() {
+    kbRunToken += 1;
+    kbWaiters.splice(0).forEach(function (waiter) {
+      clearTimeout(waiter.id);
+      waiter.resolve(false);
+    });
+    kbAnimations.splice(0).forEach(function (animation) { animation.cancel(); });
+    knowledgeFlow.querySelectorAll('.kb-path.is-running').forEach(function (path) {
+      path.classList.remove('is-running');
+    });
+    kbMethodPulse.classList.remove('is-visible');
+    kbStrategyPulse.classList.remove('is-visible');
+  }
+
+  function knowledgeDelay(milliseconds, token) {
+    return new Promise(function (resolve) {
+      var waiter = { id: 0, resolve: resolve };
+      waiter.id = setTimeout(function () {
+        var index = kbWaiters.indexOf(waiter);
+        if (index >= 0) kbWaiters.splice(index, 1);
+        resolve(token === kbRunToken);
+      }, milliseconds);
+      kbWaiters.push(waiter);
+    });
+  }
+
+  function resetKnowledgeVisuals() {
+    knowledgeFlow.dataset.kbState = 'idle';
+    delete knowledgeFlow.dataset.previewLane;
+    [knowledgeSource, knowledgeRelease, knowledgeAgent].forEach(function (element) {
+      element.classList.remove('is-active', 'is-complete');
+    });
+    kbNodes.forEach(function (node) { node.classList.remove('is-active', 'is-complete'); });
+    [kbMethodPath, kbStrategyPath].forEach(function (path) {
+      path.classList.remove('is-running', 'is-complete');
+      path.style.removeProperty('stroke-dasharray');
+      path.style.removeProperty('stroke-dashoffset');
+    });
+    knowledgeReplay.disabled = true;
+  }
+
+  function animateKnowledgePath(path, pulse, duration, token) {
+    if (!path || token !== kbRunToken) return Promise.resolve(false);
+    var length = path.getTotalLength();
+    path.classList.add('is-running');
+    pulse.classList.add('is-visible');
+    var strokeAnimation = path.animate(
+      [{ strokeDasharray: length + ' ' + length, strokeDashoffset: length }, { strokeDasharray: length + ' ' + length, strokeDashoffset: 0 }],
+      { duration: duration, easing: 'cubic-bezier(.22,1,.36,1)', fill: 'none' }
+    );
+    kbAnimations.push(strokeAnimation);
+    return new Promise(function (resolve) {
+      var start = performance.now();
+      function frame(now) {
+        if (token !== kbRunToken) {
+          path.classList.remove('is-running');
+          pulse.classList.remove('is-visible');
+          resolve(false);
+          return;
+        }
+        var progress = Math.min(1, (now - start) / duration);
+        var point = path.getPointAtLength(length * progress);
+        pulse.setAttribute('cx', point.x.toFixed(2));
+        pulse.setAttribute('cy', point.y.toFixed(2));
+        if (progress < 1) {
+          requestAnimationFrame(frame);
+          return;
+        }
+        var animationIndex = kbAnimations.indexOf(strokeAnimation);
+        if (animationIndex >= 0) kbAnimations.splice(animationIndex, 1);
+        path.classList.remove('is-running');
+        path.classList.add('is-complete');
+        pulse.classList.remove('is-visible');
+        resolve(true);
+      }
+      requestAnimationFrame(frame);
+    });
+  }
+
+  function activateKnowledgePair(step, token) {
+    var pair = kbNodes.filter(function (node) { return node.dataset.kbStep === String(step); });
+    kbNodes.forEach(function (node) { node.classList.remove('is-active'); });
+    pair.forEach(function (node) { node.classList.add('is-active'); });
+    announceKnowledge(
+      '正在提炼第 ' + step + ' 层方法知识与研究策略',
+      'Distilling method knowledge and research strategy layer ' + step
+    );
+    return knowledgeDelay(440, token).then(function (current) {
+      if (!current) return false;
+      pair.forEach(function (node) {
+        node.classList.remove('is-active');
+        node.classList.add('is-complete');
+      });
+      return true;
+    });
+  }
+
+  function completeKnowledgeImmediately() {
+    knowledgeSource.classList.add('is-complete');
+    knowledgeRelease.classList.add('is-complete');
+    knowledgeAgent.classList.add('is-complete');
+    kbNodes.forEach(function (node) { node.classList.add('is-complete'); });
+    kbMethodPath.classList.add('is-complete');
+    kbStrategyPath.classList.add('is-complete');
+    knowledgeFlow.dataset.kbState = 'complete';
+    knowledgeReplay.disabled = false;
+    announceKnowledge('知识库构建流程已完成', 'Knowledge build complete');
+  }
+
+  async function runKnowledgeFlow() {
+    cancelKnowledgeSequence();
+    var token = kbRunToken;
+    resetKnowledgeVisuals();
+    if (reduceMotion) {
+      completeKnowledgeImmediately();
+      return;
+    }
+
+    knowledgeFlow.dataset.kbState = 'running';
+    knowledgeSource.classList.add('is-active');
+    announceKnowledge('正在将论文语料转化为结构化证据', 'Structuring the shared paper evidence');
+    if (!await knowledgeDelay(350, token)) return;
+    knowledgeSource.classList.remove('is-active');
+    knowledgeSource.classList.add('is-complete');
+    if (!await knowledgeDelay(180, token)) return;
+
+    var pathRuns = Promise.all([
+      animateKnowledgePath(kbMethodPath, kbMethodPulse, 2400, token),
+      animateKnowledgePath(kbStrategyPath, kbStrategyPulse, 2400, token)
+    ]);
+    for (var step = 1; step <= 4; step += 1) {
+      if (!await activateKnowledgePair(step, token)) return;
+    }
+    var pathResults = await pathRuns;
+    if (token !== kbRunToken || !pathResults[0] || !pathResults[1]) return;
+
+    knowledgeRelease.classList.add('is-active');
+    announceKnowledge('正在生成可验证的版本化知识发布', 'Building the verifiable versioned release');
+    if (!await knowledgeDelay(350, token)) return;
+    knowledgeRelease.classList.remove('is-active');
+    knowledgeRelease.classList.add('is-complete');
+    knowledgeAgent.classList.add('is-active');
+    announceKnowledge('正在交付 NeuroAgent 检索入口', 'Delivering the NeuroAgent retrieval endpoint');
+    if (!await knowledgeDelay(320, token)) return;
+    knowledgeAgent.classList.remove('is-active');
+    knowledgeAgent.classList.add('is-complete');
+    knowledgeFlow.dataset.kbState = 'complete';
+    knowledgeReplay.disabled = false;
+    announceKnowledge('知识库构建流程已完成', 'Knowledge build complete');
+  }
+
+  function previewKnowledgeLane(lane, active) {
+    if (active) knowledgeFlow.dataset.previewLane = lane;
+    else if (knowledgeFlow.dataset.previewLane === lane) delete knowledgeFlow.dataset.previewLane;
+  }
+
+  knowledgeFlow.querySelectorAll('.kb-node, .kb-lane-label').forEach(function (element) {
+    var lane = element.dataset.kbLane || element.closest('[data-kb-lane]').dataset.kbLane;
+    element.addEventListener('mouseenter', function () { previewKnowledgeLane(lane, true); });
+    element.addEventListener('mouseleave', function () { previewKnowledgeLane(lane, false); });
+  });
+  [knowledgeSource, knowledgeRelease, knowledgeAgent].forEach(function (element) {
+    element.addEventListener('mouseenter', function () { delete knowledgeFlow.dataset.previewLane; });
+  });
+  knowledgeReplay.addEventListener('click', runKnowledgeFlow);
+  updateKbControlLabels();
+
+  if (reduceMotion) {
+    completeKnowledgeImmediately();
+  } else {
+    var knowledgeObserver = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (!entry.isIntersecting) return;
+        knowledgeObserver.unobserve(entry.target);
+        runKnowledgeFlow();
+      });
+    }, { threshold: 0.28 });
+    knowledgeObserver.observe(knowledgeFlow);
+  }
+
+  /* ---------- task-driven research skill assembly ---------- */
+  var skillFlow = document.getElementById('skillFlow');
+  var skillReplay = document.getElementById('skillReplay');
+  var skillStatus = document.getElementById('skillFlowStatus');
+  var skillContext = skillFlow.querySelector('[data-skill-context]');
+  var skillGroups = Array.prototype.slice.call(skillFlow.querySelectorAll('[data-skill-group]'));
+  var skillPickedItems = Array.prototype.slice.call(skillFlow.querySelectorAll('[data-skill-pick]'));
+  var skillBundle = skillFlow.querySelector('[data-skill-bundle]');
+  var skillBundleSlots = Array.prototype.slice.call(skillFlow.querySelectorAll('.skill-bundle-slot'));
+  var skillStageOutputs = Array.prototype.slice.call(skillFlow.querySelectorAll('.skill-stage-output'));
+  var skillRunToken = 0;
+  var skillWaiters = [];
+
+  function updateSkillControlLabels() {
+    if (!skillFlow || !skillReplay) return;
+    var zh = root.dataset.lang === 'zh';
+    var label = zh ? '重播科研技能装配' : 'Replay research skill assembly';
+    skillReplay.setAttribute('aria-label', label);
+    skillReplay.title = label;
+  }
+
+  function announceSkill(zh, en) {
+    skillStatus.textContent = root.dataset.lang === 'zh' ? zh : en;
+  }
+
+  function cancelSkillSequence() {
+    skillRunToken += 1;
+    skillWaiters.splice(0).forEach(function (waiter) {
+      clearTimeout(waiter.id);
+      waiter.resolve(false);
+    });
+  }
+
+  function skillDelay(milliseconds, token) {
+    return new Promise(function (resolve) {
+      var waiter = { id: 0, resolve: resolve };
+      waiter.id = setTimeout(function () {
+        var index = skillWaiters.indexOf(waiter);
+        if (index >= 0) skillWaiters.splice(index, 1);
+        resolve(token === skillRunToken);
+      }, milliseconds);
+      skillWaiters.push(waiter);
+    });
+  }
+
+  function selectedSkillGroups() {
+    return skillGroups.filter(function (group) { return group.querySelector('[data-skill-pick]'); });
+  }
+
+  function resetSkillVisuals() {
+    skillFlow.dataset.skillState = 'idle';
+    delete skillFlow.dataset.previewGroup;
+    skillContext.classList.remove('is-active', 'is-complete');
+    skillBundle.classList.remove('is-active', 'is-complete');
+    skillGroups.forEach(function (group) { group.classList.remove('is-scanning', 'is-selected'); });
+    skillPickedItems.forEach(function (item) { item.classList.remove('is-selected'); });
+    skillBundleSlots.forEach(function (slot) { slot.classList.remove('is-active', 'is-complete'); });
+    skillStageOutputs.forEach(function (output) { output.classList.remove('is-complete'); });
+    skillReplay.disabled = true;
+  }
+
+  function completeSkillImmediately() {
+    skillContext.classList.add('is-complete');
+    selectedSkillGroups().forEach(function (group) { group.classList.add('is-selected'); });
+    skillPickedItems.forEach(function (item) { item.classList.add('is-selected'); });
+    skillBundle.classList.add('is-complete');
+    skillBundleSlots.forEach(function (slot) { slot.classList.add('is-complete'); });
+    skillStageOutputs.forEach(function (output) { output.classList.add('is-complete'); });
+    skillFlow.dataset.skillState = 'complete';
+    skillReplay.disabled = false;
+    announceSkill('科研技能装配已完成', 'Research skill assembly complete');
+  }
+
+  async function runSkillFlow() {
+    cancelSkillSequence();
+    var token = skillRunToken;
+    resetSkillVisuals();
+    if (reduceMotion) {
+      completeSkillImmediately();
+      return;
+    }
+
+    skillFlow.dataset.skillState = 'running';
+    skillContext.classList.add('is-active');
+    announceSkill('正在读取当前任务和所处阶段', 'Reading the current task and workflow stage');
+    if (!await skillDelay(360, token)) return;
+    skillContext.classList.remove('is-active');
+    skillContext.classList.add('is-complete');
+
+    for (var groupIndex = 0; groupIndex < skillGroups.length; groupIndex += 1) {
+      var group = skillGroups[groupIndex];
+      group.classList.add('is-scanning');
+      announceSkill('正在匹配第 ' + (groupIndex + 1) + ' 类科研技能', 'Matching research skill group ' + (groupIndex + 1));
+      if (!await skillDelay(190, token)) return;
+      group.classList.remove('is-scanning');
+      var picked = group.querySelector('[data-skill-pick]');
+      if (picked) {
+        group.classList.add('is-selected');
+        picked.classList.add('is-selected');
+      }
+    }
+    if (!await skillDelay(160, token)) return;
+
+    skillBundle.classList.add('is-active');
+    for (var slotIndex = 0; slotIndex < skillBundleSlots.length; slotIndex += 1) {
+      var slot = skillBundleSlots[slotIndex];
+      slot.classList.add('is-active');
+      announceSkill('正在装配第 ' + (slotIndex + 1) + ' 项工作方法', 'Assembling working method ' + (slotIndex + 1));
+      if (!await skillDelay(260, token)) return;
+      slot.classList.remove('is-active');
+      slot.classList.add('is-complete');
+    }
+
+    for (var outputIndex = 0; outputIndex < skillStageOutputs.length; outputIndex += 1) {
+      skillStageOutputs[outputIndex].classList.add('is-complete');
+      announceSkill('正在生成当前阶段的执行要求', 'Preparing execution requirements for the current stage');
+      if (!await skillDelay(180, token)) return;
+    }
+    skillBundle.classList.remove('is-active');
+    skillBundle.classList.add('is-complete');
+    skillFlow.dataset.skillState = 'complete';
+    skillReplay.disabled = false;
+    announceSkill('科研技能装配已完成', 'Research skill assembly complete');
+  }
+
+  skillGroups.forEach(function (group) {
+    group.addEventListener('mouseenter', function () { skillFlow.dataset.previewGroup = group.dataset.skillGroup; });
+    group.addEventListener('mouseleave', function () { delete skillFlow.dataset.previewGroup; });
+  });
+  skillReplay.addEventListener('click', runSkillFlow);
+  updateSkillControlLabels();
+
+  if (reduceMotion) {
+    completeSkillImmediately();
+  } else {
+    var skillObserver = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (!entry.isIntersecting) return;
+        skillObserver.unobserve(entry.target);
+        runSkillFlow();
+      });
+    }, { threshold: 0.24 });
+    skillObserver.observe(skillFlow);
+  }
 
   /* ---------- scroll reveal ---------- */
   var io = new IntersectionObserver(function (entries) {
