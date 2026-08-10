@@ -537,15 +537,25 @@ html[data-lang="zh"] .kb-node-name { font-family: var(--font-b-zh); }
 .skill-flow { position: relative; margin: 32px 0 0; padding: 18px 0 0; border-top: 1px solid var(--stroke); }
 .skill-figure-intro { max-width: 78ch; margin: 4px 0 28px; color: var(--dim); font-size: 15px; line-height: 1.7; }
 .skill-shell {
-  display: grid; grid-template-columns: 180px minmax(0, 1fr) 240px;
-  align-items: stretch; gap: 28px; min-height: 520px;
+  display: grid; grid-template-columns: 180px 132px minmax(0, 1fr) 248px;
+  align-items: stretch; gap: 20px; min-height: 520px;
 }
-.skill-context-wrap, .skill-output-wrap { position: relative; z-index: 3; display: grid; align-content: center; min-width: 0; }
+.skill-context-wrap, .skill-agent-wrap, .skill-output-wrap { position: relative; z-index: 3; display: grid; align-content: center; min-width: 0; }
+.skill-route {
+  position: absolute; left: 100%; top: 50%; width: 20px; height: 2px;
+  background: var(--accent); opacity: .22; transform: scaleX(.24); transform-origin: left center;
+  transition: opacity .28s, transform .5s var(--ease-cinematic), filter .28s;
+}
+.skill-route::after {
+  content: ""; position: absolute; right: 0; top: -3px; width: 6px; height: 6px;
+  border-top: 2px solid var(--accent); border-right: 2px solid var(--accent); transform: rotate(45deg);
+}
+.skill-route.is-active { opacity: .9; transform: scaleX(1); filter: drop-shadow(0 0 5px var(--accent-soft)); }
 .skill-phase-label {
   margin-bottom: 12px; color: var(--faint); font: 500 11.25px/1.2 var(--font-mono);
   letter-spacing: .14em; text-align: center;
 }
-.skill-context, .skill-bundle {
+.skill-context, .skill-agent, .skill-decision {
   position: relative; display: grid; align-content: center; padding: 20px 18px;
   background: var(--panel); border: 1px solid var(--panel-edge); border-radius: 8px;
   box-shadow: 0 12px 30px rgba(0,0,0,.12);
@@ -555,10 +565,19 @@ html[data-lang="zh"] .kb-node-name { font-family: var(--font-b-zh); }
 .skill-context.is-active, .skill-context.is-complete {
   border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft), 0 16px 34px rgba(0,0,0,.18);
 }
-.skill-context-title, .skill-bundle-title {
+.skill-agent { min-height: 170px; padding: 17px 12px; text-align: center; }
+.skill-agent.is-active, .skill-agent.is-complete {
+  border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft), 0 16px 34px rgba(0,0,0,.18);
+}
+.skill-agent-mark { font: 500 18px/1.2 var(--font-d-en); }
+.skill-agent-mark span { color: var(--accent); }
+.skill-agent-title { margin-top: 12px; color: var(--text); font: 600 13.75px/1.3 var(--font-b-en); }
+.skill-agent-state { margin-top: 8px; color: var(--dim); font: 500 9.375px/1.45 var(--font-mono); }
+html[data-lang="zh"] .skill-agent-title { font-family: var(--font-b-zh); }
+.skill-context-title, .skill-decision-title {
   color: var(--text); font: 600 16px/1.3 var(--font-b-en);
 }
-html[data-lang="zh"] .skill-context-title, html[data-lang="zh"] .skill-bundle-title { font-family: var(--font-b-zh); }
+html[data-lang="zh"] .skill-context-title, html[data-lang="zh"] .skill-decision-title { font-family: var(--font-b-zh); }
 .skill-context-list { display: grid; margin-top: 14px; }
 .skill-context-row {
   display: grid; gap: 3px; padding: 10px 0; border-top: 1px solid var(--stroke);
@@ -584,11 +603,12 @@ html[data-lang="zh"] .skill-library-title { font-family: var(--font-b-zh); }
 .skill-group[data-skill-group="analysis"] { --skill-accent: var(--gate); }
 .skill-group[data-skill-group="writing"] { --skill-accent: var(--tertiary); }
 .skill-group[data-skill-group="review"] { --skill-accent: var(--danger); }
-.skill-group.is-scanning, .skill-group.is-selected, .skill-group:hover {
+.skill-group.is-scanning, .skill-group:hover {
   opacity: 1; transform: translateX(3px);
   background: color-mix(in srgb, var(--panel) 90%, var(--skill-accent) 10%);
   box-shadow: 0 8px 20px rgba(0,0,0,.12);
 }
+.skill-group.is-agent-selected { opacity: 1; transform: translateX(3px); background: color-mix(in srgb, var(--panel) 90%, var(--skill-accent) 10%); box-shadow: 0 8px 20px rgba(0,0,0,.12); }
 .skill-flow[data-preview-group] .skill-group { opacity: .24; }
 .skill-flow[data-preview-group="design"] .skill-group[data-skill-group="design"],
 .skill-flow[data-preview-group="brain"] .skill-group[data-skill-group="brain"],
@@ -599,40 +619,43 @@ html[data-lang="zh"] .skill-library-title { font-family: var(--font-b-zh); }
 html[data-lang="zh"] .skill-group-name { font-family: var(--font-b-zh); }
 .skill-items { display: flex; flex-wrap: wrap; gap: 6px; min-width: 0; }
 .skill-item {
-  min-height: 30px; display: inline-flex; align-items: center; padding: 5px 8px;
-  color: var(--dim); border: 1px solid var(--panel-edge); border-radius: 5px;
-  background: var(--bg-2); font: 500 10.625px/1.25 var(--font-mono);
+  position: relative; display: inline-flex; align-items: center; padding: 4px 0;
+  color: var(--dim); border-bottom: 1px solid var(--stroke); background: transparent;
+  font: 500 10.625px/1.25 var(--font-mono);
   transition: color .2s, border-color .2s, background-color .2s, box-shadow .2s, transform .2s var(--ease-out);
 }
-.skill-item.is-selected, .skill-item:hover {
+.skill-item.is-agent-selected {
   color: var(--text); border-color: var(--skill-accent);
   background: color-mix(in srgb, var(--panel) 88%, var(--skill-accent) 12%);
   box-shadow: 0 0 0 2px color-mix(in srgb, var(--skill-accent) 18%, transparent);
   transform: translateY(-1px);
 }
+.skill-item.is-agent-selected::before { content: ""; width: 4px; height: 4px; margin-right: 6px; border-radius: 50%; background: var(--skill-accent); box-shadow: 0 0 8px var(--skill-accent); }
 .skill-group-route {
   position: absolute; left: calc(100% + 2px); top: 50%; width: 26px; height: 2px;
   background: var(--skill-accent); opacity: 0; transform: scaleX(0); transform-origin: left;
   transition: opacity .25s, transform .42s var(--ease-cinematic);
 }
-.skill-group.is-selected .skill-group-route { opacity: .8; transform: scaleX(1); }
-.skill-bundle { min-height: 344px; }
-.skill-bundle.is-active, .skill-bundle.is-complete {
+.skill-group.is-agent-selected .skill-group-route { opacity: .8; transform: scaleX(1); }
+.skill-decision { min-height: 396px; }
+.skill-decision.is-active, .skill-decision.is-complete {
   border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft), 0 16px 34px rgba(0,0,0,.18);
 }
-.skill-bundle-kicker { color: var(--accent); font: 500 10px/1.2 var(--font-mono); letter-spacing: .12em; }
-.skill-bundle-slots { display: grid; gap: 7px; margin-top: 16px; }
-.skill-bundle-slot {
-  min-height: 36px; display: flex; align-items: center; gap: 9px; padding: 8px 10px;
-  color: var(--dim); border-left: 2px solid var(--stroke-strong); background: var(--bg-2);
-  font-size: 12.5px; opacity: .42; transform: translateX(7px);
-  transition: opacity .25s, transform .25s var(--ease-out), color .25s, border-color .25s;
-}
-.skill-bundle-slot::before { content: attr(data-skill-order); color: var(--faint); font: 500 10px var(--font-mono); }
-.skill-bundle-slot.is-active, .skill-bundle-slot.is-complete {
-  opacity: 1; transform: none; color: var(--text); border-color: var(--accent);
-}
-.skill-bundle-divider { height: 1px; margin: 18px 0; background: var(--stroke-strong); }
+.skill-decision-kicker { color: var(--accent); font: 500 10px/1.2 var(--font-mono); letter-spacing: .12em; }
+.skill-decision-meta { display: grid; gap: 7px; margin-top: 15px; }
+.skill-decision-meta-row { display: flex; justify-content: space-between; gap: 10px; padding-bottom: 6px; border-bottom: 1px solid var(--stroke); color: var(--dim); font-size: 11px; }
+.skill-decision-meta-row strong { color: var(--text); font-weight: 500; text-align: right; }
+.skill-decision-divider { height: 1px; margin: 16px 0 12px; background: var(--stroke-strong); }
+.skill-decision-label { color: var(--faint); font: 500 9.375px/1.2 var(--font-mono); letter-spacing: .1em; }
+.skill-decision-list { display: grid; gap: 5px; margin-top: 8px; }
+.skill-decision-item { display: flex; justify-content: space-between; gap: 8px; padding: 7px 8px; border-left: 2px solid var(--stroke); background: var(--bg-2); color: var(--dim); font-size: 11.25px; opacity: .46; transform: translateX(6px); transition: opacity .25s, transform .25s var(--ease-out), color .25s, border-color .25s; }
+.skill-decision-item.is-visible { opacity: 1; transform: none; color: var(--text); border-color: var(--accent); }
+.skill-decision-item::after { color: var(--faint); font: 500 9.375px var(--font-mono); }
+html[data-lang="zh"] .skill-decision-item::after { content: "等待"; }
+html[data-lang="en"] .skill-decision-item::after { content: "Waiting"; }
+.skill-decision-item.is-loaded::after { color: var(--accent); }
+html[data-lang="zh"] .skill-decision-item.is-loaded::after { content: "已加载"; }
+html[data-lang="en"] .skill-decision-item.is-loaded::after { content: "Loaded"; }
 .skill-stage-title { color: var(--text); font: 600 14.375px/1.3 var(--font-b-en); }
 html[data-lang="zh"] .skill-stage-title { font-family: var(--font-b-zh); }
 .skill-stage-outputs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 5px; margin-top: 12px; }
@@ -643,6 +666,7 @@ html[data-lang="zh"] .skill-stage-title { font-family: var(--font-b-zh); }
   transition: opacity .25s, color .25s, border-color .25s, background-color .25s;
 }
 .skill-stage-output.is-complete { opacity: 1; color: var(--text); border-color: var(--accent); background: var(--accent-soft); }
+.skill-decision-stage { margin-top: 15px; padding-top: 14px; border-top: 1px solid var(--stroke-strong); }
 .skill-trace-note {
   margin-top: 20px; padding: 17px 20px; border-block: 1px solid var(--stroke-strong);
   color: var(--text); background: color-mix(in srgb, var(--panel) 90%, var(--accent) 10%);
@@ -870,12 +894,14 @@ footer { border-top: 1px solid var(--stroke); margin-top: 130px; padding: 46px 3
   .kb-node.is-active, .kb-node.is-complete, .kb-node:hover { transform: translateY(-2px); }
   .kb-agent-endpoint { position: relative; inset: auto; margin-top: 16px; }
   .skill-shell { grid-template-columns: 1fr; gap: 22px; min-height: 0; }
-  .skill-context-wrap, .skill-library, .skill-output-wrap { width: min(100%, 620px); margin: 0 auto; }
+  .skill-context-wrap, .skill-agent-wrap, .skill-library, .skill-output-wrap { width: min(100%, 620px); margin: 0 auto; }
+  .skill-route { display: none; }
   .skill-context { grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr); gap: 18px; }
   .skill-context-list { margin-top: 0; grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .skill-context-row { padding: 7px 0; }
   .skill-group-route { display: none; }
-  .skill-bundle { min-height: 0; }
+  .skill-agent { min-height: 0; }
+  .skill-decision { min-height: 0; }
 }
 
 @media (max-width: 600px) {
@@ -944,7 +970,7 @@ footer { border-top: 1px solid var(--stroke); margin-top: 130px; padding: 46px 3
   .skill-group { grid-template-columns: 1fr; gap: 8px; padding: 12px; }
   .skill-library-head { align-items: center; }
   .skill-item { font-size: 10px; }
-  .skill-bundle { padding: 18px 16px; }
+  .skill-decision { padding: 18px 16px; }
   .skill-stage-outputs { grid-template-columns: 1fr; }
   .skill-stage-output { min-height: 38px; }
   .skill-trace-note { padding: 14px 12px; font-size: 12.5px; }
@@ -962,7 +988,7 @@ footer { border-top: 1px solid var(--stroke); margin-top: 130px; padding: 46px 3
   .flow-pulse { display: none !important; }
   .kb-pulse { display: none !important; }
   .kb-node, .kb-path, .kb-source, .kb-release,
-  .skill-context, .skill-group, .skill-item, .skill-bundle-slot, .skill-stage-output { opacity: 1 !important; transition: none !important; transform: none !important; }
+  .skill-context, .skill-agent, .skill-group, .skill-item, .skill-decision-item, .skill-stage-output { opacity: 1 !important; transition: none !important; transform: none !important; }
 }
 </style>
 <noscript><style>
@@ -1361,18 +1387,18 @@ footer { border-top: 1px solid var(--stroke); margin-top: 130px; padding: 46px 3
 
     <figure class="skill-flow" id="skillFlow" data-skill-state="idle" aria-labelledby="skillFlowCaption" aria-describedby="skillFlowSummary">
       <div class="flow-caption-bar">
-        <figcaption class="figure-caption" id="skillFlowCaption"><span class="lang-en">Fig. 3 · Task-driven research skill assembly</span><span class="lang-zh">图 3 · 按任务装配的科研技能</span></figcaption>
+        <figcaption class="figure-caption" id="skillFlowCaption"><span class="lang-en">Fig. 3 · NeuroAgent autonomous skill routing</span><span class="lang-zh">图 3 · NeuroAgent 自主调用科研技能</span></figcaption>
         <button class="flow-replay" id="skillReplay" type="button" disabled aria-label="Replay skill assembly" title="Replay skill assembly">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11a8 8 0 1 0-2.35 5.65"/><path d="M20 4v7h-7"/></svg>
         </button>
       </div>
       <p class="skill-figure-intro">
-        <span class="lang-en">The built-in catalog contains 39 research and engineering skills. The example below shows how a task can draw procedures from several groups and assemble them for one stage.</span>
-        <span class="lang-zh">系统内置 39 项科研与工程技能。下面以一个任务为例，展示不同类别的技能如何被选中，并组合成当前阶段需要的工作方法。</span>
+        <span class="lang-en">The built-in catalog contains 39 research and engineering skills. In this example, NeuroAgent reads the task context, evaluates the catalog, records its selections, and loads the chosen skills into the current stage.</span>
+        <span class="lang-zh">系统内置 39 项科研与工程技能。下面以一个任务为例，展示 NeuroAgent 如何评估技能目录，形成选择记录，再把技能带入当前阶段。</span>
       </p>
       <p class="sr-only" id="skillFlowSummary">
-        <span class="lang-en">The current research goal and stage are matched against five skill groups. Selected skills are assembled into one working bundle that supplies procedures, checks, and output requirements to the current workflow stage.</span>
-        <span class="lang-zh">当前研究目标和所处阶段会与五类科研技能进行匹配。选中的技能被组合为本轮工作方法，并向当前阶段提供操作步骤、检查标准和输出要求。</span>
+        <span class="lang-en">NeuroAgent matches the current research goal and stage against five skill groups. It records the selection basis, loads the chosen skills, and supplies procedures, checks, and output requirements to the current workflow stage.</span>
+        <span class="lang-zh">当前研究目标和所处阶段会与五类科研技能进行匹配。NeuroAgent 根据结构化选择依据记录选择结果，加载对应技能，并向当前阶段提供操作步骤、检查标准和输出要求。</span>
       </p>
 
       <div class="skill-shell">
@@ -1387,6 +1413,17 @@ footer { border-top: 1px solid var(--stroke); margin-top: 130px; padding: 46px 3
               <div class="skill-context-row"><span class="skill-context-key"><span class="lang-en">DELIVER</span><span class="lang-zh">交付要求</span></span><span class="skill-context-value"><span class="lang-en">Reproducible analysis plan</span><span class="lang-zh">可复现的分析方案</span></span></div>
             </div>
           </div>
+          <span class="skill-route" data-skill-route aria-hidden="true"></span>
+        </div>
+
+        <div class="skill-agent-wrap">
+          <div class="skill-phase-label"><span class="lang-en">AGENT ROUTER</span><span class="lang-zh">自主判断</span></div>
+          <div class="skill-agent" data-agent-router>
+            <div class="skill-agent-mark">Neuro<span>Agent</span></div>
+            <div class="skill-agent-title"><span class="lang-en">Evaluate the catalog</span><span class="lang-zh">自主评估技能目录</span></div>
+            <div class="skill-agent-state" data-state-en="Waiting for context" data-state-zh="等待任务上下文"><span class="lang-en">Waiting for context</span><span class="lang-zh">等待任务上下文</span></div>
+          </div>
+          <span class="skill-route" data-skill-route aria-hidden="true"></span>
         </div>
 
         <div class="skill-library">
@@ -1397,49 +1434,57 @@ footer { border-top: 1px solid var(--stroke); margin-top: 130px; padding: 46px 3
           <div class="skill-groups">
             <div class="skill-group" data-skill-group="design">
               <div class="skill-group-name"><span class="lang-en">Research design</span><span class="lang-zh">研究设计</span></div>
-              <div class="skill-items"><span class="skill-item"><span class="lang-en">Research questions</span><span class="lang-zh">研究选题</span></span><span class="skill-item" data-skill-pick="1"><span class="lang-en">Method selection</span><span class="lang-zh">方法选择</span></span><span class="skill-item"><span class="lang-en">Research planning</span><span class="lang-zh">研究计划</span></span></div>
+              <div class="skill-items"><span class="skill-item" data-skill-name="research-questions"><span class="lang-en">Research questions</span><span class="lang-zh">研究选题</span></span><span class="skill-item" data-skill-name="method-selection"><span class="lang-en">Method selection</span><span class="lang-zh">方法选择</span></span><span class="skill-item" data-skill-name="research-planning"><span class="lang-en">Research planning</span><span class="lang-zh">研究计划</span></span></div>
               <span class="skill-group-route" aria-hidden="true"></span>
             </div>
             <div class="skill-group" data-skill-group="brain">
               <div class="skill-group-name"><span class="lang-en">Brain data processing</span><span class="lang-zh">脑数据处理</span></div>
-              <div class="skill-items"><span class="skill-item" data-skill-pick="2"><span class="lang-en">Data audit</span><span class="lang-zh">数据审计</span></span><span class="skill-item"><span class="lang-en">Signal preprocessing</span><span class="lang-zh">信号预处理</span></span><span class="skill-item"><span class="lang-en">Tool workflows</span><span class="lang-zh">工具流程</span></span></div>
+              <div class="skill-items"><span class="skill-item" data-skill-name="data-audit"><span class="lang-en">Data audit</span><span class="lang-zh">数据审计</span></span><span class="skill-item" data-skill-name="signal-preprocessing"><span class="lang-en">Signal preprocessing</span><span class="lang-zh">信号预处理</span></span><span class="skill-item" data-skill-name="tool-workflows"><span class="lang-en">Tool workflows</span><span class="lang-zh">工具流程</span></span></div>
               <span class="skill-group-route" aria-hidden="true"></span>
             </div>
             <div class="skill-group" data-skill-group="analysis">
               <div class="skill-group-name"><span class="lang-en">Modeling and analysis</span><span class="lang-zh">建模与分析</span></div>
-              <div class="skill-items"><span class="skill-item" data-skill-pick="3"><span class="lang-en">Decoding strategy</span><span class="lang-zh">解码策略</span></span><span class="skill-item"><span class="lang-en">Results analysis</span><span class="lang-zh">结果分析</span></span><span class="skill-item"><span class="lang-en">Scientific figures</span><span class="lang-zh">科研图表</span></span></div>
+              <div class="skill-items"><span class="skill-item" data-skill-name="decoding-strategy"><span class="lang-en">Decoding strategy</span><span class="lang-zh">解码策略</span></span><span class="skill-item" data-skill-name="results-analysis"><span class="lang-en">Results analysis</span><span class="lang-zh">结果分析</span></span><span class="skill-item" data-skill-name="scientific-figures"><span class="lang-en">Scientific figures</span><span class="lang-zh">科研图表</span></span></div>
               <span class="skill-group-route" aria-hidden="true"></span>
             </div>
             <div class="skill-group" data-skill-group="writing">
               <div class="skill-group-name"><span class="lang-en">Paper writing</span><span class="lang-zh">论文写作</span></div>
-              <div class="skill-items"><span class="skill-item"><span class="lang-en">Paper structure</span><span class="lang-zh">论文组织</span></span><span class="skill-item"><span class="lang-en">Academic polishing</span><span class="lang-zh">学术润色</span></span><span class="skill-item"><span class="lang-en">Data statements</span><span class="lang-zh">数据声明</span></span></div>
+              <div class="skill-items"><span class="skill-item" data-skill-name="paper-structure"><span class="lang-en">Paper structure</span><span class="lang-zh">论文组织</span></span><span class="skill-item" data-skill-name="academic-polishing"><span class="lang-en">Academic polishing</span><span class="lang-zh">学术润色</span></span><span class="skill-item" data-skill-name="data-statements"><span class="lang-en">Data statements</span><span class="lang-zh">数据声明</span></span></div>
               <span class="skill-group-route" aria-hidden="true"></span>
             </div>
             <div class="skill-group" data-skill-group="review">
               <div class="skill-group-name"><span class="lang-en">Review and reproducibility</span><span class="lang-zh">审查与复现</span></div>
-              <div class="skill-items"><span class="skill-item"><span class="lang-en">Citation checks</span><span class="lang-zh">引用核验</span></span><span class="skill-item"><span class="lang-en">Paper self-review</span><span class="lang-zh">论文自审</span></span><span class="skill-item" data-skill-pick="4"><span class="lang-en">Run verification</span><span class="lang-zh">运行验证</span></span></div>
+              <div class="skill-items"><span class="skill-item" data-skill-name="citation-checks"><span class="lang-en">Citation checks</span><span class="lang-zh">引用核验</span></span><span class="skill-item" data-skill-name="paper-self-review"><span class="lang-en">Paper self-review</span><span class="lang-zh">论文自审</span></span><span class="skill-item" data-skill-name="run-verification"><span class="lang-en">Run verification</span><span class="lang-zh">运行验证</span></span></div>
               <span class="skill-group-route" aria-hidden="true"></span>
             </div>
           </div>
         </div>
 
         <div class="skill-output-wrap">
-          <div class="skill-phase-label"><span class="lang-en">ACTIVE ASSEMBLY</span><span class="lang-zh">本轮技能组合</span></div>
-          <div class="skill-bundle" data-skill-bundle>
-            <div class="skill-bundle-kicker"><span class="lang-en">SELECTED FOR THIS STAGE</span><span class="lang-zh">按当前阶段选择</span></div>
-            <div class="skill-bundle-title"><span class="lang-en">Working method bundle</span><span class="lang-zh">本轮工作方法</span></div>
-            <div class="skill-bundle-slots">
-              <div class="skill-bundle-slot" data-skill-order="01"><span class="lang-en">Method selection</span><span class="lang-zh">方法选择</span></div>
-              <div class="skill-bundle-slot" data-skill-order="02"><span class="lang-en">Brain-data audit</span><span class="lang-zh">脑数据审计</span></div>
-              <div class="skill-bundle-slot" data-skill-order="03"><span class="lang-en">Decoding strategy</span><span class="lang-zh">解码建模策略</span></div>
-              <div class="skill-bundle-slot" data-skill-order="04"><span class="lang-en">Run verification</span><span class="lang-zh">运行验证</span></div>
+          <div class="skill-phase-label"><span class="lang-en">DECISION RECORD</span><span class="lang-zh">决策记录</span></div>
+          <div class="skill-decision" data-skill-decision>
+            <div class="skill-decision-kicker"><span class="lang-en">AGENT DECISION</span><span class="lang-zh">自主决策</span></div>
+            <div class="skill-decision-title"><span class="lang-en">NeuroAgent selection</span><span class="lang-zh">NeuroAgent 选择结果</span></div>
+            <div class="skill-decision-meta">
+              <div class="skill-decision-meta-row"><span class="lang-en">Stage</span><span class="lang-zh">阶段</span><strong><span class="lang-en">Method design</span><span class="lang-zh">方法设计</span></strong></div>
+              <div class="skill-decision-meta-row"><span class="lang-en">Basis</span><span class="lang-zh">选择依据</span><strong><span class="lang-en">Task + stage fit</span><span class="lang-zh">任务与阶段匹配</span></strong></div>
+              <div class="skill-decision-meta-row"><span class="lang-en">Selected by</span><span class="lang-zh">选择者</span><strong>NeuroAgent</strong></div>
             </div>
-            <div class="skill-bundle-divider" aria-hidden="true"></div>
-            <div class="skill-stage-title"><span class="lang-en">Delivered into the current stage</span><span class="lang-zh">带入当前科研阶段</span></div>
-            <div class="skill-stage-outputs">
-              <div class="skill-stage-output"><span class="lang-en">Procedures</span><span class="lang-zh">操作步骤</span></div>
-              <div class="skill-stage-output"><span class="lang-en">Checks</span><span class="lang-zh">检查清单</span></div>
-              <div class="skill-stage-output"><span class="lang-en">Outputs</span><span class="lang-zh">输出规范</span></div>
+            <div class="skill-decision-divider" aria-hidden="true"></div>
+            <div class="skill-decision-label"><span class="lang-en">LOADED SKILLS</span><span class="lang-zh">已加载技能</span></div>
+            <div class="skill-decision-list">
+              <div class="skill-decision-item" data-skill-name="method-selection"><span class="lang-en">Method selection</span><span class="lang-zh">方法选择</span></div>
+              <div class="skill-decision-item" data-skill-name="data-audit"><span class="lang-en">Brain-data audit</span><span class="lang-zh">脑数据审计</span></div>
+              <div class="skill-decision-item" data-skill-name="decoding-strategy"><span class="lang-en">Decoding strategy</span><span class="lang-zh">解码建模策略</span></div>
+              <div class="skill-decision-item" data-skill-name="run-verification"><span class="lang-en">Run verification</span><span class="lang-zh">运行验证</span></div>
+            </div>
+            <div class="skill-decision-stage">
+              <div class="skill-stage-title"><span class="lang-en">Delivered into the current stage</span><span class="lang-zh">带入当前科研阶段</span></div>
+              <div class="skill-stage-outputs">
+                <div class="skill-stage-output"><span class="lang-en">Procedures</span><span class="lang-zh">操作步骤</span></div>
+                <div class="skill-stage-output"><span class="lang-en">Checks</span><span class="lang-zh">检查清单</span></div>
+                <div class="skill-stage-output"><span class="lang-en">Outputs</span><span class="lang-zh">输出规范</span></div>
+              </div>
             </div>
           </div>
         </div>
@@ -2195,11 +2240,15 @@ footer { border-top: 1px solid var(--stroke); margin-top: 130px; padding: 46px 3
   var skillReplay = document.getElementById('skillReplay');
   var skillStatus = document.getElementById('skillFlowStatus');
   var skillContext = skillFlow.querySelector('[data-skill-context]');
+  var skillAgent = skillFlow.querySelector('[data-agent-router]');
+  var skillAgentState = skillAgent.querySelector('.skill-agent-state');
+  var skillRoutes = Array.prototype.slice.call(skillFlow.querySelectorAll('[data-skill-route]'));
   var skillGroups = Array.prototype.slice.call(skillFlow.querySelectorAll('[data-skill-group]'));
-  var skillPickedItems = Array.prototype.slice.call(skillFlow.querySelectorAll('[data-skill-pick]'));
-  var skillBundle = skillFlow.querySelector('[data-skill-bundle]');
-  var skillBundleSlots = Array.prototype.slice.call(skillFlow.querySelectorAll('.skill-bundle-slot'));
+  var skillItems = Array.prototype.slice.call(skillFlow.querySelectorAll('.skill-item[data-skill-name]'));
+  var skillDecision = skillFlow.querySelector('[data-skill-decision]');
+  var skillDecisionItems = Array.prototype.slice.call(skillFlow.querySelectorAll('.skill-decision-item'));
   var skillStageOutputs = Array.prototype.slice.call(skillFlow.querySelectorAll('.skill-stage-output'));
+  var skillSelectionNames = ['method-selection', 'data-audit', 'decoding-strategy', 'run-verification'];
   var skillRunToken = 0;
   var skillWaiters = [];
 
@@ -2209,6 +2258,7 @@ footer { border-top: 1px solid var(--stroke); margin-top: 130px; padding: 46px 3
     var label = zh ? '重播科研技能装配' : 'Replay research skill assembly';
     skillReplay.setAttribute('aria-label', label);
     skillReplay.title = label;
+    if (skillAgentState) skillAgentState.textContent = zh ? skillAgentState.dataset.stateZh : skillAgentState.dataset.stateEn;
   }
 
   function announceSkill(zh, en) {
@@ -2235,28 +2285,48 @@ footer { border-top: 1px solid var(--stroke); margin-top: 130px; padding: 46px 3
     });
   }
 
+  function setSkillAgentState(zh, en) {
+    skillAgentState.dataset.stateZh = zh;
+    skillAgentState.dataset.stateEn = en;
+    skillAgentState.textContent = root.dataset.lang === 'zh' ? zh : en;
+  }
+
+  function selectedSkillItems() {
+    return skillItems.filter(function (item) { return skillSelectionNames.indexOf(item.dataset.skillName) >= 0; });
+  }
+
   function selectedSkillGroups() {
-    return skillGroups.filter(function (group) { return group.querySelector('[data-skill-pick]'); });
+    return skillGroups.filter(function (group) {
+      return group.querySelector('.skill-item[data-skill-name]') && selectedSkillItems().some(function (item) {
+        return item.closest('[data-skill-group]') === group;
+      });
+    });
   }
 
   function resetSkillVisuals() {
     skillFlow.dataset.skillState = 'idle';
     delete skillFlow.dataset.previewGroup;
     skillContext.classList.remove('is-active', 'is-complete');
-    skillBundle.classList.remove('is-active', 'is-complete');
-    skillGroups.forEach(function (group) { group.classList.remove('is-scanning', 'is-selected'); });
-    skillPickedItems.forEach(function (item) { item.classList.remove('is-selected'); });
-    skillBundleSlots.forEach(function (slot) { slot.classList.remove('is-active', 'is-complete'); });
+    skillAgent.classList.remove('is-active', 'is-complete');
+    skillDecision.classList.remove('is-active', 'is-complete');
+    skillRoutes.forEach(function (route) { route.classList.remove('is-active'); });
+    skillGroups.forEach(function (group) { group.classList.remove('is-scanning', 'is-agent-selected'); });
+    skillItems.forEach(function (item) { item.classList.remove('is-agent-selected'); });
+    skillDecisionItems.forEach(function (item) { item.classList.remove('is-visible', 'is-loaded'); });
     skillStageOutputs.forEach(function (output) { output.classList.remove('is-complete'); });
+    setSkillAgentState('等待任务上下文', 'Waiting for context');
     skillReplay.disabled = true;
   }
 
   function completeSkillImmediately() {
     skillContext.classList.add('is-complete');
-    selectedSkillGroups().forEach(function (group) { group.classList.add('is-selected'); });
-    skillPickedItems.forEach(function (item) { item.classList.add('is-selected'); });
-    skillBundle.classList.add('is-complete');
-    skillBundleSlots.forEach(function (slot) { slot.classList.add('is-complete'); });
+    skillAgent.classList.add('is-complete');
+    skillRoutes.forEach(function (route) { route.classList.add('is-active'); });
+    setSkillAgentState('已完成目录评估', 'Catalog evaluation complete');
+    selectedSkillGroups().forEach(function (group) { group.classList.add('is-agent-selected'); });
+    selectedSkillItems().forEach(function (item) { item.classList.add('is-agent-selected'); });
+    skillDecision.classList.add('is-complete');
+    skillDecisionItems.forEach(function (item) { item.classList.add('is-visible', 'is-loaded'); });
     skillStageOutputs.forEach(function (output) { output.classList.add('is-complete'); });
     skillFlow.dataset.skillState = 'complete';
     skillReplay.disabled = false;
@@ -2278,6 +2348,13 @@ footer { border-top: 1px solid var(--stroke); margin-top: 130px; padding: 46px 3
     if (!await skillDelay(360, token)) return;
     skillContext.classList.remove('is-active');
     skillContext.classList.add('is-complete');
+    skillRoutes[0].classList.add('is-active');
+    skillAgent.classList.add('is-active');
+    setSkillAgentState('正在评估任务与阶段', 'Evaluating task and stage');
+    announceSkill('NeuroAgent 正在评估当前任务与阶段', 'NeuroAgent is evaluating the current task and stage');
+    if (!await skillDelay(420, token)) return;
+    skillRoutes[1].classList.add('is-active');
+    setSkillAgentState('正在扫描技能目录', 'Scanning the skill catalog');
 
     for (var groupIndex = 0; groupIndex < skillGroups.length; groupIndex += 1) {
       var group = skillGroups[groupIndex];
@@ -2285,31 +2362,36 @@ footer { border-top: 1px solid var(--stroke); margin-top: 130px; padding: 46px 3
       announceSkill('正在匹配第 ' + (groupIndex + 1) + ' 类科研技能', 'Matching research skill group ' + (groupIndex + 1));
       if (!await skillDelay(190, token)) return;
       group.classList.remove('is-scanning');
-      var picked = group.querySelector('[data-skill-pick]');
-      if (picked) {
-        group.classList.add('is-selected');
-        picked.classList.add('is-selected');
+      var agentSelection = skillItems.find(function (item) {
+        return item.closest('[data-skill-group]') === group && skillSelectionNames.indexOf(item.dataset.skillName) >= 0;
+      });
+      if (agentSelection) {
+        group.classList.add('is-agent-selected');
+        agentSelection.classList.add('is-agent-selected');
       }
     }
     if (!await skillDelay(160, token)) return;
 
-    skillBundle.classList.add('is-active');
-    for (var slotIndex = 0; slotIndex < skillBundleSlots.length; slotIndex += 1) {
-      var slot = skillBundleSlots[slotIndex];
-      slot.classList.add('is-active');
-      announceSkill('正在装配第 ' + (slotIndex + 1) + ' 项工作方法', 'Assembling working method ' + (slotIndex + 1));
+    skillAgent.classList.remove('is-active');
+    skillAgent.classList.add('is-complete');
+    setSkillAgentState('已形成选择记录', 'Selection record created');
+    skillDecision.classList.add('is-active');
+    for (var selectionIndex = 0; selectionIndex < skillSelectionNames.length; selectionIndex += 1) {
+      var decisionItem = skillDecisionItems.find(function (item) { return item.dataset.skillName === skillSelectionNames[selectionIndex]; });
+      if (!decisionItem) continue;
+      decisionItem.classList.add('is-visible');
+      announceSkill('NeuroAgent 正在记录第 ' + (selectionIndex + 1) + ' 项选择', 'NeuroAgent is recording selection ' + (selectionIndex + 1));
       if (!await skillDelay(260, token)) return;
-      slot.classList.remove('is-active');
-      slot.classList.add('is-complete');
+      decisionItem.classList.add('is-loaded');
     }
 
     for (var outputIndex = 0; outputIndex < skillStageOutputs.length; outputIndex += 1) {
       skillStageOutputs[outputIndex].classList.add('is-complete');
-      announceSkill('正在生成当前阶段的执行要求', 'Preparing execution requirements for the current stage');
+      announceSkill('正在把选择结果带入当前科研阶段', 'Injecting the selection into the current research stage');
       if (!await skillDelay(180, token)) return;
     }
-    skillBundle.classList.remove('is-active');
-    skillBundle.classList.add('is-complete');
+    skillDecision.classList.remove('is-active');
+    skillDecision.classList.add('is-complete');
     skillFlow.dataset.skillState = 'complete';
     skillReplay.disabled = false;
     announceSkill('科研技能装配已完成', 'Research skill assembly complete');

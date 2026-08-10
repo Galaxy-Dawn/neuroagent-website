@@ -333,15 +333,25 @@ def test_skill_flow_accessibility_and_group_catalog() -> None:
     assert tuple(actual) == EXPECTED_SKILL_GROUPS
 
 
-def test_skill_flow_selected_items_match_bundle_slots() -> None:
-    _, soup = _page()
+def test_skill_flow_exposes_agent_selection_record_without_user_picker_semantics() -> None:
+    source, soup = _page()
     flow = soup.select_one('#skillFlow')
-    picks = flow.select('[data-skill-pick]')
-    slots = flow.select('.skill-bundle-slot')
+    agent = flow.select_one('[data-agent-router]')
+    decision = flow.select_one('[data-skill-decision]')
+    candidates = flow.select('.skill-item[data-skill-name]')
+    decision_items = decision.select('.skill-decision-item')
 
-    assert [pick['data-skill-pick'] for pick in picks] == ['1', '2', '3', '4']
-    assert [slot['data-skill-order'] for slot in slots] == ['01', '02', '03', '04']
-    assert [slot.select_one('.lang-zh').get_text(' ', strip=True) for slot in slots] == [
+    assert agent is not None
+    assert agent.select_one('.skill-agent-mark').get_text('', strip=True) == 'NeuroAgent'
+    assert flow.select_one('#skillFlowCaption .lang-zh').get_text(' ', strip=True) == '图 3 · NeuroAgent 自主调用科研技能'
+    assert decision.select_one('.skill-decision-title .lang-zh').get_text(' ', strip=True) == 'NeuroAgent 选择结果'
+    assert [item['data-skill-name'] for item in candidates if item['data-skill-name'] in {
+        'method-selection', 'data-audit', 'decoding-strategy', 'run-verification'
+    }] == ['method-selection', 'data-audit', 'decoding-strategy', 'run-verification']
+    assert [item['data-skill-name'] for item in decision_items] == [
+        'method-selection', 'data-audit', 'decoding-strategy', 'run-verification'
+    ]
+    assert [item.select_one('.lang-zh').get_text(' ', strip=True) for item in decision_items] == [
         '方法选择',
         '脑数据审计',
         '解码建模策略',
@@ -352,6 +362,9 @@ def test_skill_flow_selected_items_match_bundle_slots() -> None:
         '检查清单',
         '输出规范',
     ]
+    assert not flow.select('[data-skill-pick], [data-skill-order], input[type="checkbox"], [aria-pressed]')
+    assert '.skill-item.is-agent-selected, .skill-item:hover' not in source
+    assert len(flow.select('[data-skill-route]')) == 2
 
 
 def test_skill_flow_uses_independent_lifecycle_and_responsive_completion() -> None:
@@ -359,14 +372,17 @@ def test_skill_flow_uses_independent_lifecycle_and_responsive_completion() -> No
     assert 'function runSkillFlow()' in source
     assert 'var skillRunToken = 0;' in source
     assert 'var skillWaiters = [];' in source
+    assert "var skillRoutes = Array.prototype.slice.call(skillFlow.querySelectorAll('[data-skill-route]'));" in source
     assert "skillReplay.addEventListener('click', runSkillFlow);" in source
     assert 'var skillObserver = new IntersectionObserver' in source
     assert 'skillObserver.unobserve(entry.target);' in source
     assert 'skillObserver.observe(skillFlow);' in source
     assert 'completeSkillImmediately();' in source
-    assert 'grid-template-columns: 180px minmax(0, 1fr) 240px' in source
+    assert 'grid-template-columns: 180px 132px minmax(0, 1fr) 248px' in source
     assert '.skill-shell { grid-template-columns: 1fr;' in source
     assert "zh ? '重播科研技能装配' : 'Replay research skill assembly'" in source
+    assert 'var skillSelectionNames = [\'method-selection\', \'data-audit\', \'decoding-strategy\', \'run-verification\'];' in source
+    assert 'html[data-lang="en"] .skill-decision-item.is-loaded::after { content: "Loaded"; }' in source
 
 
 def test_website_has_no_duplicate_ids() -> None:
