@@ -1061,6 +1061,7 @@ html[data-lang="zh"] .brainlib-artifact { font-family: var(--font-b-zh); }
 .brainlib-native-canvas:not(.is-runtime-details-expanded) .brainlib-native-node-modes { visibility: hidden; }
 .brainlib-native-node--dataset { left: 36px; top: 64px; width: 133px; height: 78px; }
 .brainlib-native-node--dataset .brainlib-native-node-copy { left: 16px; }
+html[data-lang="en"] .brainlib-native-node--dataset .brainlib-native-node-copy { left: 8px; }
 .brainlib-native-node--paradigm { left: 192px; top: 64px; width: 185px; height: 78px; }
 .brainlib-native-node--paradigm .brainlib-native-node-copy { left: 7px; }
 .brainlib-native-node--protocol { left: 412px; top: 64px; width: 162px; height: 78px; }
@@ -1136,6 +1137,7 @@ html[data-lang="zh"] .brainlib-artifact { font-family: var(--font-b-zh); }
   left: 50%; top: 50%; transform: translate(-50%, -50%);
   font-size: 18px; font-weight: 600; text-align: center;
 }
+html[data-lang="en"] .brainlib-native-canvas:not(.is-extension-details-expanded) .brainlib-native-card-title { font-size: 17px; }
 .brainlib-native-pulse {
   position: absolute; z-index: 7; left: 0; top: 0; width: 9px; height: 9px; border-radius: 50%;
   opacity: 0; pointer-events: none; background: var(--brainlib-blue);
@@ -2397,41 +2399,41 @@ html[data-lang="zh"] .svg-diagram-control { font-family: var(--font-b-zh); }
   <h2><span class="lang-en">A complete <em>Brainlib skill library</em>—from multi-source brain data to reusable experiments.</span><span class="lang-zh">基于Brainlib的从多源脑数据到可复用实验的完整技能库</span></h2>
 
   <figure class="brainlib-native-flow" id="brainlibFlow" data-brainlib-state="idle" aria-labelledby="brainlibFlowCaption" aria-describedby="brainlibFlowSummary">
-    <figcaption class="sr-only" id="brainlibFlowCaption">基于Brainlib的从多源脑数据到可复用实验的完整技能库</figcaption>
-    <p class="sr-only" id="brainlibFlowSummary">Brainlib 支持 EEG、sEEG、ECoG、Spike 与 fMRI，并通过原始数据接口接入 BIDS、MOABB、OpenNeuro、MNE、Numpy Array 和 NWB Units。实验运行流程依次包含 Dataset、Paradigm、Protocol、Split、Collator、Model、Trainer 与 Training；统一配置、模型训练与组件扩展支持完整实验、内置组件、自定义接口以及可复用的实验产物与恢复机制。</p>
-    <button class="flow-replay brainlib-native-replay" id="brainlibReplay" type="button" disabled aria-label="重播 Brainlib 实验运行" title="重播 Brainlib 实验运行">
+    <figcaption class="sr-only" id="brainlibFlowCaption"><span class="lang-en">A complete Brainlib skill library from multi-source brain data to reusable experiments</span><span class="lang-zh">基于Brainlib的从多源脑数据到可复用实验的完整技能库</span></figcaption>
+    <p class="sr-only" id="brainlibFlowSummary"><span class="lang-en">Brainlib supports EEG, sEEG, ECoG, spike data and fMRI through BIDS, MOABB, OpenNeuro, MNE, NumPy arrays and NWB Units. Its experiment runtime connects Dataset, Paradigm, Protocol, Split, Collator, Model, Trainer and Training, while unified configuration, built-in components, extension interfaces and structured artifacts keep experiments reusable and resumable.</span><span class="lang-zh">Brainlib 支持 EEG、sEEG、ECoG、Spike 与 fMRI，并通过原始数据接口接入 BIDS、MOABB、OpenNeuro、MNE、Numpy Array 和 NWB Units。实验运行流程依次包含 Dataset、Paradigm、Protocol、Split、Collator、Model、Trainer 与 Training；统一配置、模型训练与组件扩展支持完整实验、内置组件、自定义接口以及可复用的实验产物与恢复机制。</span></p>
+    <button class="flow-replay brainlib-native-replay" id="brainlibReplay" type="button" disabled aria-label="重播 Brainlib 实验运行" title="重播 Brainlib 实验运行" data-aria-zh="重播 Brainlib 实验运行" data-aria-en="Replay Brainlib experiment run" data-title-zh="重播 Brainlib 实验运行" data-title-en="Replay Brainlib experiment run">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11a8 8 0 1 0-2.35 5.65"/><path d="M20 4v7h-7"/></svg>
     </button>
-    <div class="brainlib-native-viewport" tabindex="0" role="region" aria-label="基于 Brainlib 的完整技能库；窄屏可横向滚动查看完整图版。">
+    <div class="brainlib-native-viewport" tabindex="0" role="region" aria-label="基于 Brainlib 的完整技能库；窄屏可横向滚动查看完整图版。" data-aria-zh="基于 Brainlib 的完整技能库；窄屏可横向滚动查看完整图版。" data-aria-en="Complete Brainlib skill library; scroll horizontally to inspect the full figure on narrow screens.">
       <div class="brainlib-native-canvas">
         <div class="brainlib-native-panel brainlib-native-source" data-brainlib-node="source">
-          <div class="brainlib-native-panel-heading">原始数据接口</div>
+          <div class="brainlib-native-panel-heading"><span class="lang-en">Raw data interfaces</span><span class="lang-zh">原始数据接口</span></div>
           <span class="brainlib-native-divider" aria-hidden="true"></span>
-          <div class="brainlib-native-source-label brainlib-native-source-label--types">支持的数据类型：</div>
+          <div class="brainlib-native-source-label brainlib-native-source-label--types"><span class="lang-en">Supported data types:</span><span class="lang-zh">支持的数据类型：</span></div>
           <div class="brainlib-native-type-list">EEG   sEEG   ECoG
 Spike   fMRI</div>
-          <div class="brainlib-native-source-label brainlib-native-source-label--sources">支持的数据来源：</div>
+          <div class="brainlib-native-source-label brainlib-native-source-label--sources"><span class="lang-en">Supported data sources:</span><span class="lang-zh">支持的数据来源：</span></div>
           <div class="brainlib-native-source-list"><span>BIDS</span><span>MOABB</span><span>OpenNeuro</span><span>MNE</span><span>Numpy Array</span><span>NWB Units</span></div>
         </div>
 
         <span class="brainlib-native-line brainlib-native-line--source brainlib-native-line--arrow" data-brainlib-segment="source" aria-hidden="true"></span>
 
         <div class="brainlib-native-panel brainlib-native-runtime">
-          <div class="brainlib-native-panel-heading">实验运行流程</div>
+          <div class="brainlib-native-panel-heading"><span class="lang-en">Experiment runtime</span><span class="lang-zh">实验运行流程</span></div>
           <button class="brainlib-native-details-toggle brainlib-native-details-toggle--runtime" id="brainlibRuntimeDetailsToggle" type="button" aria-expanded="false" aria-controls="brainlibDatasetCopy brainlibParadigmCopy brainlibProtocolCopy brainlibProtocolModes brainlibSplitCopy brainlibCollatorCopy brainlibModelCopy brainlibTrainerCopy brainlibTrainingCopy">
-            <span class="brainlib-native-details-toggle-label--expand"><span class="lang-zh">展开说明</span><span class="lang-en">View step details</span></span>
+            <span class="brainlib-native-details-toggle-label--expand"><span class="lang-zh">展开说明</span><span class="lang-en">View details</span></span>
             <span class="brainlib-native-details-toggle-label--collapse"><span class="lang-zh">收起步骤说明</span><span class="lang-en">Hide step details</span></span>
           </button>
           <span class="brainlib-native-divider" aria-hidden="true"></span>
 
-          <div class="brainlib-native-node brainlib-native-node--dataset" data-brainlib-node="dataset"><div class="brainlib-native-node-title">Dataset</div><div class="brainlib-native-node-copy" id="brainlibDatasetCopy" aria-hidden="true">确认数据来源和结构<br>可选的数据预处理</div></div>
-          <div class="brainlib-native-node brainlib-native-node--paradigm" data-brainlib-node="paradigm"><div class="brainlib-native-node-title">Paradigm</div><div class="brainlib-native-node-copy" id="brainlibParadigmCopy" aria-hidden="true">将数据根据不同的范式划分窗口<br>得到有明确样本和标签语义的数据</div></div>
-          <div class="brainlib-native-node brainlib-native-node--protocol" data-brainlib-node="protocol"><div class="brainlib-native-node-title">Protocol</div><div class="brainlib-native-node-copy" id="brainlibProtocolCopy" aria-hidden="true">选择实验的分析设定</div><div class="brainlib-native-node-modes" id="brainlibProtocolModes" aria-hidden="true">within session/subject<br>cross session/subject</div></div>
-          <div class="brainlib-native-node brainlib-native-node--split" data-brainlib-node="split"><div class="brainlib-native-node-title">Split</div><div class="brainlib-native-node-copy" id="brainlibSplitCopy" aria-hidden="true">生成训练、验证、测试数据集<br>支持多种划分方法</div></div>
-          <div class="brainlib-native-node brainlib-native-node--collator" data-brainlib-node="collator"><div class="brainlib-native-node-title">Collator</div><div class="brainlib-native-node-copy" id="brainlibCollatorCopy" aria-hidden="true">接收一组 Dataset 样本<br>生成模型能够消费的 batch</div></div>
-          <div class="brainlib-native-node brainlib-native-node--model" data-brainlib-node="model"><div class="brainlib-native-node-title">Model</div><div class="brainlib-native-node-copy" id="brainlibModelCopy" aria-hidden="true">从内置的模型库中选择模型<br>或自定义模型</div></div>
-          <div class="brainlib-native-node brainlib-native-node--trainer" data-brainlib-node="trainer"><div class="brainlib-native-node-title">Trainer</div><div class="brainlib-native-node-copy" id="brainlibTrainerCopy" aria-hidden="true">选择损失函数、优化器、<br>学习率调度器、EMA/SWA、<br>评估指标，模型权重保存策略</div></div>
-          <div class="brainlib-native-node brainlib-native-node--training" data-brainlib-node="training"><div class="brainlib-native-node-title">Training</div><div class="brainlib-native-node-copy" id="brainlibTrainingCopy" aria-hidden="true">进行模型的训练评估和测试<br>将流程整理成结构化的运行记录</div></div>
+          <div class="brainlib-native-node brainlib-native-node--dataset" data-brainlib-node="dataset"><div class="brainlib-native-node-title">Dataset</div><div class="brainlib-native-node-copy" id="brainlibDatasetCopy" aria-hidden="true"><span class="lang-en">Confirm data structure<br>Preprocess if needed</span><span class="lang-zh">确认数据来源和结构<br>可选的数据预处理</span></div></div>
+          <div class="brainlib-native-node brainlib-native-node--paradigm" data-brainlib-node="paradigm"><div class="brainlib-native-node-title">Paradigm</div><div class="brainlib-native-node-copy" id="brainlibParadigmCopy" aria-hidden="true"><span class="lang-en">Window data by paradigm<br>Define samples and labels</span><span class="lang-zh">将数据根据不同的范式划分窗口<br>得到有明确样本和标签语义的数据</span></div></div>
+          <div class="brainlib-native-node brainlib-native-node--protocol" data-brainlib-node="protocol"><div class="brainlib-native-node-title">Protocol</div><div class="brainlib-native-node-copy" id="brainlibProtocolCopy" aria-hidden="true"><span class="lang-en">Choose the analysis protocol</span><span class="lang-zh">选择实验的分析设定</span></div><div class="brainlib-native-node-modes" id="brainlibProtocolModes" aria-hidden="true">within session/subject<br>cross session/subject</div></div>
+          <div class="brainlib-native-node brainlib-native-node--split" data-brainlib-node="split"><div class="brainlib-native-node-title">Split</div><div class="brainlib-native-node-copy" id="brainlibSplitCopy" aria-hidden="true"><span class="lang-en">Create train, validation<br>and test partitions</span><span class="lang-zh">生成训练、验证、测试数据集<br>支持多种划分方法</span></div></div>
+          <div class="brainlib-native-node brainlib-native-node--collator" data-brainlib-node="collator"><div class="brainlib-native-node-title">Collator</div><div class="brainlib-native-node-copy" id="brainlibCollatorCopy" aria-hidden="true"><span class="lang-en">Collect Dataset samples<br>into model-ready batches</span><span class="lang-zh">接收一组 Dataset 样本<br>生成模型能够消费的 batch</span></div></div>
+          <div class="brainlib-native-node brainlib-native-node--model" data-brainlib-node="model"><div class="brainlib-native-node-title">Model</div><div class="brainlib-native-node-copy" id="brainlibModelCopy" aria-hidden="true"><span class="lang-en">Use a built-in model<br>or register a custom model</span><span class="lang-zh">从内置的模型库中选择模型<br>或自定义模型</span></div></div>
+          <div class="brainlib-native-node brainlib-native-node--trainer" data-brainlib-node="trainer"><div class="brainlib-native-node-title">Trainer</div><div class="brainlib-native-node-copy" id="brainlibTrainerCopy" aria-hidden="true"><span class="lang-en">Choose loss, optimizer,<br>scheduler, EMA/SWA,<br>metrics and checkpoints</span><span class="lang-zh">选择损失函数、优化器、<br>学习率调度器、EMA/SWA、<br>评估指标，模型权重保存策略</span></div></div>
+          <div class="brainlib-native-node brainlib-native-node--training" data-brainlib-node="training"><div class="brainlib-native-node-title">Training</div><div class="brainlib-native-node-copy" id="brainlibTrainingCopy" aria-hidden="true"><span class="lang-en">Train, evaluate and test<br>with structured run records</span><span class="lang-zh">进行模型的训练评估和测试<br>将流程整理成结构化的运行记录</span></div></div>
 
           <span class="brainlib-native-line brainlib-native-line--dataset brainlib-native-line--arrow" data-brainlib-segment="dataset" aria-hidden="true"></span>
           <span class="brainlib-native-line brainlib-native-line--paradigm brainlib-native-line--arrow" data-brainlib-segment="paradigm" aria-hidden="true"></span>
@@ -2447,16 +2449,16 @@ Spike   fMRI</div>
         </div>
 
         <div class="brainlib-native-panel brainlib-native-extensions">
-          <div class="brainlib-native-extensions-heading">统一配置、模型训练与组件扩展</div>
+          <div class="brainlib-native-extensions-heading"><span class="lang-en">Unified configuration, model training and extensions</span><span class="lang-zh">统一配置、模型训练与组件扩展</span></div>
           <button class="brainlib-native-details-toggle" id="brainlibExtensionDetailsToggle" type="button" aria-expanded="false" aria-controls="brainlibConfigurationCopy brainlibBuiltinsCopy brainlibCustomCopy brainlibArtifactsCopy">
             <span class="brainlib-native-details-toggle-label--expand"><span class="lang-zh">展开说明</span><span class="lang-en">View details</span></span>
             <span class="brainlib-native-details-toggle-label--collapse"><span class="lang-zh">收起说明</span><span class="lang-en">Hide details</span></span>
           </button>
         </div>
-        <div class="brainlib-native-card brainlib-native-card--configuration" data-brainlib-capability="configuration"><div class="brainlib-native-card-title">一份配置贯穿完整实验</div><div class="brainlib-native-card-copy" id="brainlibConfigurationCopy" aria-hidden="true">数据来源、任务视图、实验划分、模型<br>结构和训练策略由同一份配置定义，并<br>沿运行链自动传递，避免参数散落在不<br>同脚本中。</div></div>
-        <div class="brainlib-native-card brainlib-native-card--builtins" data-brainlib-capability="builtins"><div class="brainlib-native-card-title">内置先进模型与训练组件</div><div class="brainlib-native-card-copy" id="brainlibBuiltinsCopy" aria-hidden="true">Brainlib 内置常用神经信号模型、训练<br>组件与评估方法，可直接组成完整实<br>验，也能作为新方法的可比较基线。</div></div>
-        <div class="brainlib-native-card brainlib-native-card--custom" data-brainlib-capability="custom"><div class="brainlib-native-card-title">灵活的自定义组件接口</div><div class="brainlib-native-card-copy" id="brainlibCustomCopy" aria-hidden="true">研究者可以注册自己的数据源、任务视图、<br>模型和训练组件，而无需重写 Brainlib 的<br>数据、划分、训练与产物流程。</div></div>
-        <div class="brainlib-native-card brainlib-native-card--artifacts" data-brainlib-capability="artifacts"><div class="brainlib-native-card-title">可复用的实验产物与恢复机制</div><div class="brainlib-native-card-copy" id="brainlibArtifactsCopy" aria-hidden="true">Brainlib 将数据视图、实验划分、模<br>型、训练状态和预测结果保存为结构化记<br>录，使实验可以从中间阶段继续运行，而<br>不必每次从原始数据重新开始。</div></div>
+        <div class="brainlib-native-card brainlib-native-card--configuration" data-brainlib-capability="configuration"><div class="brainlib-native-card-title"><span class="lang-en">One configuration, end to end</span><span class="lang-zh">一份配置贯穿完整实验</span></div><div class="brainlib-native-card-copy" id="brainlibConfigurationCopy" aria-hidden="true"><span class="lang-en">One config defines data sources,<br>task views, splits and models.<br>It carries training settings through<br>the full experiment run.</span><span class="lang-zh">数据来源、任务视图、实验划分、模型<br>结构和训练策略由同一份配置定义，并<br>沿运行链自动传递，避免参数散落在不<br>同脚本中。</span></div></div>
+        <div class="brainlib-native-card brainlib-native-card--builtins" data-brainlib-capability="builtins"><div class="brainlib-native-card-title"><span class="lang-en">Built-in models and training</span><span class="lang-zh">内置先进模型与训练组件</span></div><div class="brainlib-native-card-copy" id="brainlibBuiltinsCopy" aria-hidden="true"><span class="lang-en">Brainlib includes neural models,<br>training and evaluation components<br>for complete experiments and<br>comparable research baselines.</span><span class="lang-zh">Brainlib 内置常用神经信号模型、训练<br>组件与评估方法，可直接组成完整实<br>验，也能作为新方法的可比较基线。</span></div></div>
+        <div class="brainlib-native-card brainlib-native-card--custom" data-brainlib-capability="custom"><div class="brainlib-native-card-title"><span class="lang-en">Flexible custom components</span><span class="lang-zh">灵活的自定义组件接口</span></div><div class="brainlib-native-card-copy" id="brainlibCustomCopy" aria-hidden="true"><span class="lang-en">Register custom sources, task views,<br>models and training components without<br>rewriting Brainlib's data, split, training<br>or artifact pipeline.</span><span class="lang-zh">研究者可以注册自己的数据源、任务视图、<br>模型和训练组件，而无需重写 Brainlib 的<br>数据、划分、训练与产物流程。</span></div></div>
+        <div class="brainlib-native-card brainlib-native-card--artifacts" data-brainlib-capability="artifacts"><div class="brainlib-native-card-title"><span class="lang-en">Reusable artifacts &amp; recovery</span><span class="lang-zh">可复用的实验产物与恢复机制</span></div><div class="brainlib-native-card-copy" id="brainlibArtifactsCopy" aria-hidden="true"><span class="lang-en">Brainlib saves views, splits and models,<br>training state and predictions as<br>structured records, so runs resume<br>without restarting from raw data.</span><span class="lang-zh">Brainlib 将数据视图、实验划分、模<br>型、训练状态和预测结果保存为结构化记<br>录，使实验可以从中间阶段继续运行，而<br>不必每次从原始数据重新开始。</span></div></div>
         <span class="brainlib-native-pulse" data-brainlib-pulse aria-hidden="true"></span>
       </div>
     </div>
@@ -2725,10 +2727,19 @@ Spike   fMRI</div>
 
   /* ---------- language ---------- */
   var langBtn = document.getElementById('langToggle');
+  function updateLocalizedAttributes(lang) {
+    document.querySelectorAll('[data-aria-zh][data-aria-en]').forEach(function (element) {
+      element.setAttribute('aria-label', element.getAttribute(lang === 'zh' ? 'data-aria-zh' : 'data-aria-en'));
+    });
+    document.querySelectorAll('[data-title-zh][data-title-en]').forEach(function (element) {
+      element.title = element.getAttribute(lang === 'zh' ? 'data-title-zh' : 'data-title-en');
+    });
+  }
   function applyLang(lang) {
     root.dataset.lang = lang;
     root.lang = lang === 'zh' ? 'zh-CN' : 'en';
     langBtn.textContent = lang === 'zh' ? 'EN / 中' : '中 / EN';
+    updateLocalizedAttributes(lang);
     try { localStorage.setItem('na-lang', lang); } catch (e) {}
     var url = new URL(location.href);
     url.searchParams.set('lang', lang);
