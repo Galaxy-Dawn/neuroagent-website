@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-CN" data-lang="zh">
+<html lang="zh-CN" data-lang="zh" data-figure-engine="legacy">
 <head>
 <meta charset="UTF-8">
 <script>
@@ -15,13 +15,13 @@
   var reduceMotion = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
   var deepLink = location.hash && location.hash !== '#top';
   var introSeen = false;
-  try { introSeen = sessionStorage.getItem('na-intro-v8-seen') === '1'; } catch (e) {}
+  try { introSeen = sessionStorage.getItem('ownpi-intro-v1-seen') === '1'; } catch (e) {}
   if (!reduceMotion && !deepLink && !introSeen) root.classList.add('intro-pending');
 })();
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NeuroAgent — From research questions to usable scientific outcomes</title>
-<meta name="description" content="NeuroAgent chooses the right runtime depth, assembles the research stages, knowledge, and skills a task needs, and advances the work through review to usable scientific outcomes.">
+<title>OwnPI — From research questions to usable scientific outcomes</title>
+<meta name="description" content="OwnPI chooses the right runtime depth, assembles the research stages, knowledge, and skills a task needs, and advances the work through review to usable scientific outcomes.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans+SC:wght@400;500;600&display=swap" rel="stylesheet">
@@ -120,25 +120,10 @@ html.intro-pending .intro-overlay, html.intro-exiting .intro-overlay { display: 
   background-image: linear-gradient(var(--grid-line) 1px, transparent 1px), linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
   background-size: 32px 32px;
 }
-.intro-scan {
-  position: absolute; left: 8vw; right: 8vw; top: 50%; height: 1px; background: var(--accent);
-  opacity: 0; transform: scaleX(0); transform-origin: center;
+.intro-stage { position: relative; isolation: isolate; width: min(720px, 88vw); display: grid; justify-items: center; }
+.intro-logo {
+  width: 100%; height: auto; display: block; opacity: 0; transform: translateY(14px) scale(.965);
 }
-.intro-stage { position: relative; width: min(780px, 84vw); display: grid; justify-items: center; gap: 22px; }
-.intro-brain { width: clamp(82px, 10vw, 132px); color: var(--accent); filter: drop-shadow(0 0 18px var(--accent-soft)); }
-.intro-brain path { stroke-dasharray: 1; stroke-dashoffset: 1; }
-.intro-wordmark {
-  display: flex; align-items: baseline; font-family: var(--font-d-en); font-weight: 700;
-  font-size: clamp(44px, 8vw, 96px); line-height: 1.14; padding: .04em .03em .12em;
-  clip-path: inset(-.08em 100% -.18em -.04em);
-}
-.intro-wordmark .agent { color: var(--accent); }
-.intro-meta {
-  display: grid; justify-items: center; gap: 6px; color: var(--dim);
-  opacity: 0; transform: translateY(8px); text-align: center;
-}
-.intro-meta-zh { font-family: var(--font-b-zh); font-size: 16px; color: var(--text); letter-spacing: 0; }
-.intro-meta-en { font-family: var(--font-mono); font-size: 14px; letter-spacing: 0; }
 .intro-skip {
   position: absolute; top: 24px; right: 28px; min-width: 44px; min-height: 44px; padding: 0 14px;
   border: 1px solid var(--stroke); border-radius: 7px; background: transparent; color: var(--dim);
@@ -147,18 +132,12 @@ html.intro-pending .intro-overlay, html.intro-exiting .intro-overlay { display: 
 html[data-lang="zh"] .intro-skip { font-family: var(--font-b-zh); }
 .intro-skip:hover, .intro-skip:focus-visible { color: var(--accent); border-color: var(--stroke-strong); }
 html.intro-running .intro-overlay::before { animation: intro-grid-in .875s ease forwards; }
-html.intro-running .intro-scan { animation: intro-scan-line 1.5s var(--ease-cinematic) .5625s forwards; }
-html.intro-running .intro-brain path { animation: intro-brain-draw 1.3125s var(--ease-cinematic) .3125s forwards; }
-html.intro-running .intro-wordmark { animation: intro-mark-in 1s var(--ease-cinematic) 1s forwards; }
-html.intro-running .intro-meta { animation: intro-meta-in 1s var(--ease-cinematic) 1.1875s forwards; }
+html.intro-running .intro-logo { animation: intro-logo-in 1.55s var(--ease-cinematic) .28s forwards; }
 html.intro-running .intro-skip { animation: intro-fade-in .4375s ease .4375s forwards; }
 html.intro-exiting .intro-overlay { animation: intro-curtain-out 1.1s var(--ease-cinematic) forwards; }
 html.intro-exiting .intro-stage { animation: intro-stage-out .875s ease forwards; }
 @keyframes intro-grid-in { to { opacity: 1; } }
-@keyframes intro-scan-line { 0% { opacity: 0; transform: scaleX(0); } 35% { opacity: .8; } 100% { opacity: .12; transform: scaleX(1); } }
-@keyframes intro-brain-draw { to { stroke-dashoffset: 0; } }
-@keyframes intro-mark-in { to { clip-path: inset(-.08em 0 -.18em -.04em); } }
-@keyframes intro-meta-in { to { opacity: 1; transform: none; } }
+@keyframes intro-logo-in { 0% { opacity: 0; transform: translateY(14px) scale(.965); } 72% { opacity: 1; } 100% { opacity: 1; transform: none; } }
 @keyframes intro-fade-in { to { opacity: 1; } }
 @keyframes intro-stage-out { to { opacity: 0; transform: translateY(-16px) scale(.985); } }
 @keyframes intro-curtain-out { to { clip-path: inset(0 0 100% 0); visibility: hidden; } }
@@ -273,14 +252,13 @@ html:not(.intro-pending):not(.intro-running):not(.intro-exiting) .hero::before {
 }
 .hero-copy { width: 100%; flex: none; display: grid; justify-items: center; text-align: center; }
 .wordmark {
-  display: flex; align-items: center; justify-content: center; gap: .11em; margin: 0; padding: .02em .02em .1em;
-  font-family: var(--font-d-en); font-weight: 700; font-size: clamp(96px, 9.45vw, 136px);
-  letter-spacing: 0; line-height: 1.04; white-space: nowrap; opacity: 0; transform: translateY(24px);
+  position: relative; width: min(420px, 86vw); aspect-ratio: 1 / 1.02; overflow: hidden;
+  margin: -10px auto 0; padding: 0; opacity: 0; transform: translateY(24px);
 }
-html[data-lang="zh"] .wordmark { font-family: var(--font-d-en); }
-.wordmark-brain { height: .72em; width: auto; flex: none; color: var(--accent); }
-.wm-neuro { color: var(--text); }
-.wm-agent { color: var(--accent); }
+.hero-brand-lockup {
+  position: absolute; top: 50%; left: 50%; width: 184%; max-width: none; height: auto;
+  transform: translate(-50%, -50%);
+}
 .hero-cta {
   width: min(100%, 720px); margin: 18px auto 0; display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; opacity: 0; transform: translateY(16px);
@@ -384,13 +362,13 @@ html:not(.intro-pending) .hero-product-frame { animation: hero-enter .82s var(--
 @keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
 
 @media (max-width: 1099px) {
-  .wordmark { font-size: clamp(72px, 10.2vw, 112px); }
+  .wordmark { width: min(403px, 88vw); }
   .hero-product-frame { grid-template-columns: minmax(300px, 38fr) minmax(0, 62fr); }
   .hero-story { padding: 38px 30px; }
   .hero-story-step { min-height: 82px; }
 }
 @media (max-width: 819px) {
-  .wordmark { font-size: clamp(60px, 10vw, 72px); }
+  .wordmark { width: min(370px, 94vw); margin: -4px auto 0; }
   .hero-product-frame { min-height: 0; grid-template-columns: 1fr; grid-template-rows: auto auto auto; }
   .hero-frame-title { grid-column: 1; }
   .hero-story { min-height: 0; border-right: 0; border-bottom: 1px solid var(--panel-edge); }
@@ -560,6 +538,7 @@ html[data-lang="zh"] .routing-result-title { font-family: var(--font-b-zh); }
 .flow-shell-links { position: absolute; inset: 0; z-index: 1; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
 .flow-phase, .flow-loop { position: relative; z-index: 2; }
 .flow-phase { min-width: 0; min-height: 470px; display: grid; align-content: center; gap: 16px; }
+.flow-phase--prepare { transform: translateY(var(--flow-prepare-offset, 0px)); }
 .flow-phase--deliver { transform: translateY(56px); }
 .flow-phase-label { font: 600 var(--type-support)/1.2 var(--font-b-en); color: var(--faint); letter-spacing: 0; text-align: left; }
 html[data-lang="zh"] .flow-phase-label { font-family: var(--font-b-zh); }
@@ -589,12 +568,13 @@ html[data-lang="zh"] .flow-stage-name { font-family: var(--font-b-zh); }
 .flow-ring-base { fill: none; stroke: var(--stroke-strong); stroke-width: 1.5; opacity: .34; }
 .flow-shell-track { fill: none; stroke: var(--stroke-strong); stroke-width: 1.5; stroke-linecap: round; opacity: .34; }
 .flow-path { fill: none; stroke: var(--accent); stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; opacity: 0; transition: opacity .2s, stroke-width .2s, filter .2s; }
-.flow-path--revisit { stroke: var(--gate); stroke-width: 1.8; stroke-dasharray: 6 7; opacity: .3; }
-.flow-path--revisit-in { opacity: .82; }
+.flow-path--revisit { stroke: var(--gate); stroke-width: 1.8; stroke-dasharray: 6 7; opacity: .28; }
 .flow-path--entry,
 .flow-path--pass { stroke-width: 2.4; }
-.flow-path.is-preview, .flow-path.is-selected, .flow-path.is-running { opacity: 1; stroke-width: 3; filter: drop-shadow(0 0 5px var(--gate-soft)); }
+.flow-path.is-running { opacity: 1; stroke-width: 3; filter: drop-shadow(0 0 5px var(--gate-soft)); }
 .flow-path.is-complete { opacity: 1; }
+.flow-path--revisit.is-running,
+.flow-path--revisit.is-complete { opacity: .28; stroke-width: 1.8; filter: none; }
 .flow-junction { fill: var(--accent); opacity: .8; filter: drop-shadow(0 0 5px var(--accent)); }
 .flow-junction--gate { fill: var(--gate); filter: drop-shadow(0 0 5px var(--gate)); }
 .flow-pulse { fill: var(--accent); opacity: 0; filter: drop-shadow(0 0 6px var(--accent)); }
@@ -629,7 +609,10 @@ html[data-lang="zh"] .flow-router-label { font-family: var(--font-b-zh); }
 .flow-target[aria-pressed="true"] { transform: translateY(-1px); }
 .flow-branch-label { position: absolute; z-index: 2; font: 500 var(--type-micro)/1 var(--font-mono); letter-spacing: 0; }
 .flow-branch-label--revisit { left: 51.5%; top: 71%; color: var(--gate); }
-.flow-branch-label--pass { right: 2%; top: 72%; color: var(--accent); }
+.flow-shell > .flow-branch-label--pass {
+  z-index: 3; left: 0; top: 0; right: auto; padding: 0 6px; transform: translate(-50%, -50%);
+  color: var(--accent); background: var(--bg); pointer-events: none;
+}
 /* paper-derived knowledge figure */
 .knowledge-flow {
   position: relative; margin: 78px 0 0; padding: 18px 0 0; border-top: 1px solid var(--stroke);
@@ -670,7 +653,7 @@ html[data-lang="zh"] .flow-router-label { font-family: var(--font-b-zh); }
   color: var(--text); font: 600 var(--type-figure-result)/1.3 var(--font-b-en); overflow-wrap: anywhere;
 }
 html[data-lang="zh"] .kb-source-title, html[data-lang="zh"] .kb-release-title { font-family: var(--font-b-zh); }
-.kb-source-meta, .kb-release-meta, .kb-node-meta {
+.kb-source-meta, .kb-release-meta {
   color: var(--dim); font: 400 var(--type-meta)/1.5 var(--font-mono); overflow-wrap: anywhere;
 }
 .kb-lens { position: relative; z-index: 2; min-width: 0; height: 440px; }
@@ -694,22 +677,24 @@ html[data-lang="zh"] .kb-source-title, html[data-lang="zh"] .kb-release-title { 
 .kb-pulse.is-visible { opacity: 1; }
 .kb-lens-center {
   position: absolute; z-index: 1; left: 50%; top: 50%; transform: translate(-50%, -50%);
-  color: var(--dim); font: 600 19px/1.4 var(--font-b-en); letter-spacing: 0;
-  text-align: center; white-space: nowrap;
+  display: grid; justify-items: center; gap: 12px; width: 100%; color: var(--dim); text-align: center;
 }
 html[data-lang="zh"] .kb-lens-center { font-family: var(--font-b-zh); }
+.kb-lens-center-title { color: var(--text); font: 600 32px/1.15 var(--font-b-en); letter-spacing: 0; white-space: nowrap; }
+.kb-lens-center-copy { color: var(--dim); font: 500 22px/1.35 var(--font-b-en); letter-spacing: 0; white-space: nowrap; }
+html[data-lang="zh"] .kb-lens-center-title, html[data-lang="zh"] .kb-lens-center-copy { font-family: var(--font-b-zh); }
 .kb-lane { position: absolute; inset: 0; z-index: 2; pointer-events: none; }
 .kb-lane-label {
   position: absolute; left: 50%; transform: translateX(-50%); pointer-events: auto;
-  font: 600 19px/1.25 var(--font-b-en); letter-spacing: 0; white-space: nowrap;
+  font: 600 28px/1.2 var(--font-b-en); letter-spacing: 0; white-space: nowrap;
   transition: opacity .25s, color .25s;
 }
 html[data-lang="zh"] .kb-lane-label { font-family: var(--font-b-zh); }
-.kb-lane--method .kb-lane-label { top: 2px; color: var(--cyan); }
-.kb-lane--strategy .kb-lane-label { bottom: 2px; color: var(--gate); }
+.kb-lane--method .kb-lane-label { top: -6px; color: var(--cyan); }
+.kb-lane--strategy .kb-lane-label { bottom: -4px; color: var(--gate); }
 .kb-node {
   position: absolute; width: 126px; min-height: 80px; padding: 11px 12px;
-  display: grid; align-content: center; gap: 5px; transform: translate(-50%, -50%);
+  display: grid; grid-template-rows: auto 1fr; align-content: stretch; gap: 5px; transform: translate(-50%, -50%);
   pointer-events: auto; background: var(--panel); border: 1px solid var(--panel-edge); border-radius: 8px;
   opacity: .68;
   transition: opacity .25s, transform .25s var(--ease-out), border-color .25s, background-color .25s;
@@ -719,17 +704,16 @@ html[data-lang="zh"] .kb-lane-label { font-family: var(--font-b-zh); }
 .kb-node[data-kb-step="3"] { left: 61.7%; }
 .kb-node[data-kb-step="4"] { left: 85%; width: 138px; }
 .kb-lane--method .kb-node[data-kb-step="1"], .kb-lane--method .kb-node[data-kb-step="4"] { top: 35%; }
-.kb-lane--method .kb-node[data-kb-step="2"], .kb-lane--method .kb-node[data-kb-step="3"] { top: 17%; }
+.kb-lane--method .kb-node[data-kb-step="2"], .kb-lane--method .kb-node[data-kb-step="3"] { top: 20%; }
 .kb-lane--strategy .kb-node[data-kb-step="1"], .kb-lane--strategy .kb-node[data-kb-step="4"] { top: 65%; }
-.kb-lane--strategy .kb-node[data-kb-step="2"], .kb-lane--strategy .kb-node[data-kb-step="3"] { top: 83%; }
-.kb-node-code { font: 500 var(--type-micro)/1 var(--font-mono); letter-spacing: 0; }
+.kb-lane--strategy .kb-node[data-kb-step="2"], .kb-lane--strategy .kb-node[data-kb-step="3"] { top: 80%; }
+.kb-node-code { justify-self: start; color: var(--faint); font: 500 var(--type-micro)/1 var(--font-mono); letter-spacing: 0; }
 .kb-lane--method .kb-node-code { color: var(--cyan); }
 .kb-lane--strategy .kb-node-code { color: var(--gate); }
 .kb-node-name {
-  color: var(--text); font: 600 var(--type-figure-node)/1.3 var(--font-b-en); overflow-wrap: anywhere;
+  align-self: center; color: var(--text); font: 600 var(--type-figure-node)/1.3 var(--font-b-en); overflow-wrap: anywhere; text-align: center;
 }
 html[data-lang="zh"] .kb-node-name { font-family: var(--font-b-zh); }
-.kb-node[data-kb-step="4"] .kb-node-name { font-size: 17px; font-weight: 600; }
 .kb-node.is-active, .kb-node.is-complete, .kb-node:hover { opacity: 1; transform: translate(-50%, calc(-50% - 2px)); }
 .kb-lane--method .kb-node.is-active, .kb-lane--method .kb-node:hover {
   border-color: var(--cyan); background: color-mix(in srgb, var(--panel) 90%, var(--cyan) 10%);
@@ -751,14 +735,14 @@ html[data-lang="zh"] .kb-node-name { font-family: var(--font-b-zh); }
 .kb-release-kicker { color: var(--accent); font: 500 var(--type-micro)/1.2 var(--font-mono); letter-spacing: 0; }
 .kb-release-row--method .kb-release-kicker { color: var(--cyan); }
 .kb-release-row--strategy .kb-release-kicker { color: var(--gate); }
-.kb-agent-endpoint {
+.kb-source-endpoint, .kb-agent-endpoint {
   position: absolute; top: calc(50% + 116px); left: 0; right: 0;
   margin: 0; padding-top: 20px; color: var(--text);
   border-top: 1px solid var(--stroke-strong); text-align: center;
   transition: color .25s, border-color .25s, filter .25s, transform .25s var(--ease-out);
 }
+.kb-source-endpoint { color: var(--accent); font: 500 var(--type-meta)/1.4 var(--font-mono); }
 .kb-agent-wordmark { font: 500 20px/1.2 var(--font-d-en); }
-.kb-agent-wordmark span { color: var(--accent); }
 .kb-agent-label { margin-top: 5px; color: var(--dim); font: 500 var(--type-meta)/1.4 var(--font-mono); }
 .kb-source:hover, .kb-source.is-active, .kb-source.is-complete,
 .kb-release:hover, .kb-release.is-active, .kb-release.is-complete,
@@ -766,6 +750,7 @@ html[data-lang="zh"] .kb-node-name { font-family: var(--font-b-zh); }
   border-color: var(--accent);
   background: color-mix(in srgb, var(--panel) 94%, var(--accent) 6%);
 }
+.kb-source-endpoint.is-active, .kb-source-endpoint.is-complete,
 .kb-agent-endpoint.is-active, .kb-agent-endpoint.is-complete {
   color: var(--accent); border-color: var(--accent); transform: translateY(-2px);
   filter: drop-shadow(0 0 8px var(--accent-soft));
@@ -773,10 +758,10 @@ html[data-lang="zh"] .kb-node-name { font-family: var(--font-b-zh); }
 /* built-in research skills figure */
 .skill-flow { position: relative; margin: 32px 0 0; padding: 18px 0 0; border-top: 1px solid var(--stroke); }
 .skill-shell {
-  display: grid; grid-template-columns: 164px 26px 180px 26px minmax(306px, 1fr) 26px 180px 26px 184px;
+  display: grid; grid-template-columns: 164px 26px 180px 26px minmax(306px, 1fr) 26px 180px;
   align-items: center; min-height: 520px;
 }
-.skill-context-wrap, .skill-output-wrap { position: relative; z-index: 2; display: grid; align-content: center; min-width: 0; }
+.skill-context-wrap { position: relative; z-index: 2; display: grid; align-content: center; min-width: 0; }
 .skill-connector {
   --skill-line: var(--accent);
   position: relative; z-index: 3; display: block; height: 10px; opacity: .24;
@@ -797,7 +782,7 @@ html[data-lang="zh"] .kb-node-name { font-family: var(--font-b-zh); }
   margin-bottom: 12px; color: var(--faint); font: 500 var(--type-micro)/1.2 var(--font-mono);
   letter-spacing: 0;
 }
-.skill-context, .skill-router, .skill-pack, .skill-stage {
+.skill-context, .skill-router, .skill-pack {
   position: relative; display: grid; align-content: center; padding: 20px 18px;
   background: var(--panel); border: 1px solid var(--panel-edge); border-radius: 8px;
   transition: border-color .25s, background-color .25s, box-shadow .25s;
@@ -816,15 +801,14 @@ html[data-lang="zh"] .kb-node-name { font-family: var(--font-b-zh); }
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent-soft) 72%, transparent);
 }
 .skill-router-mark { position: relative; font: 600 21px/1.2 var(--font-d-en); }
-.skill-router-mark span { color: var(--accent); }
 .skill-router-title { position: relative; margin-top: 24px; color: var(--text); font: 600 var(--type-figure-result)/1.35 var(--font-b-en); }
 .skill-router-copy { position: relative; margin-top: 8px; color: var(--dim); font-size: 13.5px; line-height: 1.55; }
 .skill-router-state { position: relative; margin-top: 22px; padding-top: 12px; border-top: 1px solid var(--stroke); color: var(--accent); font: 500 var(--type-data)/1.45 var(--font-mono); }
 html[data-lang="zh"] .skill-router-title { font-family: var(--font-b-zh); }
-.skill-context-title, .skill-pack-title, .skill-stage-title {
+.skill-context-title, .skill-pack-title {
   color: var(--text); font: 600 var(--type-figure-result)/1.3 var(--font-b-en);
 }
-html[data-lang="zh"] .skill-context-title, html[data-lang="zh"] .skill-pack-title, html[data-lang="zh"] .skill-stage-title { font-family: var(--font-b-zh); }
+html[data-lang="zh"] .skill-context-title, html[data-lang="zh"] .skill-pack-title { font-family: var(--font-b-zh); }
 .skill-context-list { display: grid; margin-top: 14px; }
 .skill-context-row {
   display: grid; gap: 3px; padding: 10px 0; border-top: 1px solid var(--stroke);
@@ -862,29 +846,307 @@ html[data-lang="zh"] .skill-item { font-family: var(--font-b-zh); }
 .skill-pack.is-active, .skill-pack.is-complete {
   border-color: var(--accent); background: color-mix(in srgb, var(--panel) 94%, var(--accent) 6%);
 }
-.skill-pack-kicker, .skill-stage-kicker { color: var(--accent); font: 500 var(--type-micro)/1.2 var(--font-mono); }
+.skill-pack-kicker { color: var(--accent); font: 500 var(--type-micro)/1.2 var(--font-mono); }
 .skill-pack-count { margin-top: 22px; color: var(--text); font: 600 32px/1 var(--font-b-en); white-space: nowrap; }
 .skill-pack-count span { color: var(--accent); }
 .skill-pack-copy { margin-top: 9px; color: var(--dim); font-size: 13.5px; line-height: 1.55; }
 .skill-pack-dots { display: grid; grid-template-columns: repeat(4, 8px); gap: 7px; margin-top: 22px; }
 .skill-pack-dots span { width: 8px; height: 8px; border-radius: 50%; background: var(--stroke); transition: background-color .2s, box-shadow .2s; }
 .skill-pack-dots span.is-loaded { background: var(--accent); box-shadow: 0 0 8px var(--accent); }
-.skill-stage { min-height: 250px; border-color: color-mix(in srgb, var(--cyan) 30%, var(--panel-edge)); }
-.skill-stage-kicker { color: var(--cyan); }
-.skill-stage-title { margin-top: 7px; font-size: var(--type-card-title); }
-.skill-stage-copy { margin-top: 8px; color: var(--dim); font-size: 13px; line-height: 1.55; }
-.skill-stage-outputs { display: grid; grid-template-columns: 1fr; gap: 6px; margin-top: 18px; }
-.skill-stage-output {
-  min-height: 36px; display: grid; align-items: center; padding: 6px 9px;
-  color: var(--dim); border-left: 2px solid var(--stroke); background: var(--bg-2);
-  font: 500 13.5px/1.35 var(--font-b-en); opacity: .45;
-  transition: opacity .25s, color .25s, border-color .25s, background-color .25s;
+/* Brainlib brain-data runtime figure */
+.brainlib-flow { position: relative; margin: 32px 0 0; padding: 18px 0 0; border-top: 1px solid var(--stroke); }
+.brainlib-shell {
+  position: relative; display: grid; grid-template-columns: 176px 34px minmax(0, 1fr) 34px 190px;
+  align-items: center; min-height: 408px;
 }
-html[data-lang="zh"] .skill-stage-output { font-family: var(--font-b-zh); }
-.skill-stage-output.is-complete { opacity: 1; color: var(--text); border-color: var(--cyan); background: var(--cyan-soft); }
-.skill-stage.is-active, .skill-stage.is-complete { border-color: var(--cyan); background: color-mix(in srgb, var(--panel) 94%, var(--cyan) 6%); }
-.skill-connector--output { --skill-line: var(--cyan); }
-.skill-connector--output.is-active { filter: drop-shadow(0 0 5px var(--cyan-soft)); }
+.brainlib-input, .brainlib-core, .brainlib-output {
+  position: relative; min-width: 0; border: 1px solid var(--panel-edge); border-radius: 8px;
+  background: var(--panel); transition: border-color .25s, background-color .25s, box-shadow .25s, opacity .25s;
+}
+.brainlib-input { padding: 18px 16px; }
+.brainlib-kicker, .brainlib-output-kicker, .brainlib-stage-code, .brainlib-core-meta {
+  color: var(--cyan); font: 500 var(--type-micro)/1.2 var(--font-mono); letter-spacing: 0;
+}
+.brainlib-input-title, .brainlib-core-title, .brainlib-output-title {
+  margin-top: 7px; color: var(--text); font: 600 var(--type-figure-result)/1.3 var(--font-b-en); overflow-wrap: anywhere;
+}
+html[data-lang="zh"] .brainlib-input-title,
+html[data-lang="zh"] .brainlib-core-title,
+html[data-lang="zh"] .brainlib-output-title,
+html[data-lang="zh"] .brainlib-stage-name { font-family: var(--font-b-zh); }
+.brainlib-input-copy, .brainlib-output-copy { margin-top: 8px; color: var(--dim); font: 400 var(--type-meta)/1.55 var(--font-b-en); }
+html[data-lang="zh"] .brainlib-input-copy, html[data-lang="zh"] .brainlib-output-copy { font-family: var(--font-b-zh); }
+.brainlib-input-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 16px; }
+.brainlib-input-tags span {
+  padding: 4px 6px; color: var(--faint); border: 1px solid var(--stroke); border-radius: 4px;
+  font: 500 var(--type-data)/1.2 var(--font-mono);
+}
+.brainlib-core { z-index: 1; padding: 18px; overflow: hidden; }
+.brainlib-core::before {
+  content: ""; position: absolute; inset: 0; pointer-events: none; opacity: .54;
+  background: linear-gradient(90deg, transparent 0%, var(--cyan-soft) 46%, transparent 100%);
+}
+.brainlib-core > * { position: relative; z-index: 1; }
+.brainlib-core-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
+.brainlib-core-title { margin-top: 0; }
+.brainlib-core-meta { margin-top: 4px; color: var(--faint); text-align: right; white-space: nowrap; }
+.brainlib-integration {
+  display: grid; grid-template-columns: minmax(190px, .85fr) minmax(0, 1.15fr); gap: 20px; align-items: center;
+  margin: 0 0 22px; padding: 14px 16px; border: 1px solid var(--stroke); border-radius: 8px;
+  background: color-mix(in srgb, var(--panel) 78%, transparent); transition: border-color .25s, background-color .25s, box-shadow .25s;
+}
+.brainlib-integration.is-active { border-color: color-mix(in srgb, var(--cyan) 68%, var(--panel-edge)); background: color-mix(in srgb, var(--panel) 92%, var(--cyan) 8%); box-shadow: 0 0 0 3px color-mix(in srgb, var(--cyan-soft) 54%, transparent); }
+.brainlib-integration.is-complete { border-color: color-mix(in srgb, var(--cyan) 40%, var(--panel-edge)); }
+.brainlib-integration-copy { display: grid; gap: 4px; }
+.brainlib-integration-kicker { color: var(--cyan); font: 500 var(--type-micro)/1.2 var(--font-mono); }
+.brainlib-integration-title { color: var(--text); font: 600 var(--type-support)/1.45 var(--font-b-en); }
+html[data-lang="zh"] .brainlib-integration-title { font-family: var(--font-b-zh); }
+.brainlib-integration-rail { display: grid; grid-template-columns: minmax(0, 1fr) 28px minmax(0, 1.22fr) 28px minmax(0, 1fr); gap: 6px; align-items: center; }
+.brainlib-handoff { min-width: 0; display: grid; gap: 3px; padding-left: 10px; border-left: 1px solid var(--stroke-strong); }
+.brainlib-handoff-code { color: var(--faint); font: 500 var(--type-data)/1.2 var(--font-mono); }
+.brainlib-handoff-title { color: var(--dim); font: 500 var(--type-meta)/1.35 var(--font-b-en); overflow-wrap: anywhere; }
+html[data-lang="zh"] .brainlib-handoff-title { font-family: var(--font-b-zh); }
+.brainlib-handoff--runtime { border-left-color: var(--cyan); }
+.brainlib-handoff--runtime .brainlib-handoff-code { color: var(--cyan); }
+.brainlib-handoff-connector { position: relative; height: 12px; }
+.brainlib-handoff-connector::before { content: ""; position: absolute; left: 0; right: 6px; top: 5px; height: 1px; background: var(--stroke-strong); }
+.brainlib-handoff-connector::after { content: ""; position: absolute; right: 0; top: 2px; width: 6px; height: 6px; border-top: 1px solid var(--stroke-strong); border-right: 1px solid var(--stroke-strong); transform: rotate(45deg); }
+.brainlib-stages { display: flex; align-items: stretch; margin-top: 16px; }
+.brainlib-stage {
+  flex: 1 1 0; min-width: 0; min-height: 104px; padding: 12px 10px; display: grid; align-content: center; gap: 6px;
+  border: 1px solid var(--stroke); border-radius: 6px; background: color-mix(in srgb, var(--bg-2) 88%, transparent); opacity: .58;
+  transition: opacity .22s, border-color .22s, background-color .22s, box-shadow .22s;
+}
+.brainlib-stage-code { color: var(--cyan); }
+.brainlib-stage-name { color: var(--text); font: 600 var(--type-figure-node)/1.3 var(--font-b-en); overflow-wrap: anywhere; }
+.brainlib-stage.is-active, .brainlib-stage.is-complete { opacity: 1; border-color: color-mix(in srgb, var(--cyan) 66%, var(--panel-edge)); }
+.brainlib-stage.is-active { background: color-mix(in srgb, var(--panel) 90%, var(--cyan) 10%); box-shadow: 0 0 0 3px color-mix(in srgb, var(--cyan-soft) 72%, transparent), 0 0 20px var(--cyan-soft); }
+.brainlib-stage.is-complete { background: color-mix(in srgb, var(--panel) 95%, var(--cyan) 5%); }
+.brainlib-connector {
+  --brainlib-line: var(--cyan); position: relative; z-index: 2; display: block; align-self: center; height: 18px; opacity: .48;
+  transition: opacity .22s, filter .22s;
+}
+.brainlib-connector::before, .brainlib-connector::after { content: ""; position: absolute; left: 0; right: 8px; top: 8px; height: 1px; }
+.brainlib-connector::before { background: var(--stroke-strong); }
+.brainlib-connector::after { background: var(--brainlib-line); transform: scaleX(0); transform-origin: left center; transition: transform .48s var(--ease-cinematic); }
+.brainlib-connector i {
+  position: absolute; right: 1px; top: 5px; width: 7px; height: 7px; border-top: 1px solid var(--stroke-strong); border-right: 1px solid var(--stroke-strong);
+  transform: rotate(45deg); transition: border-color .22s;
+}
+.brainlib-connector--entry, .brainlib-connector--output { width: 34px; }
+.brainlib-rail-connector { flex: 0 0 16px; }
+.brainlib-connector.is-active, .brainlib-connector.is-complete { opacity: .9; }
+.brainlib-connector.is-active { filter: drop-shadow(0 0 5px var(--cyan)); }
+.brainlib-connector.is-active::after, .brainlib-connector.is-complete::after { transform: scaleX(1); }
+.brainlib-connector.is-active i, .brainlib-connector.is-complete i { border-color: var(--brainlib-line); }
+.brainlib-output { padding: 16px; }
+.brainlib-output-title { margin-top: 4px; }
+.brainlib-artifacts { display: grid; gap: 7px; margin-top: 16px; }
+.brainlib-artifact {
+  min-height: 38px; display: flex; align-items: center; padding: 8px 10px; color: var(--dim); opacity: .4;
+  border: 1px solid var(--stroke); border-left: 2px solid var(--stroke-strong); border-radius: 4px; background: var(--bg-2);
+  font: 500 var(--type-meta)/1.35 var(--font-b-en); transform: translateY(0); transition: opacity .22s, color .22s, border-color .22s, transform .22s var(--ease-out);
+}
+html[data-lang="zh"] .brainlib-artifact { font-family: var(--font-b-zh); }
+.brainlib-artifact.is-active, .brainlib-artifact.is-complete { opacity: 1; color: var(--text); border-left-color: var(--cyan); }
+.brainlib-artifact.is-active { transform: translateY(-2px); background: color-mix(in srgb, var(--panel) 92%, var(--cyan) 8%); }
+.brainlib-input.is-active, .brainlib-input.is-complete,
+.brainlib-core.is-active, .brainlib-core.is-complete,
+.brainlib-output.is-active, .brainlib-output.is-complete {
+  border-color: color-mix(in srgb, var(--cyan) 62%, var(--panel-edge)); background: color-mix(in srgb, var(--panel) 95%, var(--cyan) 5%);
+}
+.brainlib-core.is-active { box-shadow: 0 0 0 3px color-mix(in srgb, var(--cyan-soft) 60%, transparent); }
+.brainlib-pulse {
+  position: absolute; z-index: 5; width: 9px; height: 9px; border-radius: 50%; opacity: 0; pointer-events: none;
+  background: var(--cyan); box-shadow: 0 0 11px 3px var(--cyan-soft); transform: translate(-50%, -50%);
+}
+.brainlib-pulse.is-visible { opacity: 1; }
+/* Brainlib source figure — native HTML reconstruction of Fig5.svg */
+.brainlib-native-flow { position: relative; width: 100%; margin: 64px 0 0; padding-top: 46px; }
+.brainlib-native-replay { position: absolute; top: 0; right: 0; z-index: 8; }
+.brainlib-native-viewport {
+  width: 100%; overflow-x: auto; overflow-y: hidden; overscroll-behavior-inline: contain;
+  scrollbar-color: rgba(147, 189, 204, .7) transparent;
+}
+.brainlib-native-canvas {
+  --brainlib-blue: #4fc4e8; --brainlib-divider: rgba(122, 191, 215, .72); --brainlib-ink: #d9e7ec; --brainlib-title: #f1f8fa;
+  --brainlib-copy: #a6bec7; --brainlib-copy-muted: #91acb5;
+  position: relative; box-sizing: border-box; width: 1160px; height: 478px; margin-inline: auto; overflow: hidden;
+  background: transparent; color: var(--brainlib-ink); font-family: "Source Han Serif CN", "Noto Serif CJK SC", STSong, serif;
+  text-align: left; isolation: isolate;
+}
+.brainlib-native-panel, .brainlib-native-card {
+  position: absolute; box-sizing: border-box; border: 1.7px solid var(--brainlib-blue); background: rgba(10, 22, 29, .82);
+  transition: border-color .24s, background-color .24s, box-shadow .24s, opacity .24s, transform .24s var(--ease-out);
+}
+.brainlib-native-panel { border-radius: 8px; }
+.brainlib-native-source { left: .85px; top: 0; width: 292px; height: 274px; }
+.brainlib-native-runtime { left: 316.85px; top: 0; width: 842px; height: 274px; }
+.brainlib-native-extensions { left: 1.7px; top: 291.85px; width: 1156.3px; height: 185.3px; border-radius: 9.15px; }
+.brainlib-native-panel-heading, .brainlib-native-extensions-heading {
+  position: absolute; margin: 0; color: var(--brainlib-blue); font: 600 20px/1.2 "Source Han Serif CN", "Noto Serif CJK SC", STSong, serif;
+  letter-spacing: 0; white-space: nowrap;
+}
+.brainlib-native-panel-heading { left: 16px; top: 12px; }
+.brainlib-native-extensions-heading { left: 23.15px; top: 8px; }
+.brainlib-native-details-toggle {
+  position: absolute; right: 20px; top: 7px; display: inline-flex; align-items: center; gap: 7px;
+  min-height: 28px; padding: 5px 10px; border: 1px solid rgba(79, 196, 232, .58); border-radius: 999px;
+  background: rgba(10, 22, 29, .86); color: var(--brainlib-copy); font: 500 11px/1 var(--font-mono); letter-spacing: 0; white-space: nowrap;
+}
+.brainlib-native-details-toggle::after {
+  content: "+"; color: var(--brainlib-blue); font: 500 15px/1 var(--font-mono);
+}
+.brainlib-native-details-toggle[aria-expanded="true"] { border-color: var(--brainlib-blue); color: var(--brainlib-title); }
+.brainlib-native-details-toggle[aria-expanded="true"]::after { content: "−"; }
+.brainlib-native-details-toggle-label--collapse { display: none; }
+.brainlib-native-details-toggle[aria-expanded="true"] .brainlib-native-details-toggle-label--expand { display: none; }
+.brainlib-native-details-toggle[aria-expanded="true"] .brainlib-native-details-toggle-label--collapse { display: inline; }
+.brainlib-native-details-toggle--runtime { right: 16px; }
+.brainlib-native-divider { position: absolute; top: 43px; height: 1.2px; background: var(--brainlib-divider); }
+.brainlib-native-source .brainlib-native-divider { left: 14px; width: 260px; }
+.brainlib-native-runtime .brainlib-native-divider { left: 16px; width: 806px; }
+.brainlib-native-source-label {
+  position: absolute; left: 16px; margin: 0; color: var(--brainlib-ink); font: 400 16px/1.35 "Source Han Serif CN", "Noto Serif CJK SC", STSong, serif;
+  white-space: nowrap;
+}
+.brainlib-native-source-label--types { top: 60px; }
+.brainlib-native-source-label--sources { top: 157px; }
+.brainlib-native-type-list {
+  position: absolute; left: 75px; top: 96px; color: var(--brainlib-ink); font: 400 14px/20px "Source Han Serif CN", "Noto Serif CJK SC", STSong, serif;
+  white-space: pre;
+}
+.brainlib-native-source-list {
+  position: absolute; left: 36px; top: 190px; display: grid; grid-template-columns: 126px auto; column-gap: 0; row-gap: 8px;
+  color: var(--brainlib-ink); font: 400 14px/18px "Source Han Serif CN", "Noto Serif CJK SC", STSong, serif; white-space: nowrap;
+}
+.brainlib-native-source-list span:nth-child(1) { grid-column: 1; grid-row: 1; }
+.brainlib-native-source-list span:nth-child(2) { grid-column: 1; grid-row: 2; }
+.brainlib-native-source-list span:nth-child(3) { grid-column: 1; grid-row: 3; }
+.brainlib-native-source-list span:nth-child(4) { grid-column: 2; grid-row: 1; }
+.brainlib-native-source-list span:nth-child(5) { grid-column: 2; grid-row: 2; }
+.brainlib-native-source-list span:nth-child(6) { grid-column: 2; grid-row: 3; }
+.brainlib-native-node {
+  position: absolute; box-sizing: border-box; border: 1.4px solid var(--brainlib-blue); border-radius: 7px; background: rgba(10, 22, 29, .9);
+  color: var(--brainlib-ink); opacity: .74;
+  transition: opacity .22s, border-color .22s, background-color .22s, box-shadow .22s, transform .22s var(--ease-out);
+}
+.brainlib-native-source.is-active,
+.brainlib-native-node.is-active,
+.brainlib-native-card.is-active {
+  opacity: 1; border-color: #78dcf6; background: rgba(12, 34, 43, .96);
+  box-shadow: 0 0 0 2px rgba(79, 196, 232, .16), 0 0 20px rgba(79, 196, 232, .2);
+}
+.brainlib-native-node.is-active, .brainlib-native-card.is-active { transform: translateY(-2px); }
+.brainlib-native-source.is-complete,
+.brainlib-native-node.is-complete,
+.brainlib-native-card.is-complete { opacity: 1; border-color: rgba(79, 196, 232, .78); }
+.brainlib-native-card.is-supporting {
+  opacity: 1; border-color: rgba(79, 196, 232, .64); background: rgba(12, 30, 38, .92);
+  box-shadow: inset 0 2px 0 rgba(79, 196, 232, .52);
+}
+.brainlib-native-node-title {
+  position: absolute; left: 6px; top: 5px; color: var(--brainlib-ink); font: 500 14px/1.25 "Source Han Serif CN", "Noto Serif CJK SC", STSong, serif;
+  white-space: nowrap;
+}
+.brainlib-native-canvas:not(.is-runtime-details-expanded) .brainlib-native-node-title {
+  left: 50%; top: 50%; transform: translate(-50%, -50%);
+  font-size: 17px; font-weight: 600; text-align: center;
+}
+.brainlib-native-node-copy {
+  position: absolute; left: 10px; top: 27px; color: var(--brainlib-ink); font: 400 11px/21px "Source Han Serif CN", "Noto Serif CJK SC", STSong, serif;
+  white-space: nowrap;
+}
+.brainlib-native-canvas:not(.is-runtime-details-expanded) .brainlib-native-node-copy,
+.brainlib-native-canvas:not(.is-runtime-details-expanded) .brainlib-native-node-modes { visibility: hidden; }
+.brainlib-native-node--dataset { left: 36px; top: 64px; width: 133px; height: 78px; }
+.brainlib-native-node--dataset .brainlib-native-node-copy { left: 16px; }
+.brainlib-native-node--paradigm { left: 192px; top: 64px; width: 185px; height: 78px; }
+.brainlib-native-node--paradigm .brainlib-native-node-copy { left: 7px; }
+.brainlib-native-node--protocol { left: 412px; top: 64px; width: 162px; height: 78px; }
+.brainlib-native-node--protocol .brainlib-native-node-copy { left: 8px; top: 27px; }
+.brainlib-native-node--protocol .brainlib-native-node-modes {
+  position: absolute; left: 9px; top: 43px; color: var(--brainlib-ink); font: 400 10px/14px "Source Han Serif CN", "Noto Serif CJK SC", STSong, serif; white-space: nowrap;
+}
+.brainlib-native-node--split { left: 597px; top: 64px; width: 162px; height: 78px; }
+.brainlib-native-node--split .brainlib-native-node-copy { left: 12px; }
+.brainlib-native-node--collator { left: 36px; top: 167px; width: 170px; height: 78px; }
+.brainlib-native-node--collator .brainlib-native-node-copy { left: 10px; top: 26px; }
+.brainlib-native-node--model { left: 229px; top: 167px; width: 170px; height: 78px; }
+.brainlib-native-node--model .brainlib-native-node-copy { left: 20px; top: 27px; }
+.brainlib-native-node--trainer { left: 422px; top: 167px; width: 170px; height: 78px; }
+.brainlib-native-node--trainer .brainlib-native-node-copy { left: 14px; top: 24px; line-height: 16px; }
+.brainlib-native-node--training { left: 615px; top: 168px; width: 174px; height: 77px; }
+.brainlib-native-node--training .brainlib-native-node-copy { left: 11px; top: 27px; }
+.brainlib-native-line {
+  --brainlib-progress: 0; position: absolute; z-index: 2; display: block; height: 1.5px;
+  background: rgba(79, 196, 232, .24); transition: filter .16s;
+}
+.brainlib-native-line::before {
+  content: ""; position: absolute; inset: 0; background: var(--brainlib-blue);
+  transform: scaleX(var(--brainlib-progress)); transform-origin: left center;
+}
+.brainlib-native-line--turn-back::before { transform-origin: right center; }
+.brainlib-native-line--turn-down::before,
+.brainlib-native-line--turn-drop::before {
+  transform: scaleY(var(--brainlib-progress)); transform-origin: center top;
+}
+.brainlib-native-line.is-active { filter: drop-shadow(0 0 5px rgba(79, 196, 232, .9)); }
+.brainlib-native-line.is-complete { --brainlib-progress: 1; }
+.brainlib-native-line--arrow::after {
+  content: ""; position: absolute; right: -1px; top: -4px; width: 0; height: 0;
+  border-top: 5px solid transparent; border-bottom: 5px solid transparent; border-left: 8px solid rgba(79, 196, 232, .34);
+  transition: border-left-color .16s, filter .16s;
+}
+.brainlib-native-line--arrow.is-active::after,
+.brainlib-native-line--arrow.is-complete::after { border-left-color: var(--brainlib-blue); filter: drop-shadow(0 0 4px rgba(79, 196, 232, .8)); }
+.brainlib-native-line--source { left: 294.85px; top: 136.25px; width: 22px; }
+.brainlib-native-line--dataset { left: 169px; top: 102.25px; width: 23px; }
+.brainlib-native-line--paradigm { left: 377px; top: 102.25px; width: 35px; }
+.brainlib-native-line--protocol { left: 574px; top: 102.25px; width: 23px; }
+.brainlib-native-line--collator { left: 206px; top: 203.25px; width: 23px; }
+.brainlib-native-line--model { left: 399px; top: 203.25px; width: 23px; }
+.brainlib-native-line--trainer { left: 592px; top: 203.25px; width: 23px; }
+.brainlib-native-line--split-exit { left: 759px; top: 102.25px; width: 27px; }
+.brainlib-native-line--turn-down { left: 785.25px; top: 102.25px; width: 1.5px; height: 53.25px; }
+.brainlib-native-line--turn-back { left: 16.5px; top: 155px; width: 770px; }
+.brainlib-native-line--turn-drop { left: 16.5px; top: 155px; width: 1.5px; height: 50.5px; }
+.brainlib-native-line--turn-enter { left: 16.5px; top: 205px; width: 19.5px; }
+.brainlib-native-card { top: 337px; height: 129px; border-width: 1.4px; border-radius: 6px; }
+.brainlib-native-card--configuration { left: 24.85px; width: 268px; }
+.brainlib-native-card--builtins { left: 307.85px; width: 259px; }
+.brainlib-native-card--custom { left: 577.85px; width: 279.12px; }
+.brainlib-native-card--artifacts { left: 870.85px; width: 263.95px; }
+.brainlib-native-card-title {
+  position: absolute; top: 11px; color: var(--brainlib-ink); font: 600 16px/1.3 "Source Han Serif CN", "Noto Serif CJK SC", STSong, serif; white-space: nowrap;
+}
+.brainlib-native-card-copy {
+  position: absolute; color: var(--brainlib-copy); font: 400 13px/19px "Source Han Serif CN", "Noto Serif CJK SC", STSong, serif; white-space: nowrap;
+}
+.brainlib-native-canvas:not(.is-extension-details-expanded) .brainlib-native-card-copy { visibility: hidden; }
+.brainlib-native-card--configuration .brainlib-native-card-title { left: 11px; }
+.brainlib-native-card--configuration .brainlib-native-card-copy { left: 19px; top: 44px; }
+.brainlib-native-card--builtins .brainlib-native-card-title { left: 8px; }
+.brainlib-native-card--builtins .brainlib-native-card-copy { left: 14px; top: 43px; }
+.brainlib-native-card--custom .brainlib-native-card-title { left: 12px; }
+.brainlib-native-card--custom .brainlib-native-card-copy { left: 15px; top: 41px; color: var(--brainlib-copy-muted); }
+.brainlib-native-card--artifacts .brainlib-native-card-title { left: 12px; }
+.brainlib-native-card--artifacts .brainlib-native-card-copy { left: 13px; top: 38px; color: var(--brainlib-copy-muted); }
+.brainlib-native-canvas:not(.is-extension-details-expanded) .brainlib-native-card-title {
+  left: 50%; top: 50%; transform: translate(-50%, -50%);
+  font-size: 18px; font-weight: 600; text-align: center;
+}
+.brainlib-native-pulse {
+  position: absolute; z-index: 7; left: 0; top: 0; width: 9px; height: 9px; border-radius: 50%;
+  opacity: 0; pointer-events: none; background: var(--brainlib-blue);
+  box-shadow: 0 0 8px 2px rgba(79, 196, 232, .58), 0 0 18px rgba(79, 196, 232, .34);
+  transform: translate(-50%, -50%);
+}
+.brainlib-native-pulse.is-visible { opacity: 1; }
+@media (max-width: 600px) {
+  .brainlib-native-flow { margin-top: 44px; padding-top: 52px; }
+  .brainlib-native-viewport { margin-inline: -20px; width: calc(100% + 40px); }
+}
 /* ============ sections ============ */
 section {
   --section-pad: max(34px, calc((100vw - 1400px) / 2 + 34px));
@@ -1088,6 +1350,14 @@ html[data-lang="zh"] h1 em, html[data-lang="zh"] h2 em { font-style: normal; }
   --scene-lighting-size: 66% 50%, 58% 44%;
   --scene-lighting-start: 104% 18%, -10% 78%;
 }
+.mechanism-story[data-mechanism="brainlib"] {
+  --scene-bg: #0b141a; --scene-edge: rgba(64,180,224,.22);
+  --scene-lighting:
+    radial-gradient(ellipse at center, rgba(64,180,224,.11), transparent 72%),
+    radial-gradient(ellipse at center, rgba(141,184,242,.065), transparent 74%);
+  --scene-lighting-size: 76% 42%, 60% 48%;
+  --scene-lighting-start: 50% 28%, 102% 78%;
+}
 @keyframes mechanism-scene-drift {
   from { background-position: var(--scene-lighting-start); }
   to { background-position: var(--scene-lighting-end, 50% 50%, 50% 50%); }
@@ -1096,6 +1366,7 @@ html[data-lang="zh"] h1 em, html[data-lang="zh"] h2 em { font-style: normal; }
 .mechanism-story[data-mechanism="workflow"] { --scene-lighting-end: 56% 52%, 44% 50%; }
 .mechanism-story[data-mechanism="knowledge"] { --scene-lighting-end: 2% 31%, 98% 69%; }
 .mechanism-story[data-mechanism="skills"] { --scene-lighting-end: 92% 25%, 2% 70%; }
+.mechanism-story[data-mechanism="brainlib"] { --scene-lighting-end: 50% 68%, -4% 24%; }
 .mechanism-story .mechanism-figure, .mechanism-story > figure { width: 100%; }
 .mechanism-story .knowledge-flow { margin-top: 32px; }
 /* cases */
@@ -1240,7 +1511,7 @@ html[data-lang="zh"] .foot-inner a { font-family: var(--font-b-zh); }
   .routing-node--research { width: 170px; }
   .routing-result { padding-inline: 13px; }
   .skill-shell { width: min(100%, 680px); margin: 0 auto; grid-template-columns: 1fr; gap: 16px; min-height: 0; }
-  .skill-context-wrap, .skill-router, .skill-library, .skill-pack, .skill-output-wrap { width: 100%; margin: 0 auto; }
+  .skill-context-wrap, .skill-router, .skill-library, .skill-pack { width: 100%; margin: 0 auto; }
   .skill-connector {
     width: 12px; height: 28px; margin: 0 auto; opacity: .24;
     transform: none; transition: opacity .28s, filter .28s;
@@ -1258,7 +1529,23 @@ html[data-lang="zh"] .foot-inner a { font-family: var(--font-b-zh); }
   .skill-context { min-height: 0; grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr); gap: 20px; }
   .skill-context-list { margin-top: 0; grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .skill-context-row { padding: 7px 0; }
-  .skill-router, .skill-pack, .skill-stage { min-height: 0; }
+  .skill-router, .skill-pack { min-height: 0; }
+}
+
+@media (max-width: 1180px) {
+  .brainlib-shell { grid-template-columns: 166px 28px minmax(0, 1fr); row-gap: 16px; }
+  .brainlib-connector--entry { width: 28px; }
+  .brainlib-connector--output {
+    grid-column: 1 / -1; justify-self: center; width: 2px; height: 26px;
+  }
+  .brainlib-connector--output::before, .brainlib-connector--output::after {
+    left: 0; right: auto; top: 0; bottom: 7px; width: 1px; height: auto;
+    transform: scaleY(0); transform-origin: top center;
+  }
+  .brainlib-connector--output::before { transform: none; }
+  .brainlib-connector--output.is-active::after, .brainlib-connector--output.is-complete::after { transform: scaleY(1); }
+  .brainlib-connector--output i { right: -3px; top: auto; bottom: 2px; transform: rotate(135deg); }
+  .brainlib-output { grid-column: 1 / -1; width: min(100%, 740px); justify-self: center; }
 }
 
 @media (max-width: 980px) {
@@ -1271,6 +1558,7 @@ html[data-lang="zh"] .foot-inner a { font-family: var(--font-b-zh); }
   .flow-phase-link { width: 28px; height: 2px; margin: 0; }
   .flow-phase-label { text-align: left; }
   .flow-stage--out { min-height: 128px; }
+  .flow-shell > .flow-branch-label--pass { display: none; }
 }
 
 @media (min-width: 601px) and (max-width: 959px) {
@@ -1332,14 +1620,34 @@ html[data-lang="zh"] .foot-inner a { font-family: var(--font-b-zh); }
     position: relative; inset: auto; width: auto; min-height: 80px; transform: none;
   }
   .kb-node.is-active, .kb-node.is-complete, .kb-node:hover { transform: translateY(-2px); }
-  .kb-agent-endpoint { position: relative; inset: auto; margin-top: 16px; }
+  .kb-source-endpoint, .kb-agent-endpoint { position: relative; inset: auto; margin-top: 16px; }
+  .brainlib-shell { width: min(100%, 620px); margin: 0 auto; grid-template-columns: 1fr; gap: 12px; min-height: 0; }
+  .brainlib-input, .brainlib-core, .brainlib-output { width: 100%; }
+  .brainlib-connector--entry, .brainlib-connector--output {
+    grid-column: auto; justify-self: center; width: 2px; height: 26px;
+  }
+  .brainlib-connector--entry::before, .brainlib-connector--entry::after,
+  .brainlib-connector--output::before, .brainlib-connector--output::after {
+    left: 0; right: auto; top: 0; bottom: 7px; width: 1px; height: auto; transform: scaleY(0); transform-origin: top center;
+  }
+  .brainlib-connector--entry::before, .brainlib-connector--output::before { transform: none; }
+  .brainlib-connector--entry.is-active::after, .brainlib-connector--entry.is-complete::after,
+  .brainlib-connector--output.is-active::after, .brainlib-connector--output.is-complete::after { transform: scaleY(1); }
+  .brainlib-connector--entry i, .brainlib-connector--output i { right: -3px; top: auto; bottom: 2px; transform: rotate(135deg); }
+  .brainlib-integration { width: min(100%, 620px); margin: 0 auto 18px; grid-template-columns: 1fr; gap: 12px; }
+  .brainlib-core-head { display: block; }
+  .brainlib-core-meta { margin-top: 4px; text-align: left; }
+  .brainlib-stages { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+  .brainlib-rail-connector { display: none; }
+  .brainlib-stage { min-height: 82px; }
+  .brainlib-output { grid-column: auto; }
 }
 
 @media (max-width: 600px) {
   .hero, section { padding-left: 20px; padding-right: 20px; }
   .hero { width: 100%; min-width: 0; min-height: 100svh; padding-top: 84px; padding-bottom: 32px; overflow: hidden; }
   .hero > * { width: 100%; min-width: 0; max-width: 100%; }
-  .wordmark { font-size: clamp(42px, 12.3vw, 48px); }
+  .wordmark { font-size: clamp(48px, 14vw, 56px); }
   .hero-cta { width: 100%; margin-top: 18px; gap: 8px; }
   .hero-action { min-height: 48px; padding: 8px 7px; gap: 5px; font-size: 12.5px; }
   .hero-action svg { width: 14px; height: 14px; }
@@ -1379,11 +1687,7 @@ html[data-lang="zh"] .foot-inner a { font-family: var(--font-b-zh); }
   .foot-inner { align-items: flex-start; }
   .foot-inner .r { gap: 14px 18px; flex-wrap: wrap; }
   .footer-wordmark-crop { --footer-wordmark-size: 96px; width: calc(100% + 40px); margin: 40px -20px 0; }
-  .intro-stage { width: calc(100vw - 40px); gap: 18px; }
-  .intro-wordmark { font-size: clamp(42px, 16vw, 64px); }
-  .intro-meta { max-width: 32ch; gap: 5px; line-height: 1.5; }
-  .intro-meta-zh { font-size: 15px; }
-  .intro-meta-en { font-size: 12px; }
+  .intro-stage { width: calc(100vw - 40px); }
   .intro-skip { top: 14px; right: 16px; }
   .mechanism-figure { margin-top: 24px; }
   .runtime-profile-flow { padding-top: 14px; }
@@ -1431,16 +1735,71 @@ html[data-lang="zh"] .foot-inner a { font-family: var(--font-b-zh); }
   .skill-item { font-size: var(--type-support); }
   .skill-router, .skill-library, .skill-pack { padding: 18px 16px; }
   .skill-pack-count { margin-top: 16px; font-size: 30px; }
-  .skill-stage { min-height: 0; }
-  .skill-stage-outputs { grid-template-columns: 1fr; }
-  .skill-stage-output { min-height: 42px; }
+  .brainlib-flow { margin-top: 24px; padding-top: 14px; }
+  .brainlib-input, .brainlib-core, .brainlib-output { padding: 16px; }
+  .brainlib-integration { padding: 13px 14px; }
+  .brainlib-integration-rail { grid-template-columns: minmax(0, 1fr) 14px minmax(0, 1.22fr) 14px minmax(0, 1fr); gap: 4px; }
+  .brainlib-handoff { padding-left: 7px; }
+  .brainlib-handoff-title { font-size: 11px; line-height: 1.3; }
+  .brainlib-stage { padding: 10px 9px; }
+  .brainlib-stage-name { font-size: 14px; }
+  .brainlib-input-tags { margin-top: 12px; }
   .term-body { align-items: flex-start; }
   .term-body code { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .install-platform { min-height: 36px; padding: 0 10px; }
   .install-platform-mark { font-size: 18px; }
 }
 @media (max-width: 360px) {
-  .wordmark { font-size: 36px; }
+  .wordmark { font-size: 42px; }
+}
+
+/* bilingual SVG mechanism figures — no generated paths or motion */
+html[data-figure-engine="interactive"] #runtimeProfileFlow,
+html[data-figure-engine="interactive"] #runtimeFlow,
+html[data-figure-engine="interactive"] #knowledgeFlow,
+html[data-figure-engine="interactive"] #skillFlow { display: none !important; }
+html[data-figure-engine="legacy"] .svg-diagram { display: none !important; }
+.svg-diagram { --diagram-min-width: 1280px; position: relative; margin: 0; padding: 18px 0 0; border-top: 1px solid var(--stroke); }
+.svg-diagram-topline { display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 36px; }
+.svg-diagram-title { color: var(--faint); font: 500 var(--type-meta)/1.45 var(--font-mono); }
+.svg-diagram-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; justify-content: flex-end; }
+.svg-diagram-control {
+  min-height: 36px; padding: 7px 10px; border: 1px solid var(--stroke); border-radius: 6px;
+  color: var(--dim); background: transparent; cursor: pointer; font: 500 var(--type-meta)/1.2 var(--font-b-en);
+}
+html[data-lang="zh"] .svg-diagram-control { font-family: var(--font-b-zh); }
+.svg-diagram-control:hover, .svg-diagram-control:focus-visible, .svg-diagram-control[aria-pressed="true"] {
+  color: var(--text); border-color: var(--cyan); background: color-mix(in srgb, var(--panel) 85%, var(--cyan) 15%);
+}
+.svg-diagram[data-diagram="routing"] .svg-diagram-control[data-diagram-action="research"][aria-pressed="true"],
+.svg-diagram[data-diagram="workflow"] .svg-diagram-control[data-diagram-action^="revisit-"][aria-pressed="true"] {
+  border-color: var(--gate); background: color-mix(in srgb, var(--panel) 84%, var(--gate) 16%);
+}
+.svg-diagram-viewport {
+  position: relative; margin-top: 14px; overflow-x: auto; overflow-y: hidden; overscroll-behavior-inline: contain;
+  border: 1px solid var(--panel-edge); border-radius: 8px; background: transparent; cursor: grab; scrollbar-color: var(--stroke-strong) transparent;
+}
+.svg-diagram-viewport.is-dragging { cursor: grabbing; user-select: none; }
+.svg-diagram-viewport:focus-visible { outline: 2px solid var(--cyan); outline-offset: 3px; }
+.svg-diagram-canvas { width: max(100%, var(--diagram-min-width)); min-width: var(--diagram-min-width); }
+.svg-diagram-canvas > svg, .svg-diagram-fallback { display: block; width: 100%; height: auto; min-width: var(--diagram-min-width); }
+.svg-diagram-fallback { opacity: .92; }
+.svg-diagram-scroll-hint { display: none; margin-top: 8px; color: var(--faint); font: 500 var(--type-micro)/1.35 var(--font-mono); }
+.svg-diagram-overlay { pointer-events: none; }
+.svg-diagram-node { opacity: 0; }
+.svg-diagram-node rect { fill: rgba(101,195,236,.045); stroke: var(--cyan); stroke-width: 2.4; vector-effect: non-scaling-stroke; }
+.svg-diagram-node[data-tone="amber"] rect { fill: rgba(241,186,90,.05); stroke: var(--gate); }
+.svg-diagram-node[data-tone="green"] rect { fill: rgba(95,213,160,.045); stroke: var(--accent); }
+.svg-diagram-node.is-active, .svg-diagram-node.is-complete { opacity: 1; }
+.svg-diagram-node.is-skipped { opacity: .24; }
+.svg-diagram-lane { pointer-events: auto; cursor: pointer; }
+.svg-diagram-lane:focus { outline: none; }
+@media (max-width: 1279px) { .svg-diagram-scroll-hint { display: block; } }
+@media (max-width: 600px) {
+  .svg-diagram { padding-top: 14px; }
+  .svg-diagram-topline { align-items: flex-start; }
+  .svg-diagram-actions { justify-content: flex-start; }
+  .svg-diagram-control { min-height: 40px; }
 }
 
 /* reduced motion */
@@ -1457,8 +1816,10 @@ html[data-lang="zh"] .foot-inner a { font-family: var(--font-b-zh); }
   .routing-selector, .routing-node, .routing-result, .routing-path { opacity: 1 !important; transition: none !important; }
   .routing-pulse { display: none !important; }
   .kb-pulse { display: none !important; }
+  .brainlib-pulse, .brainlib-native-pulse { display: none !important; }
   .kb-node, .kb-path, .kb-source, .kb-release,
-  .skill-context, .skill-router, .skill-group, .skill-item, .skill-pack, .skill-stage, .skill-stage-output { opacity: 1 !important; transition: none !important; transform: none !important; }
+  .skill-context, .skill-router, .skill-group, .skill-item, .skill-pack { opacity: 1 !important; transition: none !important; transform: none !important; }
+  .brainlib-input, .brainlib-core, .brainlib-output, .brainlib-stage, .brainlib-artifact { opacity: 1 !important; transition: none !important; transform: none !important; }
   .capability-card__pattern { opacity: .14 !important; transform: none !important; }
   .skill-scan-beam { display: none !important; }
 }
@@ -1477,17 +1838,12 @@ html[data-lang="zh"] .foot-inner a { font-family: var(--font-b-zh); }
 <body>
 <div class="intro-overlay" id="introOverlay">
   <button class="intro-skip" id="introSkip" type="button"><span class="lang-en">Skip intro</span><span class="lang-zh">跳过</span></button>
-  <div class="intro-scan" aria-hidden="true"></div>
   <div class="intro-stage" aria-hidden="true">
-    <svg class="intro-brain" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-      <path pathLength="1" d="M12 18V5"/><path pathLength="1" d="M15 13a4.17 4.17 0 0 1-3-4 4.17 4.17 0 0 1-3 4"/><path pathLength="1" d="M17.598 6.5A3 3 0 1 0 12 5a3 3 0 1 0-5.598 1.5"/><path pathLength="1" d="M17.997 5.125a4 4 0 0 1 2.526 5.77"/><path pathLength="1" d="M18 18a4 4 0 0 0 2-7.464"/><path pathLength="1" d="M19.967 17.483A4 4 0 1 1 12 18a4 4 0 1 1-7.967-.517"/><path pathLength="1" d="M6 18a4 4 0 0 1-2-7.464"/>
-    </svg>
-    <div class="intro-wordmark"><span>Neuro</span><span class="agent">Agent</span></div>
-    <div class="intro-meta"><span class="intro-meta-zh">你的独立科研智能体</span><span class="intro-meta-en">Your independent scientific research agent</span></div>
+    <img class="intro-logo" src="assets/ownpi-brand-lockup.png" alt="">
   </div>
 </div>
 <nav id="nav">
-  <a class="nav-logo" href="#top"><svg aria-hidden="true" class="logo-brain" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 18V5"/><path d="M15 13a4.17 4.17 0 0 1-3-4 4.17 4.17 0 0 1-3 4"/><path d="M17.598 6.5A3 3 0 1 0 12 5a3 3 0 1 0-5.598 1.5"/><path d="M17.997 5.125a4 4 0 0 1 2.526 5.77"/><path d="M18 18a4 4 0 0 0 2-7.464"/><path d="M19.967 17.483A4 4 0 1 1 12 18a4 4 0 1 1-7.967-.517"/><path d="M6 18a4 4 0 0 1-2-7.464"/></svg>NeuroAgent</a>
+  <a class="nav-logo" href="#top"><svg aria-hidden="true" class="logo-brain" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 18V5"/><path d="M15 13a4.17 4.17 0 0 1-3-4 4.17 4.17 0 0 1-3 4"/><path d="M17.598 6.5A3 3 0 1 0 12 5a3 3 0 1 0-5.598 1.5"/><path d="M17.997 5.125a4 4 0 0 1 2.526 5.77"/><path d="M18 18a4 4 0 0 0 2-7.464"/><path d="M19.967 17.483A4 4 0 1 1 12 18a4 4 0 1 1-7.967-.517"/><path d="M6 18a4 4 0 0 1-2-7.464"/></svg>OwnPI</a>
   <div class="nav-links" id="navLinks">
     <a href="#how"><span class="lang-en">How it works</span><span class="lang-zh">工作方式</span></a>
     <a href="#neuro"><span class="lang-en">Research work</span><span class="lang-zh">研究能力</span></a>
@@ -1510,8 +1866,8 @@ html[data-lang="zh"] .foot-inner a { font-family: var(--font-b-zh); }
 <!-- ===================== HERO ===================== -->
 <header class="hero">
   <div class="hero-copy">
-    <h1 class="wordmark" aria-label="NeuroAgent">
-      <svg aria-hidden="true" class="wordmark-brain" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 18V5"/><path d="M15 13a4.17 4.17 0 0 1-3-4 4.17 4.17 0 0 1-3 4"/><path d="M17.598 6.5A3 3 0 1 0 12 5a3 3 0 1 0-5.598 1.5"/><path d="M17.997 5.125a4 4 0 0 1 2.526 5.77"/><path d="M18 18a4 4 0 0 0 2-7.464"/><path d="M19.967 17.483A4 4 0 1 1 12 18a4 4 0 1 1-7.967-.517"/><path d="M6 18a4 4 0 0 1-2-7.464"/></svg><span class="wm-neuro">Neuro</span><span class="wm-agent">Agent</span>
+    <h1 class="wordmark" aria-label="OwnPI">
+      <img class="hero-brand-lockup" src="assets/ownpi-brand-lockup.png" alt="">
     </h1>
     <div class="hero-cta" aria-label="Primary links">
       <a class="hero-action hero-action--primary" href="https://github.com/yzz673/independent-neuro-agent" target="_blank" rel="noopener">
@@ -1534,7 +1890,7 @@ html[data-lang="zh"] .foot-inner a { font-family: var(--font-b-zh); }
       <span class="lang-zh">独立推进科研，产出真正有价值的科研成果。</span>
     </p>
     <div class="hero-story">
-      <div class="hero-story-steps" aria-label="NeuroAgent research progression">
+      <div class="hero-story-steps" aria-label="OwnPI research progression">
         <div class="hero-story-step">
           <strong><span class="lang-en">Automatic runtime decisions</span><span class="lang-zh">自动判断运行方式</span></strong>
           <span><span class="lang-en">Complete directly or enter the staged research process based on the task.</span><span class="lang-zh">根据任务需要直接完成，或进入分阶段研究流程。</span></span>
@@ -1558,17 +1914,17 @@ html[data-lang="zh"] .foot-inner a { font-family: var(--font-b-zh); }
       </div>
     </div>
     <div class="hero-terminal">
-      <div class="hero-demo" id="heroTerminalDemo" data-video-src="assets/neuroagent-terminal-demo.mp4">
+      <div class="hero-demo" id="heroTerminalDemo" data-video-src="assets/ownpi-demo-final-57s-1080p.mp4">
         <div class="hero-demo-bar" aria-hidden="true">
           <span class="hero-demo-dots"><i></i><i></i><i></i></span>
-          <span class="hero-demo-label">NeuroAgent · terminal</span>
+          <span class="hero-demo-label">OwnPI · terminal</span>
         </div>
         <div class="hero-demo-placeholder">
           <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="m7 9 3 3-3 3"/><path d="M13 15h4"/></svg>
           <strong><span class="lang-en">Terminal research run</span><span class="lang-zh">终端科研运行演示</span></strong>
-          <span class="sr-only">assets/neuroagent-terminal-demo.mp4</span>
+          <span class="sr-only">OwnPI terminal research run</span>
         </div>
-        <video id="heroTerminalVideo" muted loop playsinline preload="metadata" aria-label="NeuroAgent terminal research run"></video>
+        <video id="heroTerminalVideo" muted loop playsinline preload="metadata" aria-label="OwnPI terminal research run"></video>
         <button class="hero-demo-toggle" id="heroTerminalToggle" type="button" aria-label="Play terminal demo">
           <svg class="icon-play" aria-hidden="true" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
           <svg class="icon-pause" aria-hidden="true" viewBox="0 0 24 24" fill="currentColor"><path d="M7 5h4v14H7zM13 5h4v14h-4z"/></svg>
@@ -1579,14 +1935,26 @@ html[data-lang="zh"] .foot-inner a { font-family: var(--font-b-zh); }
 </header>
 
 <!-- ===================== HOW IT WORKS ===================== -->
-<section id="how" class="reveal story-band story-band--alt mechanism-story" data-mechanism="routing" data-nav-target="how">
+<section id="mechanism-routing" class="reveal story-band story-band--alt mechanism-story" data-mechanism="routing" data-nav-target="how">
   <span id="features" class="anchor-alias" aria-hidden="true"></span>
-  <span id="mechanism-routing" class="anchor-alias" aria-hidden="true"></span>
   <h2>
     <span class="lang-en">Finish simple tasks directly. <em>Advance complex research in stages.</em></span>
     <span class="lang-zh">简单任务直接完成，<em>复杂研究持续推进</em>。</span>
   </h2>
   <div class="mechanism-figure">
+      <figure class="svg-diagram" id="svgRoutingFigure" data-diagram="routing" style="--diagram-min-width: 1280px" aria-labelledby="svgRoutingCaption" aria-describedby="svgRoutingSummary">
+        <div class="svg-diagram-topline">
+          <figcaption class="svg-diagram-title" id="svgRoutingCaption"><span class="lang-en">Adaptive runtime routing</span><span class="lang-zh">自适应运行路径</span></figcaption>
+          <div class="svg-diagram-actions" role="group" aria-label="Runtime routing controls">
+            <button class="svg-diagram-control" type="button" data-diagram-action="default" aria-pressed="true"><span class="lang-en">Default</span><span class="lang-zh">默认运行</span></button>
+            <button class="svg-diagram-control" type="button" data-diagram-action="research" aria-pressed="false"><span class="lang-en">Research</span><span class="lang-zh">研究模式</span></button>
+            <button class="flow-replay" type="button" data-diagram-replay disabled aria-label="Highlight adaptive routing" title="Highlight adaptive routing"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11a8 8 0 1 0-2.35 5.65"/><path d="M20 4v7h-7"/></svg></button>
+          </div>
+        </div>
+        <div class="svg-diagram-viewport" tabindex="0" role="region" aria-label="Adaptive runtime routing diagram; scroll horizontally on narrow screens"><div class="svg-diagram-canvas"><img class="svg-diagram-fallback" src="assets/figures/fig1.zh.svg" alt="OwnPI adaptive runtime routing diagram"></div></div>
+        <span class="svg-diagram-scroll-hint"><span class="lang-en">Drag or scroll sideways to inspect the full diagram.</span><span class="lang-zh">可横向拖动或滚动查看完整图版。</span></span>
+        <p class="sr-only" id="svgRoutingSummary"><span class="lang-en">Choose a mode, then use the highlight button to reveal its relevant nodes without playback animation.</span><span class="lang-zh">选择运行模式后，可使用高亮按钮查看相关节点；图表不会自动播放。</span></p><p class="svg-diagram-status sr-only" aria-live="polite"></p>
+      </figure>
       <figure class="runtime-profile-flow" id="runtimeProfileFlow" data-routing-state="idle" aria-labelledby="runtimeProfileCaption" aria-describedby="runtimeProfileSummary">
         <div class="flow-caption-bar">
           <figcaption class="figure-caption sr-only" id="runtimeProfileCaption"><span class="lang-en">Adaptive runtime and research depth</span><span class="lang-zh">自适应运行与科研深度</span></figcaption>
@@ -1603,12 +1971,12 @@ html[data-lang="zh"] .foot-inner a { font-family: var(--font-b-zh); }
           <div class="routing-selector-wrap">
             <div class="routing-selector" data-routing-selector>
               <span class="routing-selector-code"><span class="lang-en">RUNTIME PREFERENCE</span><span class="lang-zh">运行偏好</span></span>
-              <span class="routing-selector-title"><span class="lang-en">Choose the research depth</span><span class="lang-zh">选择 NeuroAgent 的研究深度</span></span>
+              <span class="routing-selector-title"><span class="lang-en">Choose the research depth</span><span class="lang-zh">选择 OwnPI 的研究深度</span></span>
               <div class="routing-mode-control" role="group" aria-label="Runtime preference">
                 <button class="routing-mode-button" type="button" data-routing-mode="default" aria-pressed="true"><span class="lang-en">Default</span><span class="lang-zh">默认运行</span></button>
                 <button class="routing-mode-button" type="button" data-routing-mode="research" aria-pressed="false"><span class="lang-en">Research</span><span class="lang-zh">研究模式</span></button>
               </div>
-              <span class="routing-selector-note"><span class="lang-en">Switch any time in NeuroAgent</span><span class="lang-zh">可在 NeuroAgent 中随时切换</span></span>
+              <span class="routing-selector-note"><span class="lang-en">Switch any time in OwnPI</span><span class="lang-zh">可在 OwnPI 中随时切换</span></span>
             </div>
           </div>
 
@@ -1644,12 +2012,11 @@ html[data-lang="zh"] .foot-inner a { font-family: var(--font-b-zh); }
 
           <div class="routing-node routing-node--direct" data-routing-node="direct" data-route-members="direct">
             <span class="routing-node-code">DIRECT</span>
-            <span class="routing-node-title"><span class="lang-en">Direct execution</span><span class="lang-zh">直接运行</span></span>
-            <span class="routing-node-copy"><span class="lang-en">Bounded steps</span><span class="lang-zh">有限步骤</span></span>
+            <span class="routing-node-title"><span class="lang-en">Direct run</span><span class="lang-zh">直接运行</span></span>
           </div>
           <div class="routing-node routing-node--staged" data-routing-node="staged" data-route-members="task">
             <span class="routing-node-code">STAGED</span>
-            <span class="routing-node-title"><span class="lang-en">Staged execution</span><span class="lang-zh">分阶段运行</span></span>
+            <span class="routing-node-title"><span class="lang-en">Staged run</span><span class="lang-zh">分阶段运行</span></span>
             <span class="routing-node-copy"><span class="lang-en">Only the stages required by this task</span><span class="lang-zh">按任务选择必要阶段</span></span>
           </div>
           <div class="routing-node routing-node--research" data-routing-node="research" data-route-members="research">
@@ -1663,6 +2030,7 @@ html[data-lang="zh"] .foot-inner a { font-family: var(--font-b-zh); }
             <div class="routing-result routing-result--direct" data-routing-result="direct" data-route-members="direct">
               <span class="routing-result-code"><span class="lang-en">DIRECT RESULT</span><span class="lang-zh">直接结果</span></span>
               <span class="routing-result-title"><span class="lang-en">A directly usable answer</span><span class="lang-zh">直接可用的回答</span></span>
+              <span class="routing-result-meta"><span class="lang-en">No full research expansion</span><span class="lang-zh">不展开完整科研流程</span></span>
             </div>
             <div class="routing-result routing-result--task" data-routing-result="task" data-route-members="task">
               <span class="routing-result-code">TASK LEVEL</span>
@@ -1681,10 +2049,15 @@ html[data-lang="zh"] .foot-inner a { font-family: var(--font-b-zh); }
   </div>
 </section>
 
-<section id="mechanism-workflow" class="reveal story-band mechanism-story" data-mechanism="workflow" data-nav-target="how">
+<section id="how" class="reveal story-band mechanism-story" data-mechanism="workflow" data-nav-target="how">
+  <span id="mechanism-workflow" class="anchor-alias" aria-hidden="true"></span>
   <h2><span class="lang-en">Research is not linear. <em>It advances through review-driven iteration.</em></span><span class="lang-zh">科研不是线性流程，<em>而是评审驱动的循环迭代</em>。</span></h2>
 
   <div class="mechanism-figure">
+    <figure class="svg-diagram" id="svgWorkflowFigure" data-diagram="workflow" style="--diagram-min-width: 1280px" aria-labelledby="svgWorkflowCaption" aria-describedby="svgWorkflowSummary">
+      <div class="svg-diagram-topline"><figcaption class="svg-diagram-title" id="svgWorkflowCaption"><span class="lang-en">Review-driven research workflow</span><span class="lang-zh">可复盘的科研工作流</span></figcaption><div class="svg-diagram-actions" role="group" aria-label="Review target controls"><button class="svg-diagram-control" type="button" data-diagram-action="revisit-3" aria-pressed="false">03</button><button class="svg-diagram-control" type="button" data-diagram-action="revisit-4" aria-pressed="true">04</button><button class="svg-diagram-control" type="button" data-diagram-action="revisit-5" aria-pressed="false">05</button><button class="svg-diagram-control" type="button" data-diagram-action="revisit-6" aria-pressed="false">06</button><button class="flow-replay" type="button" data-diagram-replay disabled aria-label="Highlight research workflow" title="Highlight research workflow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11a8 8 0 1 0-2.35 5.65"/><path d="M20 4v7h-7"/></svg></button></div></div>
+      <div class="svg-diagram-viewport" tabindex="0" role="region" aria-label="Research workflow diagram; scroll horizontally on narrow screens"><div class="svg-diagram-canvas"><img class="svg-diagram-fallback" src="assets/figures/fig2.zh.svg" alt="OwnPI research workflow diagram"></div></div><span class="svg-diagram-scroll-hint"><span class="lang-en">Drag or scroll sideways to inspect the full diagram.</span><span class="lang-zh">可横向拖动或滚动查看完整图版。</span></span><p class="sr-only" id="svgWorkflowSummary"><span class="lang-en">Choose the review destination, then highlight the static workflow nodes.</span><span class="lang-zh">选择复盘返回阶段后，可高亮静态工作流节点。</span></p><p class="svg-diagram-status sr-only" aria-live="polite"></p>
+    </figure>
     <figure class="runtime-flow" id="runtimeFlow" data-flow-state="idle" aria-labelledby="runtimeFlowCaption" aria-describedby="runtimeFlowSummary">
       <div class="flow-caption-bar">
         <figcaption class="figure-caption sr-only" id="runtimeFlowCaption"><span class="lang-en">Iterative research workflow</span><span class="lang-zh">循环式科研工作流</span></figcaption>
@@ -1775,8 +2148,8 @@ html[data-lang="zh"] .foot-inner a { font-family: var(--font-b-zh); }
           </div>
 
           <div class="flow-router">
-            <div class="flow-router-label"><span class="lang-en">Review decision</span><span class="lang-zh">评审判断</span></div>
-            <div class="flow-router-copy"><span class="lang-en">Pass to final output, or return to the stage that needs revision</span><span class="lang-zh">通过后进入成果输出；需要修正时返回对应阶段</span></div>
+            <div class="flow-router-label"><span class="lang-en">Review decision</span><span class="lang-zh">研究复盘</span></div>
+            <div class="flow-router-copy"><span class="lang-en">Review prior stages; return to the relevant stage when revision is needed</span><span class="lang-zh">对先前的阶段进行复盘；需要修正时返回对应阶段</span></div>
             <div class="flow-targets" role="group" aria-label="Select revisit target">
               <button class="flow-target" type="button" data-revisit-target="3" aria-pressed="false" aria-label="Revisit stage 3">03</button>
               <button class="flow-target" type="button" data-revisit-target="4" aria-pressed="false" aria-label="Revisit stage 4">04</button>
@@ -1784,9 +2157,10 @@ html[data-lang="zh"] .foot-inner a { font-family: var(--font-b-zh); }
               <button class="flow-target" type="button" data-revisit-target="6" aria-pressed="false" aria-label="Revisit stage 6">06</button>
             </div>
           </div>
-          <span class="flow-branch-label flow-branch-label--revisit"><span class="lang-en">REVISIT</span><span class="lang-zh">返回修正</span></span>
-          <span class="flow-branch-label flow-branch-label--pass"><span class="lang-en">PASS</span><span class="lang-zh">评审通过</span></span>
+          <span class="flow-branch-label flow-branch-label--revisit"><span class="lang-en">REVISE</span><span class="lang-zh">返回修订</span></span>
         </div>
+
+        <span class="flow-branch-label flow-branch-label--pass"><span class="lang-en">PASS</span><span class="lang-zh">评审通过</span></span>
 
         <div class="flow-phase flow-phase--deliver">
           <div class="flow-phase-label"><span class="lang-en">RESEARCH OUTPUT</span><span class="lang-zh">成果输出</span></div>
@@ -1795,7 +2169,6 @@ html[data-lang="zh"] .foot-inner a { font-family: var(--font-b-zh); }
               <span class="flow-stage-number">08</span>
               <span class="flow-stage-name lang-en">Artifact Packaging &amp; Paper Writing</span><span class="flow-stage-name lang-zh">产物打包与论文撰写</span>
               <span class="flow-stage-copy lang-en">Organize the paper, code, figures, and reproducible research outputs.</span><span class="flow-stage-copy lang-zh">整理论文、代码、图表与可复现研究产物。</span>
-              <span class="flow-stage-meta lang-en">Paper · Code · Figures · Research package</span><span class="flow-stage-meta lang-zh">论文 · 代码 · 图表 · 研究产物包</span>
             </div>
           </div>
         </div>
@@ -1809,6 +2182,10 @@ html[data-lang="zh"] .foot-inner a { font-family: var(--font-b-zh); }
 <section id="mechanism-knowledge" class="reveal story-band story-band--alt mechanism-story" data-mechanism="knowledge" data-nav-target="how">
   <h2><span class="lang-en">Turn paper evidence into <em>traceable method knowledge and research strategies.</em></span><span class="lang-zh">把论文证据，<em>提炼成可追溯的方法知识与研究策略</em>。</span></h2>
 
+  <figure class="svg-diagram" id="svgKnowledgeFigure" data-diagram="knowledge" style="--diagram-min-width: 1280px" aria-labelledby="svgKnowledgeCaption" aria-describedby="svgKnowledgeSummary">
+    <div class="svg-diagram-topline"><figcaption class="svg-diagram-title" id="svgKnowledgeCaption"><span class="lang-en">Paper-derived knowledge paths</span><span class="lang-zh">论文驱动的知识路径</span></figcaption><div class="svg-diagram-actions" role="group" aria-label="Knowledge path controls"><button class="svg-diagram-control" type="button" data-diagram-action="method" aria-pressed="false"><span class="lang-en">Method</span><span class="lang-zh">方法知识</span></button><button class="svg-diagram-control" type="button" data-diagram-action="strategy" aria-pressed="false"><span class="lang-en">Strategy</span><span class="lang-zh">研究策略</span></button><button class="flow-replay" type="button" data-diagram-replay disabled aria-label="Highlight knowledge path" title="Highlight knowledge path"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11a8 8 0 1 0-2.35 5.65"/><path d="M20 4v7h-7"/></svg></button></div></div>
+    <div class="svg-diagram-viewport" tabindex="0" role="region" aria-label="Knowledge paths diagram; scroll horizontally on narrow screens"><div class="svg-diagram-canvas"><img class="svg-diagram-fallback" src="assets/figures/fig3.zh.svg" alt="OwnPI paper-derived knowledge diagram"></div></div><span class="svg-diagram-scroll-hint"><span class="lang-en">Drag or scroll sideways to inspect the full diagram.</span><span class="lang-zh">可横向拖动或滚动查看完整图版。</span></span><p class="sr-only" id="svgKnowledgeSummary"><span class="lang-en">Select method or strategy, then highlight that static knowledge lane.</span><span class="lang-zh">选择方法知识或研究策略后，可高亮对应的静态知识路径。</span></p><p class="svg-diagram-status sr-only" aria-live="polite"></p>
+  </figure>
   <figure class="knowledge-flow" id="knowledgeFlow" data-kb-state="idle" aria-labelledby="knowledgeFlowCaption" aria-describedby="knowledgeFlowSummary">
     <div class="flow-caption-bar">
       <figcaption class="figure-caption sr-only" id="knowledgeFlowCaption"><span class="lang-en">Paper-derived knowledge factory</span><span class="lang-zh">论文驱动的知识库构建</span></figcaption>
@@ -1817,8 +2194,8 @@ html[data-lang="zh"] .foot-inner a { font-family: var(--font-b-zh); }
       </button>
     </div>
     <p class="sr-only" id="knowledgeFlowSummary">
-      <span class="lang-en">A shared paper corpus becomes structured evidence, then follows two parallel paths. Method evidence is routed, grouped, and distilled into reusable patterns and method knowledge. Research construction evidence becomes paper blueprints, strategy profiles, and transferable cross-paper strategies. Both packages enter one versioned, verifiable knowledge release for NeuroAgent.</span>
-      <span class="lang-zh">论文语料先整理为结构化证据，再沿两条路径处理：一条汇总同类案例，归纳出可复用的方法知识；另一条比较论文的研究设计，提炼出可迁移的研究策略。两类知识经过统一校验和版本管理后，供 NeuroAgent 检索使用。</span>
+      <span class="lang-en">A shared paper corpus becomes structured evidence, then follows two parallel paths. Method evidence is routed, grouped, and distilled into reusable patterns and method knowledge. Research construction evidence becomes paper blueprints, strategy profiles, and transferable cross-paper strategies. Both packages enter one versioned, verifiable knowledge release for OwnPI.</span>
+      <span class="lang-zh">论文语料先整理为结构化证据，再沿两条路径处理：一条汇总同类案例，归纳出可复用的方法知识；另一条比较论文的研究设计，提炼出可迁移的研究策略。两类知识经过统一校验和版本管理后，供 OwnPI 检索使用。</span>
     </p>
 
     <div class="kb-shell">
@@ -1833,10 +2210,11 @@ html[data-lang="zh"] .foot-inner a { font-family: var(--font-b-zh); }
           <div class="kb-source-divider" aria-hidden="true"></div>
           <div class="kb-source-row">
             <span class="kb-eyebrow"><span class="lang-en">STRUCTURED EVIDENCE</span><span class="lang-zh">统一整理</span></span>
-            <span class="kb-source-title"><span class="lang-en">Structured Evidence</span><span class="lang-zh">结构化论文证据</span></span>
+            <span class="kb-source-title"><span class="lang-en">Structured evidence</span><span class="lang-zh">结构化证据</span></span>
             <span class="kb-source-meta"><span class="lang-en">Research facts · Methods · Construction logic</span><span class="lang-zh">研究事实 · 方法细节 · 论证思路</span></span>
           </div>
         </div>
+        <div class="kb-source-endpoint"><span class="lang-en">Searchable · Expandable · Traceable</span><span class="lang-zh">可检索 · 可展开 · 可追溯</span></div>
       </div>
 
       <div class="kb-lens">
@@ -1851,39 +2229,48 @@ html[data-lang="zh"] .foot-inner a { font-family: var(--font-b-zh); }
           <circle class="kb-pulse kb-pulse--strategy" id="kbStrategyPulse" cx="0" cy="0" r="4"/>
         </svg>
 
-        <div class="kb-lens-center"><span class="lang-en">LAYERED DISTILLATION</span><span class="lang-zh">分层蒸馏</span></div>
+        <div class="kb-lens-center">
+          <span class="kb-lens-center-title"><span class="lang-en">LAYERED DISTILLATION</span><span class="lang-zh">分层蒸馏</span></span>
+          <span class="kb-lens-center-copy"><span class="lang-en">Two knowledge paths, one evidence base</span><span class="lang-zh">两条知识路径，共享同一证据基础</span></span>
+        </div>
 
         <div class="kb-lane kb-lane--method" data-kb-lane="method">
           <div class="kb-lane-label"><span class="lang-en">METHOD KNOWLEDGE</span><span class="lang-zh">方法知识</span></div>
           <div class="kb-node" data-kb-lane="method" data-kb-step="1">
+            <span class="kb-node-code">M01</span>
             <span class="kb-node-name lang-en">Evidence Routing</span><span class="kb-node-name lang-zh">证据归类</span>
           </div>
           <div class="kb-node" data-kb-lane="method" data-kb-step="2">
+            <span class="kb-node-code">M02</span>
             <span class="kb-node-name lang-en">Case Grouping</span><span class="kb-node-name lang-zh">汇总同类案例</span>
           </div>
           <div class="kb-node" data-kb-lane="method" data-kb-step="3">
+            <span class="kb-node-code">M03</span>
             <span class="kb-node-name lang-en">Pattern Induction</span><span class="kb-node-name lang-zh">归纳共性规律</span>
           </div>
           <div class="kb-node" data-kb-lane="method" data-kb-step="4">
+            <span class="kb-node-code">M04</span>
             <span class="kb-node-name lang-en">Method Knowledge</span><span class="kb-node-name lang-zh">形成方法知识</span>
-            <span class="kb-node-meta"><span class="lang-en">Subtarget · Pattern · Case</span><span class="lang-zh">研究问题 · 共性规律 · 论文案例</span></span>
           </div>
         </div>
 
         <div class="kb-lane kb-lane--strategy" data-kb-lane="strategy">
           <div class="kb-lane-label"><span class="lang-en">RESEARCH STRATEGY</span><span class="lang-zh">研究策略</span></div>
           <div class="kb-node" data-kb-lane="strategy" data-kb-step="1">
+            <span class="kb-node-code">R01</span>
             <span class="kb-node-name lang-en">Paper Blueprint</span><span class="kb-node-name lang-zh">梳理论文框架</span>
           </div>
           <div class="kb-node" data-kb-lane="strategy" data-kb-step="2">
+            <span class="kb-node-code">R02</span>
             <span class="kb-node-name lang-en">Strategy Profile</span><span class="kb-node-name lang-zh">提炼研究思路</span>
           </div>
           <div class="kb-node" data-kb-lane="strategy" data-kb-step="3">
+            <span class="kb-node-code">R03</span>
             <span class="kb-node-name lang-en">Cross-paper Distillation</span><span class="kb-node-name lang-zh">比较多篇论文</span>
           </div>
           <div class="kb-node" data-kb-lane="strategy" data-kb-step="4">
+            <span class="kb-node-code">R04</span>
             <span class="kb-node-name lang-en">Research Strategies</span><span class="kb-node-name lang-zh">形成研究策略</span>
-            <span class="kb-node-meta"><span class="lang-en">Archetype · Dimension · Supporting Paper</span><span class="lang-zh">研究类型 · 设计要点 · 参考论文</span></span>
           </div>
         </div>
 
@@ -1895,18 +2282,16 @@ html[data-lang="zh"] .foot-inner a { font-family: var(--font-b-zh); }
           <div class="kb-release-row kb-release-row--method">
             <span class="kb-release-kicker"><span class="lang-en">METHOD KNOWLEDGE</span><span class="lang-zh">方法知识</span></span>
             <span class="kb-release-title"><span class="lang-en">Method Knowledge Base</span><span class="lang-zh">方法知识库</span></span>
-            <span class="kb-release-meta"><span class="lang-en">Questions · Patterns · Cases</span><span class="lang-zh">研究问题 · 共性规律 · 论文案例</span></span>
           </div>
           <div class="kb-release-divider" aria-hidden="true"></div>
           <div class="kb-release-row kb-release-row--strategy">
             <span class="kb-release-kicker"><span class="lang-en">RESEARCH STRATEGY</span><span class="lang-zh">研究策略</span></span>
             <span class="kb-release-title"><span class="lang-en">Research Strategy Knowledge Base</span><span class="lang-zh">研究策略库</span></span>
-            <span class="kb-release-meta"><span class="lang-en">Archetypes · Design dimensions · Source papers</span><span class="lang-zh">研究类型 · 设计要点 · 参考论文</span></span>
           </div>
         </div>
         <div class="kb-agent-endpoint">
-          <div class="kb-agent-wordmark">Neuro<span>Agent</span></div>
-          <div class="kb-agent-label"><span class="lang-en">NeuroAgent Retrieval</span><span class="lang-zh">供 NeuroAgent 检索</span></div>
+          <div class="kb-agent-wordmark">OwnPI</div>
+          <div class="kb-agent-label"><span class="lang-en">OwnPI on-demand retrieval</span><span class="lang-zh">OwnPI 按需检索</span></div>
         </div>
       </div>
     </div>
@@ -1918,6 +2303,10 @@ html[data-lang="zh"] .foot-inner a { font-family: var(--font-b-zh); }
 <section id="mechanism-skills" class="reveal story-band mechanism-story" data-mechanism="skills" data-nav-target="how">
   <h2><span class="lang-en">For every research stage, <em>built-in research skills are assembled automatically.</em></span><span class="lang-zh">每个研究阶段该怎么做，<em>由内置科研技能自动装配</em>。</span></h2>
 
+  <figure class="svg-diagram" id="svgSkillsFigure" data-diagram="skills" style="--diagram-min-width: 1196px" aria-labelledby="svgSkillsCaption" aria-describedby="svgSkillsSummary">
+    <div class="svg-diagram-topline"><figcaption class="svg-diagram-title" id="svgSkillsCaption"><span class="lang-en">Task-driven skill assembly</span><span class="lang-zh">任务驱动的技能装配</span></figcaption><div class="svg-diagram-actions"><button class="flow-replay" type="button" data-diagram-replay disabled aria-label="Highlight research skill assembly" title="Highlight research skill assembly"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11a8 8 0 1 0-2.35 5.65"/><path d="M20 4v7h-7"/></svg></button></div></div>
+    <div class="svg-diagram-viewport" tabindex="0" role="region" aria-label="Research skill assembly diagram; scroll horizontally on narrow screens"><div class="svg-diagram-canvas"><img class="svg-diagram-fallback" src="assets/figures/fig4.zh.svg" alt="OwnPI research skill assembly diagram"></div></div><span class="svg-diagram-scroll-hint"><span class="lang-en">Drag or scroll sideways to inspect the full diagram.</span><span class="lang-zh">可横向拖动或滚动查看完整图版。</span></span><p class="sr-only" id="svgSkillsSummary"><span class="lang-en">Highlight the static task, capability, and method-pack nodes.</span><span class="lang-zh">可高亮静态的任务、能力目录与方法包节点。</span></p><p class="svg-diagram-status sr-only" aria-live="polite"></p>
+  </figure>
   <figure class="skill-flow" id="skillFlow" data-skill-state="idle" aria-labelledby="skillFlowCaption" aria-describedby="skillFlowSummary">
       <div class="flow-caption-bar">
         <figcaption class="figure-caption sr-only" id="skillFlowCaption"><span class="lang-en">Automatic routing and assembly of built-in research skills</span><span class="lang-zh">内置科研技能的自动路由与装配</span></figcaption>
@@ -1926,17 +2315,17 @@ html[data-lang="zh"] .foot-inner a { font-family: var(--font-b-zh); }
         </button>
       </div>
       <p class="sr-only" id="skillFlowSummary">
-        <span class="lang-en">For a predictive modeling task in method design, NeuroAgent reads the research context, routes four built-in skills from five capability tracks into one method pack, and injects that pack into the current stage. Research writing is assessed but not loaded for this run.</span>
-        <span class="lang-zh">图中以预测建模研究的方法设计阶段为例：NeuroAgent 读取研究上下文，从五类内置能力中自动路由四项技能，形成一份本轮方法包并注入当前阶段；科研写作经过判断，但本轮不加载。</span>
+        <span class="lang-en">For an intracranial EEG speech-decoding study in method design, OwnPI reads the research context, routes four built-in skills from five capability tracks into one method pack, and loads that pack into the current context. Research writing is assessed but not selected for this run.</span>
+        <span class="lang-zh">图中以侵入式脑电语音解码研究的方法设计阶段为例：OwnPI 读取研究上下文，从五类内置能力中自动路由四项技能，形成一份本轮方法包并载入上下文；科研写作经过评估，但本轮未选择。</span>
       </p>
 
       <div class="skill-shell">
         <div class="skill-context-wrap">
-          <div class="skill-phase-label"><span class="lang-en">RESEARCH CONTEXT</span><span class="lang-zh">研究上下文</span></div>
+          <div class="skill-phase-label"><span class="lang-en">CURRENT TASK</span><span class="lang-zh">当前任务</span></div>
           <div class="skill-context" data-skill-context>
-            <div class="skill-context-title"><span class="lang-en">Predictive modeling study</span><span class="lang-zh">预测建模研究</span></div>
+            <div class="skill-context-title"><span class="lang-en">Intracranial EEG speech decoding study</span><span class="lang-zh">侵入式脑电的语音解码研究</span></div>
             <div class="skill-context-list">
-              <div class="skill-context-row"><span class="skill-context-key"><span class="lang-en">GOAL</span><span class="lang-zh">研究目标</span></span><span class="skill-context-value"><span class="lang-en">Build a robust predictive model</span><span class="lang-zh">建立稳健的预测模型</span></span></div>
+              <div class="skill-context-row"><span class="skill-context-key"><span class="lang-en">GOAL</span><span class="lang-zh">研究目标</span></span><span class="skill-context-value"><span class="lang-en">Build a robust decoding model</span><span class="lang-zh">建立稳健的解码模型</span></span></div>
               <div class="skill-context-row"><span class="skill-context-key"><span class="lang-en">STAGE</span><span class="lang-zh">当前阶段</span></span><span class="skill-context-value"><span class="lang-en">Method design</span><span class="lang-zh">方法设计</span></span></div>
             </div>
           </div>
@@ -1945,10 +2334,10 @@ html[data-lang="zh"] .foot-inner a { font-family: var(--font-b-zh); }
         <span class="skill-connector" data-skill-route aria-hidden="true"></span>
 
         <div class="skill-router" data-agent-router>
-          <div class="skill-router-mark">Neuro<span>Agent</span></div>
+          <div class="skill-router-mark">OwnPI</div>
           <div class="skill-router-title"><span class="lang-en">Understand the task</span><span class="lang-zh">理解当前任务</span></div>
           <div class="skill-router-copy"><span class="lang-en">Use the research goal and current stage to determine the methods needed for this run.</span><span class="lang-zh">根据研究目标和当前阶段，判断本轮执行需要哪些方法。</span></div>
-          <div class="skill-router-state" data-state-en="Waiting for context" data-state-zh="等待研究上下文"><span class="lang-en">Waiting for context</span><span class="lang-zh">等待研究上下文</span></div>
+          <div class="skill-router-state" data-state-en="Routing in progress" data-state-zh="自动路由中"><span class="lang-en">Routing in progress</span><span class="lang-zh">自动路由中</span></div>
         </div>
 
         <span class="skill-connector" data-skill-route aria-hidden="true"></span>
@@ -1956,34 +2345,34 @@ html[data-lang="zh"] .foot-inner a { font-family: var(--font-b-zh); }
         <div class="skill-library" data-skill-library>
           <span class="skill-scan-beam" aria-hidden="true"></span>
           <div class="skill-library-head">
-            <div class="skill-library-title"><span class="lang-en">Built-in research capabilities</span><span class="lang-zh">内置科研能力</span></div>
-            <div class="skill-library-meta"><span class="lang-en">AUTOMATIC ROUTING</span><span class="lang-zh">自动路由</span></div>
+            <div class="skill-library-title"><span class="lang-en">Built-in research capability catalog</span><span class="lang-zh">内置科研能力目录</span></div>
+            <div class="skill-library-meta"><span class="lang-en">ROUTING IN PROGRESS</span><span class="lang-zh">自动路由中</span></div>
           </div>
           <div class="skill-groups">
             <div class="skill-group" data-skill-group="design" data-skill-name="research-ideation">
               <div class="skill-group-name"><span class="lang-en">Research design</span><span class="lang-zh">研究设计</span></div>
               <div class="skill-item"><span class="lang-en">Research ideation</span><span class="lang-zh">研究构思</span></div>
-              <div class="skill-group-state" data-state-en="Built in" data-state-zh="内置"><span class="lang-en">Built in</span><span class="lang-zh">内置</span></div>
+              <div class="skill-group-state" data-state-en="Loaded" data-state-zh="已加载"><span class="lang-en">Loaded</span><span class="lang-zh">已加载</span></div>
             </div>
-            <div class="skill-group" data-skill-group="data" data-skill-name="brain-data-intake-audit">
+            <div class="skill-group" data-skill-group="data" data-skill-name="eeg-signal-preprocessing">
               <div class="skill-group-name"><span class="lang-en">Data and signal processing</span><span class="lang-zh">数据与信号处理</span></div>
-              <div class="skill-item"><span class="lang-en">Data quality audit</span><span class="lang-zh">数据质量审计</span></div>
-              <div class="skill-group-state" data-state-en="Built in" data-state-zh="内置"><span class="lang-en">Built in</span><span class="lang-zh">内置</span></div>
+              <div class="skill-item"><span class="lang-en">EEG signal preprocessing method</span><span class="lang-zh">脑电信号预处理方法</span></div>
+              <div class="skill-group-state" data-state-en="Loaded" data-state-zh="已加载"><span class="lang-en">Loaded</span><span class="lang-zh">已加载</span></div>
             </div>
             <div class="skill-group" data-skill-group="analysis" data-skill-name="supervised-decoding-modeling-strategy">
               <div class="skill-group-name"><span class="lang-en">Modeling and analysis</span><span class="lang-zh">建模与结果分析</span></div>
               <div class="skill-item"><span class="lang-en">Supervised decoding strategy</span><span class="lang-zh">监督解码建模策略</span></div>
-              <div class="skill-group-state" data-state-en="Built in" data-state-zh="内置"><span class="lang-en">Built in</span><span class="lang-zh">内置</span></div>
+              <div class="skill-group-state" data-state-en="Loaded" data-state-zh="已加载"><span class="lang-en">Loaded</span><span class="lang-zh">已加载</span></div>
             </div>
             <div class="skill-group" data-skill-group="writing">
               <div class="skill-group-name"><span class="lang-en">Research writing</span><span class="lang-zh">科研写作</span></div>
               <div class="skill-item"><span class="lang-en">Not needed for this stage</span><span class="lang-zh">本轮无需加载</span></div>
-              <div class="skill-group-state" data-state-en="Built in" data-state-zh="内置"><span class="lang-en">Built in</span><span class="lang-zh">内置</span></div>
+              <div class="skill-group-state" data-state-en="Evaluated not selected" data-state-zh="已评估 未选择"><span class="lang-en">Evaluated not selected</span><span class="lang-zh">已评估 未选择</span></div>
             </div>
             <div class="skill-group" data-skill-group="review" data-skill-name="verification-loop">
               <div class="skill-group-name"><span class="lang-en">Review and reproducibility</span><span class="lang-zh">审查与复现</span></div>
-              <div class="skill-item"><span class="lang-en">Run verification</span><span class="lang-zh">运行验证</span></div>
-              <div class="skill-group-state" data-state-en="Built in" data-state-zh="内置"><span class="lang-en">Built in</span><span class="lang-zh">内置</span></div>
+              <div class="skill-item"><span class="lang-en">Iterative validation</span><span class="lang-zh">迭代验证</span></div>
+              <div class="skill-group-state" data-state-en="Loaded" data-state-zh="已加载"><span class="lang-en">Loaded</span><span class="lang-zh">已加载</span></div>
             </div>
           </div>
         </div>
@@ -1994,28 +2383,84 @@ html[data-lang="zh"] .foot-inner a { font-family: var(--font-b-zh); }
           <div class="skill-pack-kicker"><span class="lang-en">AUTO-ASSEMBLED</span><span class="lang-zh">自动装配</span></div>
           <div class="skill-pack-title"><span class="lang-en">Method pack for this run</span><span class="lang-zh">本轮方法包</span></div>
           <div class="skill-pack-count"><span data-skill-count>0</span><span class="lang-en"> skills</span><span class="lang-zh"> 项技能</span></div>
-          <div class="skill-pack-copy"><span class="lang-en">Formed automatically by NeuroAgent.</span><span class="lang-zh">由 NeuroAgent 自动形成。</span></div>
+          <div class="skill-pack-copy"><span class="lang-en">Formed automatically by OwnPI and loaded into context.</span><span class="lang-zh">由 OwnPI 自动形成，并载入上下文。</span></div>
           <div class="skill-pack-dots" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
         </div>
 
-        <span class="skill-connector skill-connector--output" data-skill-route aria-hidden="true"></span>
-
-        <div class="skill-output-wrap">
-          <div class="skill-phase-label"><span class="lang-en">CURRENT STAGE</span><span class="lang-zh">当前科研阶段</span></div>
-          <div class="skill-stage" data-skill-stage>
-            <div class="skill-stage-kicker"><span class="lang-en">METHOD PACK INJECTED</span><span class="lang-zh">方法包已注入</span></div>
-            <div class="skill-stage-title"><span class="lang-en">Method design</span><span class="lang-zh">方法设计</span></div>
-            <div class="skill-stage-copy"><span class="lang-en">The assembled methods now guide this stage.</span><span class="lang-zh">自动装配的方法进入本轮执行。</span></div>
-            <div class="skill-stage-outputs">
-              <div class="skill-stage-output"><span class="lang-en">Procedures</span><span class="lang-zh">操作步骤</span></div>
-              <div class="skill-stage-output"><span class="lang-en">Checks</span><span class="lang-zh">检查标准</span></div>
-              <div class="skill-stage-output"><span class="lang-en">Output requirements</span><span class="lang-zh">输出要求</span></div>
-            </div>
-          </div>
-        </div>
       </div>
 
       <div class="sr-only" id="skillFlowStatus" aria-live="polite"></div>
+  </figure>
+</section>
+
+<section id="brainlib" class="reveal story-band story-band--alt mechanism-story" data-mechanism="brainlib" data-nav-target="how">
+  <h2><span class="lang-en">A complete <em>Brainlib skill library</em>—from multi-source brain data to reusable experiments.</span><span class="lang-zh">基于Brainlib的从多源脑数据到可复用实验的完整技能库</span></h2>
+
+  <figure class="brainlib-native-flow" id="brainlibFlow" data-brainlib-state="idle" aria-labelledby="brainlibFlowCaption" aria-describedby="brainlibFlowSummary">
+    <figcaption class="sr-only" id="brainlibFlowCaption">基于Brainlib的从多源脑数据到可复用实验的完整技能库</figcaption>
+    <p class="sr-only" id="brainlibFlowSummary">Brainlib 支持 EEG、sEEG、ECoG、Spike 与 fMRI，并通过原始数据接口接入 BIDS、MOABB、OpenNeuro、MNE、Numpy Array 和 NWB Units。实验运行流程依次包含 Dataset、Paradigm、Protocol、Split、Collator、Model、Trainer 与 Training；统一配置、模型训练与组件扩展支持完整实验、内置组件、自定义接口以及可复用的实验产物与恢复机制。</p>
+    <button class="flow-replay brainlib-native-replay" id="brainlibReplay" type="button" disabled aria-label="重播 Brainlib 实验运行" title="重播 Brainlib 实验运行">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11a8 8 0 1 0-2.35 5.65"/><path d="M20 4v7h-7"/></svg>
+    </button>
+    <div class="brainlib-native-viewport" tabindex="0" role="region" aria-label="基于 Brainlib 的完整技能库；窄屏可横向滚动查看完整图版。">
+      <div class="brainlib-native-canvas">
+        <div class="brainlib-native-panel brainlib-native-source" data-brainlib-node="source">
+          <div class="brainlib-native-panel-heading">原始数据接口</div>
+          <span class="brainlib-native-divider" aria-hidden="true"></span>
+          <div class="brainlib-native-source-label brainlib-native-source-label--types">支持的数据类型：</div>
+          <div class="brainlib-native-type-list">EEG   sEEG   ECoG
+Spike   fMRI</div>
+          <div class="brainlib-native-source-label brainlib-native-source-label--sources">支持的数据来源：</div>
+          <div class="brainlib-native-source-list"><span>BIDS</span><span>MOABB</span><span>OpenNeuro</span><span>MNE</span><span>Numpy Array</span><span>NWB Units</span></div>
+        </div>
+
+        <span class="brainlib-native-line brainlib-native-line--source brainlib-native-line--arrow" data-brainlib-segment="source" aria-hidden="true"></span>
+
+        <div class="brainlib-native-panel brainlib-native-runtime">
+          <div class="brainlib-native-panel-heading">实验运行流程</div>
+          <button class="brainlib-native-details-toggle brainlib-native-details-toggle--runtime" id="brainlibRuntimeDetailsToggle" type="button" aria-expanded="false" aria-controls="brainlibDatasetCopy brainlibParadigmCopy brainlibProtocolCopy brainlibProtocolModes brainlibSplitCopy brainlibCollatorCopy brainlibModelCopy brainlibTrainerCopy brainlibTrainingCopy">
+            <span class="brainlib-native-details-toggle-label--expand"><span class="lang-zh">展开说明</span><span class="lang-en">View step details</span></span>
+            <span class="brainlib-native-details-toggle-label--collapse"><span class="lang-zh">收起步骤说明</span><span class="lang-en">Hide step details</span></span>
+          </button>
+          <span class="brainlib-native-divider" aria-hidden="true"></span>
+
+          <div class="brainlib-native-node brainlib-native-node--dataset" data-brainlib-node="dataset"><div class="brainlib-native-node-title">Dataset</div><div class="brainlib-native-node-copy" id="brainlibDatasetCopy" aria-hidden="true">确认数据来源和结构<br>可选的数据预处理</div></div>
+          <div class="brainlib-native-node brainlib-native-node--paradigm" data-brainlib-node="paradigm"><div class="brainlib-native-node-title">Paradigm</div><div class="brainlib-native-node-copy" id="brainlibParadigmCopy" aria-hidden="true">将数据根据不同的范式划分窗口<br>得到有明确样本和标签语义的数据</div></div>
+          <div class="brainlib-native-node brainlib-native-node--protocol" data-brainlib-node="protocol"><div class="brainlib-native-node-title">Protocol</div><div class="brainlib-native-node-copy" id="brainlibProtocolCopy" aria-hidden="true">选择实验的分析设定</div><div class="brainlib-native-node-modes" id="brainlibProtocolModes" aria-hidden="true">within session/subject<br>cross session/subject</div></div>
+          <div class="brainlib-native-node brainlib-native-node--split" data-brainlib-node="split"><div class="brainlib-native-node-title">Split</div><div class="brainlib-native-node-copy" id="brainlibSplitCopy" aria-hidden="true">生成训练、验证、测试数据集<br>支持多种划分方法</div></div>
+          <div class="brainlib-native-node brainlib-native-node--collator" data-brainlib-node="collator"><div class="brainlib-native-node-title">Collator</div><div class="brainlib-native-node-copy" id="brainlibCollatorCopy" aria-hidden="true">接收一组 Dataset 样本<br>生成模型能够消费的 batch</div></div>
+          <div class="brainlib-native-node brainlib-native-node--model" data-brainlib-node="model"><div class="brainlib-native-node-title">Model</div><div class="brainlib-native-node-copy" id="brainlibModelCopy" aria-hidden="true">从内置的模型库中选择模型<br>或自定义模型</div></div>
+          <div class="brainlib-native-node brainlib-native-node--trainer" data-brainlib-node="trainer"><div class="brainlib-native-node-title">Trainer</div><div class="brainlib-native-node-copy" id="brainlibTrainerCopy" aria-hidden="true">选择损失函数、优化器、<br>学习率调度器、EMA/SWA、<br>评估指标，模型权重保存策略</div></div>
+          <div class="brainlib-native-node brainlib-native-node--training" data-brainlib-node="training"><div class="brainlib-native-node-title">Training</div><div class="brainlib-native-node-copy" id="brainlibTrainingCopy" aria-hidden="true">进行模型的训练评估和测试<br>将流程整理成结构化的运行记录</div></div>
+
+          <span class="brainlib-native-line brainlib-native-line--dataset brainlib-native-line--arrow" data-brainlib-segment="dataset" aria-hidden="true"></span>
+          <span class="brainlib-native-line brainlib-native-line--paradigm brainlib-native-line--arrow" data-brainlib-segment="paradigm" aria-hidden="true"></span>
+          <span class="brainlib-native-line brainlib-native-line--protocol brainlib-native-line--arrow" data-brainlib-segment="protocol" aria-hidden="true"></span>
+          <span class="brainlib-native-line brainlib-native-line--collator brainlib-native-line--arrow" data-brainlib-segment="collator" aria-hidden="true"></span>
+          <span class="brainlib-native-line brainlib-native-line--model brainlib-native-line--arrow" data-brainlib-segment="model" aria-hidden="true"></span>
+          <span class="brainlib-native-line brainlib-native-line--trainer brainlib-native-line--arrow" data-brainlib-segment="trainer" aria-hidden="true"></span>
+          <span class="brainlib-native-line brainlib-native-line--split-exit" data-brainlib-segment="split-exit" aria-hidden="true"></span>
+          <span class="brainlib-native-line brainlib-native-line--turn-down" data-brainlib-segment="turn-down" aria-hidden="true"></span>
+          <span class="brainlib-native-line brainlib-native-line--turn-back" data-brainlib-segment="turn-back" aria-hidden="true"></span>
+          <span class="brainlib-native-line brainlib-native-line--turn-drop" data-brainlib-segment="turn-drop" aria-hidden="true"></span>
+          <span class="brainlib-native-line brainlib-native-line--turn-enter brainlib-native-line--arrow" data-brainlib-segment="turn-enter" aria-hidden="true"></span>
+        </div>
+
+        <div class="brainlib-native-panel brainlib-native-extensions">
+          <div class="brainlib-native-extensions-heading">统一配置、模型训练与组件扩展</div>
+          <button class="brainlib-native-details-toggle" id="brainlibExtensionDetailsToggle" type="button" aria-expanded="false" aria-controls="brainlibConfigurationCopy brainlibBuiltinsCopy brainlibCustomCopy brainlibArtifactsCopy">
+            <span class="brainlib-native-details-toggle-label--expand"><span class="lang-zh">展开说明</span><span class="lang-en">View details</span></span>
+            <span class="brainlib-native-details-toggle-label--collapse"><span class="lang-zh">收起说明</span><span class="lang-en">Hide details</span></span>
+          </button>
+        </div>
+        <div class="brainlib-native-card brainlib-native-card--configuration" data-brainlib-capability="configuration"><div class="brainlib-native-card-title">一份配置贯穿完整实验</div><div class="brainlib-native-card-copy" id="brainlibConfigurationCopy" aria-hidden="true">数据来源、任务视图、实验划分、模型<br>结构和训练策略由同一份配置定义，并<br>沿运行链自动传递，避免参数散落在不<br>同脚本中。</div></div>
+        <div class="brainlib-native-card brainlib-native-card--builtins" data-brainlib-capability="builtins"><div class="brainlib-native-card-title">内置先进模型与训练组件</div><div class="brainlib-native-card-copy" id="brainlibBuiltinsCopy" aria-hidden="true">Brainlib 内置常用神经信号模型、训练<br>组件与评估方法，可直接组成完整实<br>验，也能作为新方法的可比较基线。</div></div>
+        <div class="brainlib-native-card brainlib-native-card--custom" data-brainlib-capability="custom"><div class="brainlib-native-card-title">灵活的自定义组件接口</div><div class="brainlib-native-card-copy" id="brainlibCustomCopy" aria-hidden="true">研究者可以注册自己的数据源、任务视图、<br>模型和训练组件，而无需重写 Brainlib 的<br>数据、划分、训练与产物流程。</div></div>
+        <div class="brainlib-native-card brainlib-native-card--artifacts" data-brainlib-capability="artifacts"><div class="brainlib-native-card-title">可复用的实验产物与恢复机制</div><div class="brainlib-native-card-copy" id="brainlibArtifactsCopy" aria-hidden="true">Brainlib 将数据视图、实验划分、模<br>型、训练状态和预测结果保存为结构化记<br>录，使实验可以从中间阶段继续运行，而<br>不必每次从原始数据重新开始。</div></div>
+        <span class="brainlib-native-pulse" data-brainlib-pulse aria-hidden="true"></span>
+      </div>
+    </div>
+    <div class="sr-only" id="brainlibFlowStatus" aria-live="polite"></div>
   </figure>
 </section>
 
@@ -2026,8 +2471,8 @@ html[data-lang="zh"] .foot-inner a { font-family: var(--font-b-zh); }
     <span class="lang-zh">从不同科研任务切入，形成<em>可检查、可复现的成果</em>。</span>
   </h2>
   <p class="section-intro">
-    <span class="lang-en">NeuroAgent can begin with study design, data and computation, or output review while keeping execution and artifacts in one traceable run.</span>
-    <span class="lang-zh">NeuroAgent 可以从方案设计、数据计算或成果审查进入，并把执行过程与产物保存在同一份运行记录中。</span>
+    <span class="lang-en">OwnPI can begin with study design, data and computation, or output review while keeping execution and artifacts in one traceable run.</span>
+    <span class="lang-zh">OwnPI 可以从方案设计、数据计算或成果审查进入，并把执行过程与产物保存在同一份运行记录中。</span>
   </p>
   <div class="capability-grid stagger">
     <article class="capability-card capability-card--flow">
@@ -2113,7 +2558,7 @@ html[data-lang="zh"] .foot-inner a { font-family: var(--font-b-zh); }
       <summary><span class="lang-en">Configure the provider and run an example</span><span class="lang-zh">配置服务并运行示例</span></summary>
       <div class="qs"><div class="t"><span><span class="lang-en">Configure and verify your LLM provider.</span><span class="lang-zh">配置并检查 LLM 服务商。</span></span></div><div class="term-body"><code>neuro-agent setup &amp;&amp; neuro-agent doctor</code><button class="copy-btn" data-copy="neuro-agent setup && neuro-agent doctor" aria-label="Copy"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg></button></div></div>
       <div class="qs"><div class="t"><span><span class="lang-en">Run the bundled public research example.</span><span class="lang-zh">运行随附的公开研究示例。</span></span></div><div class="term-body"><code>neuro-agent run --task ~/.neuro-agent/tasks/public_bci_demo.yaml</code><button class="copy-btn" data-copy="neuro-agent run --task ~/.neuro-agent/tasks/public_bci_demo.yaml" aria-label="Copy"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg></button></div></div>
-      <div class="qs"><div class="t"><span><span class="lang-en">Then point NeuroAgent at your own dataset or research project.</span><span class="lang-zh">然后将 NeuroAgent 指向你的数据集或研究项目。</span></span></div><div class="term-body"><code><span class="lang-en"># Your dataset or research project</span><span class="lang-zh"># 你的数据集或研究项目</span></code></div></div>
+      <div class="qs"><div class="t"><span><span class="lang-en">Then point OwnPI at your own dataset or research project.</span><span class="lang-zh">然后将 OwnPI 指向你的数据集或研究项目。</span></span></div><div class="term-body"><code><span class="lang-en"># Your dataset or research project</span><span class="lang-zh"># 你的数据集或研究项目</span></code></div></div>
     </details>
   </div>
 </section>
@@ -2154,7 +2599,7 @@ html[data-lang="zh"] .foot-inner a { font-family: var(--font-b-zh); }
 
 <footer>
   <div class="foot-inner">
-    <div class="l">NeuroAgent</div>
+    <div class="l">OwnPI</div>
     <div class="r">
       <a href="#quickstart"><span class="lang-en">Quick start</span><span class="lang-zh">快速上手</span></a>
       <a href="#faq">FAQ</a>
@@ -2164,7 +2609,7 @@ html[data-lang="zh"] .foot-inner a { font-family: var(--font-b-zh); }
     </div>
   </div>
   <div class="footer-wordmark-crop" aria-hidden="true">
-    <div class="footer-wordmark-outline">NeuroAgent</div>
+    <div class="footer-wordmark-outline">OwnPI</div>
   </div>
 </footer>
 
@@ -2200,7 +2645,7 @@ html[data-lang="zh"] .foot-inner a { font-family: var(--font-b-zh); }
     introCompleteTimer = setTimeout(completeIntro, 1125);
   }
   if (root.classList.contains('intro-pending')) {
-    try { sessionStorage.setItem('na-intro-v8-seen', '1'); } catch (e) {}
+    try { sessionStorage.setItem('ownpi-intro-v1-seen', '1'); } catch (e) {}
     root.classList.add('intro-running');
     introExitTimer = setTimeout(beginIntroExit, 2625);
     introSafetyTimer = setTimeout(completeIntro, 4750);
@@ -2271,6 +2716,13 @@ html[data-lang="zh"] .foot-inner a { font-family: var(--font-b-zh); }
     updateHeroTerminalPlayback();
   });
 
+  /* ---------- Figure order ---------- */
+  var routingSection = document.getElementById('mechanism-routing');
+  var workflowSection = document.getElementById('how');
+  if (routingSection && workflowSection && routingSection.previousElementSibling !== workflowSection) {
+    routingSection.before(workflowSection);
+  }
+
   /* ---------- language ---------- */
   var langBtn = document.getElementById('langToggle');
   function applyLang(lang) {
@@ -2281,10 +2733,7 @@ html[data-lang="zh"] .foot-inner a { font-family: var(--font-b-zh); }
     var url = new URL(location.href);
     url.searchParams.set('lang', lang);
     history.replaceState(null, '', url.toString());
-    updateRuntimeProfileControlLabels();
-    updateFlowControlLabels();
-    updateKbControlLabels();
-    updateSkillControlLabels();
+    if (root.dataset.figureEngine === 'interactive' && typeof refreshDiagramLanguage === 'function') refreshDiagramLanguage();
   }
   var initialLang = new URLSearchParams(location.search).get('lang');
   if (!initialLang) { try { initialLang = localStorage.getItem('na-lang'); } catch (e) {} }
@@ -2293,6 +2742,39 @@ html[data-lang="zh"] .foot-inner a { font-family: var(--font-b-zh); }
   langBtn.addEventListener('click', function () {
     applyLang(root.dataset.lang === 'zh' ? 'en' : 'zh');
   });
+
+  /* ---------- Brainlib extension details ---------- */
+  var brainlibExtensionDetailsToggle = document.getElementById('brainlibExtensionDetailsToggle');
+  var brainlibNativeCanvas = document.querySelector('#brainlibFlow .brainlib-native-canvas');
+  var brainlibExtensionCopies = Array.prototype.slice.call(document.querySelectorAll('#brainlibFlow .brainlib-native-card-copy'));
+  function setBrainlibExtensionDetails(expanded) {
+    if (!brainlibExtensionDetailsToggle || !brainlibNativeCanvas) return;
+    brainlibNativeCanvas.classList.toggle('is-extension-details-expanded', expanded);
+    brainlibExtensionDetailsToggle.setAttribute('aria-expanded', String(expanded));
+    brainlibExtensionCopies.forEach(function (copy) { copy.setAttribute('aria-hidden', String(!expanded)); });
+  }
+  if (brainlibExtensionDetailsToggle && brainlibNativeCanvas) {
+    setBrainlibExtensionDetails(false);
+    brainlibExtensionDetailsToggle.addEventListener('click', function () {
+      setBrainlibExtensionDetails(brainlibExtensionDetailsToggle.getAttribute('aria-expanded') !== 'true');
+    });
+  }
+
+  /* ---------- Brainlib runtime step details ---------- */
+  var brainlibRuntimeDetailsToggle = document.getElementById('brainlibRuntimeDetailsToggle');
+  var brainlibRuntimeDetails = Array.prototype.slice.call(document.querySelectorAll('#brainlibFlow .brainlib-native-node-copy, #brainlibFlow .brainlib-native-node-modes'));
+  function setBrainlibRuntimeDetails(expanded) {
+    if (!brainlibRuntimeDetailsToggle || !brainlibNativeCanvas) return;
+    brainlibNativeCanvas.classList.toggle('is-runtime-details-expanded', expanded);
+    brainlibRuntimeDetailsToggle.setAttribute('aria-expanded', String(expanded));
+    brainlibRuntimeDetails.forEach(function (detail) { detail.setAttribute('aria-hidden', String(!expanded)); });
+  }
+  if (brainlibRuntimeDetailsToggle && brainlibNativeCanvas) {
+    setBrainlibRuntimeDetails(false);
+    brainlibRuntimeDetailsToggle.addEventListener('click', function () {
+      setBrainlibRuntimeDetails(brainlibRuntimeDetailsToggle.getAttribute('aria-expanded') !== 'true');
+    });
+  }
 
   /* ---------- figure playback lifecycle ---------- */
   function observeFigurePlayback(element, startPlayback, resetPlayback) {
@@ -2324,6 +2806,7 @@ html[data-lang="zh"] .foot-inner a { font-family: var(--font-b-zh); }
     return observer;
   }
 
+  if (root.dataset.figureEngine === 'legacy') {
   /* ---------- adaptive runtime and research depth ---------- */
   var runtimeProfileFlow = document.getElementById('runtimeProfileFlow');
   var runtimeProfileReplay = document.getElementById('runtimeProfileReplay');
@@ -2746,6 +3229,7 @@ html[data-lang="zh"] .foot-inner a { font-family: var(--font-b-zh); }
   /* ---------- iterative research flow ---------- */
   var runtimeFlow = document.getElementById('runtimeFlow');
   var flowShell = runtimeFlow.querySelector('.flow-shell');
+  var flowPrepare = runtimeFlow.querySelector('.flow-phase--prepare');
   var flowLoop = runtimeFlow.querySelector('.flow-loop');
   var flowLoopSvg = document.getElementById('flowLoopSvg');
   var flowShellLinks = document.getElementById('flowShellLinks');
@@ -2753,6 +3237,7 @@ html[data-lang="zh"] .foot-inner a { font-family: var(--font-b-zh); }
   var flowPassBase = document.getElementById('flow-pass-base');
   var flowEntryPath = document.getElementById('flow-entry');
   var flowPassPath = document.getElementById('flow-pass');
+  var flowPassLabel = runtimeFlow.querySelector('.flow-branch-label--pass');
   var flowReviewJunction = document.getElementById('flowReviewJunction');
   var flowShellPulse = document.getElementById('flowShellPulse');
   var flowReplay = document.getElementById('flowReplay');
@@ -2911,7 +3396,16 @@ html[data-lang="zh"] .foot-inner a { font-family: var(--font-b-zh); }
 
   function updateFlowShellPaths() {
     if (!flowShell || !flowShellLinks || !flowEntryPath || !flowPassPath) return;
-    if (window.matchMedia('(max-width: 980px)').matches) return;
+    if (window.matchMedia('(max-width: 980px)').matches) {
+      flowPrepare.style.removeProperty('--flow-prepare-offset');
+      return;
+    }
+    flowPrepare.style.setProperty('--flow-prepare-offset', '0px');
+    var initialStage2Rect = flowStage(2).getBoundingClientRect();
+    var initialStage3Rect = flowStage(3).getBoundingClientRect();
+    var prepareOffset = initialStage3Rect.top + initialStage3Rect.height / 2 -
+      (initialStage2Rect.top + initialStage2Rect.height / 2);
+    flowPrepare.style.setProperty('--flow-prepare-offset', prepareOffset.toFixed(1) + 'px');
     var shellRect = flowShell.getBoundingClientRect();
     var stage2Rect = flowStage(2).getBoundingClientRect();
     var stage3Rect = flowStage(3).getBoundingClientRect();
@@ -2921,13 +3415,11 @@ html[data-lang="zh"] .foot-inner a { font-family: var(--font-b-zh); }
     var startY = stage2Rect.top - shellRect.top + stage2Rect.height / 2;
     var endX = stage3Rect.left - shellRect.left - 1;
     var endY = stage3Rect.top - shellRect.top + stage3Rect.height / 2;
-    var entrySpan = Math.max(24, endX - startX);
+    var entryY = (startY + endY) / 2;
     flowShellLinks.setAttribute('viewBox', '0 0 ' + flowShell.clientWidth + ' ' + flowShell.clientHeight);
     var entryPathData =
-      'M' + startX.toFixed(1) + ' ' + startY.toFixed(1) +
-      ' C' + (startX + entrySpan * .34).toFixed(1) + ' ' + startY.toFixed(1) +
-      ' ' + (endX - entrySpan * .38).toFixed(1) + ' ' + endY.toFixed(1) +
-      ' ' + endX.toFixed(1) + ' ' + endY.toFixed(1);
+      'M' + startX.toFixed(1) + ' ' + entryY.toFixed(1) +
+      ' L' + endX.toFixed(1) + ' ' + entryY.toFixed(1);
     flowEntryBase.setAttribute('d', entryPathData);
     flowEntryPath.setAttribute('d', entryPathData);
 
@@ -2941,6 +3433,11 @@ html[data-lang="zh"] .foot-inner a { font-family: var(--font-b-zh); }
       ' L' + passEndX.toFixed(1) + ' ' + passEndY.toFixed(1);
     flowPassBase.setAttribute('d', passPathData);
     flowPassPath.setAttribute('d', passPathData);
+    if (flowPassLabel) {
+      var passLabelX = passStartX + (passEndX - passStartX) / 2;
+      flowPassLabel.style.left = passLabelX.toFixed(1) + 'px';
+      flowPassLabel.style.top = passStartY.toFixed(1) + 'px';
+    }
   }
 
   function updateFlowControlLabels() {
@@ -2991,14 +3488,13 @@ html[data-lang="zh"] .foot-inner a { font-family: var(--font-b-zh); }
       stage.classList.remove('is-active', 'is-complete', 'is-skipped', 'is-revisited');
     });
     runtimeFlow.querySelectorAll('.flow-path').forEach(function (path) {
-      path.classList.remove('is-preview', 'is-selected', 'is-running', 'is-complete');
+      path.classList.remove('is-running', 'is-complete');
       path.style.removeProperty('stroke-dasharray');
       path.style.removeProperty('stroke-dashoffset');
     });
     flowTargets.forEach(function (button) {
-      button.setAttribute('aria-pressed', button.dataset.revisitTarget === String(target) ? 'true' : 'false');
+      button.setAttribute('aria-pressed', 'false');
     });
-    document.getElementById('flow-revisit-' + target).classList.add('is-selected');
     flowReplay.disabled = true;
   }
 
@@ -3064,8 +3560,9 @@ html[data-lang="zh"] .foot-inner a { font-family: var(--font-b-zh); }
     });
     for (var skipped = 3; skipped < target; skipped += 1) flowStage(skipped).classList.add('is-skipped');
     flowStage(target).classList.add('is-revisited');
-    document.getElementById('flow-revisit-in').classList.add('is-complete');
-    document.getElementById('flow-revisit-' + target).classList.add('is-selected', 'is-complete');
+    flowTargets.forEach(function (button) {
+      button.setAttribute('aria-pressed', button.dataset.revisitTarget === String(target) ? 'true' : 'false');
+    });
     document.getElementById('flow-entry').classList.add('is-complete');
     document.getElementById('flow-pass').classList.add('is-complete');
     runtimeFlow.dataset.flowState = 'complete';
@@ -3106,6 +3603,9 @@ html[data-lang="zh"] .foot-inner a { font-family: var(--font-b-zh); }
     runtimeFlow.dataset.flowState = 'revisit';
     flowRouter.classList.add('is-active');
     if (!await animateFlowPath('flow-revisit-in', 480, token, true)) return;
+    flowTargets.forEach(function (button) {
+      button.setAttribute('aria-pressed', button.dataset.revisitTarget === String(selectedFlowTarget) ? 'true' : 'false');
+    });
     if (!await animateFlowPath('flow-revisit-' + selectedFlowTarget, 540, token, true)) return;
     flowRouter.classList.remove('is-active');
 
@@ -3114,6 +3614,8 @@ html[data-lang="zh"] .foot-inner a { font-family: var(--font-b-zh); }
       if (candidate < selectedFlowTarget) flowStage(candidate).classList.add('is-skipped');
     }
     if (!await visitFlowStage(selectedFlowTarget, token, true)) return;
+    document.getElementById('flow-revisit-in').classList.remove('is-complete');
+    document.getElementById('flow-revisit-' + selectedFlowTarget).classList.remove('is-complete');
     for (var rerunStage = selectedFlowTarget; rerunStage < 7; rerunStage += 1) {
       document.getElementById(flowEdges[rerunStage]).classList.remove('is-complete');
       if (!await animateFlowPath(flowEdges[rerunStage], 500, token, false)) return;
@@ -3135,20 +3637,8 @@ html[data-lang="zh"] .foot-inner a { font-family: var(--font-b-zh); }
     announceFlow('循环演示完成：评审回到阶段 ' + selectedFlowTarget + ' 修正后进入成果输出', 'Workflow complete: review revisited stage ' + selectedFlowTarget + ' before final output');
   }
 
-  function previewFlowTarget(target, active) {
-    var path = document.getElementById('flow-revisit-' + target);
-    if (!path) return;
-    path.classList.toggle('is-preview', active);
-    if (active) runtimeFlow.dataset.previewTarget = String(target);
-    else delete runtimeFlow.dataset.previewTarget;
-  }
-
   flowTargets.forEach(function (button) {
     var target = button.dataset.revisitTarget;
-    button.addEventListener('mouseenter', function () { previewFlowTarget(target, true); });
-    button.addEventListener('mouseleave', function () { previewFlowTarget(target, false); });
-    button.addEventListener('focus', function () { previewFlowTarget(target, true); });
-    button.addEventListener('blur', function () { previewFlowTarget(target, false); });
     button.addEventListener('click', function () { runFlow(Number(target)); });
   });
   flowReplay.addEventListener('click', function () {
@@ -3161,6 +3651,10 @@ html[data-lang="zh"] .foot-inner a { font-family: var(--font-b-zh); }
     updateFlowLoopPaths();
     updateFlowShellPaths();
   });
+  if ('ResizeObserver' in window) new ResizeObserver(function () {
+    updateFlowLoopPaths();
+    updateFlowShellPaths();
+  }).observe(flowShell);
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () {
     updateFlowLoopPaths();
     updateFlowShellPaths();
@@ -3351,7 +3845,7 @@ html[data-lang="zh"] .foot-inner a { font-family: var(--font-b-zh); }
     knowledgeRelease.classList.remove('is-active');
     knowledgeRelease.classList.add('is-complete');
     knowledgeAgent.classList.add('is-active');
-    announceKnowledge('正在交付 NeuroAgent 检索入口', 'Delivering the NeuroAgent retrieval endpoint');
+    announceKnowledge('正在交付 OwnPI 检索入口', 'Delivering the OwnPI retrieval endpoint');
     if (!await knowledgeDelay(320, token)) return;
     knowledgeAgent.classList.remove('is-active');
     knowledgeAgent.classList.add('is-complete');
@@ -3402,8 +3896,6 @@ html[data-lang="zh"] .foot-inner a { font-family: var(--font-b-zh); }
   var skillPack = skillFlow.querySelector('[data-skill-pack]');
   var skillCount = skillFlow.querySelector('[data-skill-count]');
   var skillPackDots = Array.prototype.slice.call(skillFlow.querySelectorAll('.skill-pack-dots span'));
-  var skillStage = skillFlow.querySelector('[data-skill-stage]');
-  var skillStageOutputs = Array.prototype.slice.call(skillFlow.querySelectorAll('.skill-stage-output'));
   var skillRunToken = 0;
   var skillWaiters = [];
 
@@ -3463,14 +3955,16 @@ html[data-lang="zh"] .foot-inner a { font-family: var(--font-b-zh); }
     skillRouter.classList.remove('is-active', 'is-complete');
     skillLibrary.classList.remove('is-scanning');
     skillPack.classList.remove('is-active', 'is-complete');
-    skillStage.classList.remove('is-active', 'is-complete');
     skillRoutes.forEach(function (route) { route.classList.remove('is-active'); });
     skillGroups.forEach(function (group) {
       group.classList.remove('is-scanning', 'is-agent-selected', 'is-skipped');
-      setSkillGroupState(group, '内置', 'Built in');
+      if (group.dataset.skillName) {
+        setSkillGroupState(group, '已加载', 'Loaded');
+      } else {
+        setSkillGroupState(group, '已评估 未选择', 'Evaluated not selected');
+      }
     });
     skillPackDots.forEach(function (dot) { dot.classList.remove('is-loaded'); });
-    skillStageOutputs.forEach(function (output) { output.classList.remove('is-complete'); });
     skillCount.textContent = '0';
     setSkillRouterState('等待研究上下文', 'Waiting for context');
     skillReplay.disabled = true;
@@ -3484,17 +3978,15 @@ html[data-lang="zh"] .foot-inner a { font-family: var(--font-b-zh); }
     skillGroups.forEach(function (group) {
       if (group.dataset.skillName) {
         group.classList.add('is-agent-selected');
-        setSkillGroupState(group, '已命中', 'Matched');
+        setSkillGroupState(group, '已加载', 'Loaded');
       } else {
         group.classList.add('is-skipped');
-        setSkillGroupState(group, '本轮不加载', 'Not loaded');
+        setSkillGroupState(group, '已评估 未选择', 'Evaluated not selected');
       }
     });
     skillPack.classList.add('is-complete');
     skillCount.textContent = '4';
     skillPackDots.forEach(function (dot) { dot.classList.add('is-loaded'); });
-    skillStage.classList.add('is-complete');
-    skillStageOutputs.forEach(function (output) { output.classList.add('is-complete'); });
     skillFlow.dataset.skillState = 'complete';
     skillReplay.disabled = false;
     announceSkill('科研技能装配已完成', 'Research skill assembly complete');
@@ -3518,7 +4010,7 @@ html[data-lang="zh"] .foot-inner a { font-family: var(--font-b-zh); }
     skillRoutes[0].classList.add('is-active');
     skillRouter.classList.add('is-active');
     setSkillRouterState('正在判断所需方法', 'Determining required methods');
-    announceSkill('NeuroAgent 正在分析任务目标与当前阶段', 'NeuroAgent is analyzing the task goal and current stage');
+    announceSkill('OwnPI 正在分析任务目标与当前阶段', 'OwnPI is analyzing the task goal and current stage');
     if (!await skillDelay(620, token)) return;
     skillRoutes[1].classList.add('is-active');
     skillLibrary.classList.add('is-scanning');
@@ -3532,10 +4024,10 @@ html[data-lang="zh"] .foot-inner a { font-family: var(--font-b-zh); }
       group.classList.remove('is-scanning');
       if (group.dataset.skillName) {
         group.classList.add('is-agent-selected');
-        setSkillGroupState(group, '已命中', 'Matched');
+        setSkillGroupState(group, '已加载', 'Loaded');
       } else {
         group.classList.add('is-skipped');
-        setSkillGroupState(group, '本轮不加载', 'Not loaded');
+        setSkillGroupState(group, '已评估 未选择', 'Evaluated not selected');
       }
     }
     skillLibrary.classList.remove('is-scanning');
@@ -3556,15 +4048,6 @@ html[data-lang="zh"] .foot-inner a { font-family: var(--font-b-zh); }
     skillPack.classList.remove('is-active');
     skillPack.classList.add('is-complete');
     setSkillRouterState('方法包已形成', 'Method pack ready');
-    skillRoutes[3].classList.add('is-active');
-    skillStage.classList.add('is-active');
-    for (var outputIndex = 0; outputIndex < skillStageOutputs.length; outputIndex += 1) {
-      skillStageOutputs[outputIndex].classList.add('is-complete');
-      announceSkill('正在把方法包注入当前科研阶段', 'Injecting the method pack into the current research stage');
-      if (!await skillDelay(220, token)) return;
-    }
-    skillStage.classList.remove('is-active');
-    skillStage.classList.add('is-complete');
     skillFlow.dataset.skillState = 'complete';
     skillReplay.disabled = false;
     announceSkill('科研技能装配已完成', 'Research skill assembly complete');
@@ -3584,6 +4067,517 @@ html[data-lang="zh"] .foot-inner a { font-family: var(--font-b-zh); }
         resetSkillVisuals();
       }
     );
+  }
+
+  /* ---------- Brainlib brain-data runtime ---------- */
+  var brainlibFlow = document.getElementById('brainlibFlow');
+  var brainlibReplay = document.getElementById('brainlibReplay');
+  if (brainlibFlow && brainlibReplay) {
+    var brainlibStatus = document.getElementById('brainlibFlowStatus');
+    var brainlibCanvas = brainlibFlow.querySelector('.brainlib-native-canvas');
+    var brainlibPulse = brainlibFlow.querySelector('[data-brainlib-pulse]');
+    var brainlibNodes = Array.prototype.slice.call(brainlibFlow.querySelectorAll('[data-brainlib-node]'));
+    var brainlibSegments = Array.prototype.slice.call(brainlibFlow.querySelectorAll('[data-brainlib-segment]'));
+    var brainlibCapabilities = Array.prototype.slice.call(brainlibFlow.querySelectorAll('[data-brainlib-capability]'));
+    var brainlibRunToken = 0;
+    var brainlibWaiters = [];
+    var brainlibAnimations = [];
+    var brainlibStageNames = {
+      dataset: ['确认数据来源与结构', 'Confirming the data source and structure'],
+      paradigm: ['构建任务范式与样本语义', 'Building the paradigm and sample semantics'],
+      protocol: ['选择实验分析设定', 'Selecting the experimental protocol'],
+      split: ['生成训练、验证与测试划分', 'Creating train, validation, and test splits'],
+      collator: ['组织模型可用的批数据', 'Preparing model-ready batches'],
+      model: ['装配模型与研究组件', 'Assembling the model and research components'],
+      trainer: ['配置训练与评估策略', 'Configuring training and evaluation'],
+      training: ['执行训练、评估与预测', 'Running training, evaluation, and prediction']
+    };
+
+    function updateBrainlibControlLabels() {
+      var label = root.dataset.lang === 'zh' ? '重播 Brainlib 实验运行' : 'Replay Brainlib experiment run';
+      brainlibReplay.setAttribute('aria-label', label);
+      brainlibReplay.title = label;
+    }
+
+    function announceBrainlib(zh, en) {
+      brainlibStatus.textContent = root.dataset.lang === 'zh' ? zh : en;
+    }
+
+    function brainlibNode(name) {
+      return brainlibFlow.querySelector('[data-brainlib-node="' + name + '"]');
+    }
+
+    function brainlibSegment(name) {
+      return brainlibFlow.querySelector('[data-brainlib-segment="' + name + '"]');
+    }
+
+    function brainlibCapability(name) {
+      return brainlibFlow.querySelector('[data-brainlib-capability="' + name + '"]');
+    }
+
+    function cancelBrainlibSequence() {
+      brainlibRunToken += 1;
+      brainlibWaiters.splice(0).forEach(function (waiter) {
+        clearTimeout(waiter.id);
+        waiter.resolve(false);
+      });
+      brainlibAnimations.splice(0).forEach(function (animation) {
+        cancelAnimationFrame(animation.frameId);
+        animation.resolve(false);
+      });
+      brainlibPulse.classList.remove('is-visible');
+    }
+
+    function brainlibDelay(milliseconds, token) {
+      return new Promise(function (resolve) {
+        var waiter = { id: 0, resolve: resolve };
+        waiter.id = setTimeout(function () {
+          var index = brainlibWaiters.indexOf(waiter);
+          if (index >= 0) brainlibWaiters.splice(index, 1);
+          resolve(token === brainlibRunToken);
+        }, milliseconds);
+        brainlibWaiters.push(waiter);
+      });
+    }
+
+    function resetBrainlibVisuals() {
+      brainlibFlow.dataset.brainlibState = 'idle';
+      brainlibNodes.forEach(function (node) { node.classList.remove('is-active', 'is-complete'); });
+      brainlibSegments.forEach(function (segment) {
+        segment.classList.remove('is-active', 'is-complete');
+        segment.style.removeProperty('--brainlib-progress');
+      });
+      brainlibCapabilities.forEach(function (capability) {
+        capability.classList.remove('is-active', 'is-complete', 'is-supporting');
+      });
+      brainlibPulse.classList.remove('is-visible');
+      brainlibPulse.style.removeProperty('left');
+      brainlibPulse.style.removeProperty('top');
+      brainlibReplay.disabled = true;
+    }
+
+    function completeBrainlibImmediately() {
+      brainlibNodes.forEach(function (node) { node.classList.add('is-complete'); });
+      brainlibSegments.forEach(function (segment) {
+        segment.classList.add('is-complete');
+        segment.style.setProperty('--brainlib-progress', '1');
+      });
+      brainlibCapabilities.forEach(function (capability) { capability.classList.add('is-complete'); });
+      brainlibFlow.dataset.brainlibState = 'complete';
+      brainlibReplay.disabled = false;
+      announceBrainlib('Brainlib 实验运行已完成', 'Brainlib experiment run complete');
+    }
+
+    function brainlibSegmentGeometry(segment) {
+      var canvasRect = brainlibCanvas.getBoundingClientRect();
+      var rect = segment.getBoundingClientRect();
+      var vertical = rect.height > rect.width;
+      var reverse = segment.dataset.brainlibSegment === 'turn-back';
+      var start = vertical
+        ? { x: rect.left - canvasRect.left + rect.width / 2, y: rect.top - canvasRect.top }
+        : { x: rect.left - canvasRect.left, y: rect.top - canvasRect.top + rect.height / 2 };
+      var end = vertical
+        ? { x: start.x, y: rect.bottom - canvasRect.top }
+        : { x: rect.right - canvasRect.left, y: start.y };
+      if (reverse) {
+        var swap = start;
+        start = end;
+        end = swap;
+      }
+      return {
+        element: segment,
+        start: start,
+        end: end,
+        length: Math.max(1, Math.abs(end.x - start.x) + Math.abs(end.y - start.y))
+      };
+    }
+
+    function brainlibEase(progress) {
+      return progress * progress * (3 - 2 * progress);
+    }
+
+    function animateBrainlibRoute(names, duration, token) {
+      var route = names.map(brainlibSegment).filter(Boolean).map(brainlibSegmentGeometry);
+      if (!route.length || token !== brainlibRunToken) return Promise.resolve(false);
+      var totalLength = route.reduce(function (total, segment) { return total + segment.length; }, 0);
+      route.forEach(function (segment) {
+        segment.element.classList.remove('is-complete');
+        segment.element.style.setProperty('--brainlib-progress', '0');
+      });
+      brainlibPulse.classList.add('is-visible');
+
+      return new Promise(function (resolve) {
+        var animation = { frameId: 0, resolve: resolve };
+        var startedAt = 0;
+        brainlibAnimations.push(animation);
+
+        function finish(current) {
+          var index = brainlibAnimations.indexOf(animation);
+          if (index >= 0) brainlibAnimations.splice(index, 1);
+          route.forEach(function (segment) {
+            segment.element.classList.remove('is-active');
+            if (current) {
+              segment.element.classList.add('is-complete');
+              segment.element.style.setProperty('--brainlib-progress', '1');
+            }
+          });
+          brainlibPulse.classList.remove('is-visible');
+          resolve(current);
+        }
+
+        function frame(now) {
+          if (token !== brainlibRunToken) {
+            finish(false);
+            return;
+          }
+          if (!startedAt) startedAt = now;
+          var rawProgress = Math.min(1, (now - startedAt) / duration);
+          var travelled = totalLength * brainlibEase(rawProgress);
+          var offset = 0;
+          var pulsePoint = route[0].start;
+
+          route.forEach(function (segment) {
+            var local = Math.max(0, Math.min(1, (travelled - offset) / segment.length));
+            segment.element.style.setProperty('--brainlib-progress', local.toFixed(4));
+            segment.element.classList.toggle('is-active', local > 0 && local < 1);
+            segment.element.classList.toggle('is-complete', local >= 1);
+            if (travelled >= offset && travelled <= offset + segment.length) {
+              pulsePoint = {
+                x: segment.start.x + (segment.end.x - segment.start.x) * local,
+                y: segment.start.y + (segment.end.y - segment.start.y) * local
+              };
+            }
+            offset += segment.length;
+          });
+
+          brainlibPulse.style.left = pulsePoint.x.toFixed(1) + 'px';
+          brainlibPulse.style.top = pulsePoint.y.toFixed(1) + 'px';
+          if (rawProgress < 1) {
+            animation.frameId = requestAnimationFrame(frame);
+            return;
+          }
+          finish(true);
+        }
+
+        animation.frameId = requestAnimationFrame(frame);
+      });
+    }
+
+    function setBrainlibSupport(names, active) {
+      names.forEach(function (name) {
+        var capability = brainlibCapability(name);
+        if (capability) capability.classList.toggle('is-supporting', active);
+      });
+    }
+
+    async function visitBrainlibStage(name, token) {
+      var node = brainlibNode(name);
+      var copy = brainlibStageNames[name];
+      var supports = name === 'model' ? ['builtins', 'custom'] :
+        name === 'trainer' ? ['builtins'] :
+          name === 'training' ? ['artifacts'] :
+            name === 'dataset' || name === 'paradigm' ? ['custom'] : ['configuration'];
+      node.classList.add('is-active');
+      setBrainlibSupport(supports, true);
+      announceBrainlib(copy[0], copy[1]);
+      if (!await brainlibDelay(340, token)) return false;
+      node.classList.remove('is-active');
+      node.classList.add('is-complete');
+      setBrainlibSupport(supports.filter(function (item) { return item !== 'configuration'; }), false);
+      return true;
+    }
+
+    async function runBrainlibFlow() {
+      cancelBrainlibSequence();
+      var token = brainlibRunToken;
+      resetBrainlibVisuals();
+      if (reduceMotion) {
+        completeBrainlibImmediately();
+        return;
+      }
+
+      brainlibFlow.dataset.brainlibState = 'running';
+      brainlibReplay.disabled = true;
+      brainlibCapability('configuration').classList.add('is-supporting');
+      var source = brainlibNode('source');
+      source.classList.add('is-active');
+      announceBrainlib('正在确认多源脑数据输入', 'Confirming multimodal brain-data inputs');
+      if (!await brainlibDelay(440, token)) return;
+      source.classList.remove('is-active');
+      source.classList.add('is-complete');
+      if (!await animateBrainlibRoute(['source'], 420, token)) return;
+
+      var stages = ['dataset', 'paradigm', 'protocol', 'split', 'collator', 'model', 'trainer', 'training'];
+      var routes = [
+        ['dataset'], ['paradigm'], ['protocol'],
+        ['split-exit', 'turn-down', 'turn-back', 'turn-drop', 'turn-enter'],
+        ['collator'], ['model'], ['trainer']
+      ];
+      for (var stageIndex = 0; stageIndex < stages.length; stageIndex += 1) {
+        if (!await visitBrainlibStage(stages[stageIndex], token)) return;
+        if (stageIndex < routes.length) {
+          var routeDuration = stageIndex === 3 ? 960 : 340;
+          if (!await animateBrainlibRoute(routes[stageIndex], routeDuration, token)) return;
+        }
+      }
+
+      brainlibCapability('configuration').classList.remove('is-supporting');
+      brainlibCapabilities.forEach(function (capability) {
+        capability.classList.remove('is-active', 'is-supporting');
+        capability.classList.add('is-complete');
+      });
+      brainlibFlow.dataset.brainlibState = 'complete';
+      brainlibReplay.disabled = false;
+      announceBrainlib('Brainlib 实验运行已完成，可检查并复用运行产物', 'Brainlib experiment complete; runtime artifacts are ready for inspection and reuse');
+    }
+
+    brainlibReplay.addEventListener('click', runBrainlibFlow);
+    updateBrainlibControlLabels();
+
+    if (reduceMotion) {
+      completeBrainlibImmediately();
+    } else {
+      var brainlibObserver = observeFigurePlayback(
+        brainlibFlow,
+        runBrainlibFlow,
+        function () {
+          cancelBrainlibSequence();
+          resetBrainlibVisuals();
+        }
+      );
+    }
+  }
+
+  }
+
+  if (root.dataset.figureEngine === 'interactive') {
+  /* ---------- published SVG diagram controller ---------- */
+  var diagramControllers;
+  var diagramSpecs = {
+    routing: {
+      nodes: {
+        preference: [65, 282, 270, 251, 'green'], default: [450, 181, 256, 164, 'blue'], decision: [450, 181, 256, 164, 'blue'],
+        direct: [829, 125, 210, 91, 'blue'], staged: [829, 305, 210, 114, 'blue'], research: [630, 489, 300, 136, 'amber'],
+        'direct-output': [1139, 107, 260, 136, 'blue'], 'task-output': [1139, 295, 260, 136, 'blue'], 'research-output': [1144, 488, 260, 136, 'amber']
+      },
+      sequence: function (selection) {
+        return selection === 'research'
+          ? ['preference', 'research', 'research-output']
+          : ['preference', 'default', 'decision', 'direct', 'direct-output', 'decision', 'staged', 'task-output'];
+      }
+    },
+    workflow: {
+      nodes: {
+        1: [139, 271, 187, 108, 'green'], 2: [139, 446, 187, 106, 'green'], 3: [431, 444, 178, 109, 'green'],
+        4: [561, 163, 178, 109, 'green'], 5: [899, 163, 178, 109, 'green'], 6: [1055, 448, 178, 109, 'green'],
+        7: [710, 688, 220, 102, 'amber'], review: [680, 330, 280, 246, 'amber'], 8: [1292, 466, 290, 171, 'blue']
+      },
+      sequence: function (selection) { return ['1', '2', '3', '4', '5', '6', '7', 'review', selection || '4', '7', '8']; }
+    },
+    knowledge: {
+      nodes: {
+        source: [46, 269, 260, 422, 'green'], 'method-1': [403, 265, 170, 92, 'blue', 'method'], 'method-2': [613, 265, 170, 92, 'blue', 'method'],
+        'method-3': [823, 265, 170, 92, 'blue', 'method'], 'method-4': [1033, 265, 180, 92, 'blue', 'method'],
+        'strategy-1': [403, 541, 170, 92, 'amber', 'strategy'], 'strategy-2': [613, 541, 170, 92, 'amber', 'strategy'],
+        'strategy-3': [823, 541, 170, 92, 'amber', 'strategy'], 'strategy-4': [1033, 540, 180, 94, 'amber', 'strategy'], release: [1328, 269, 260, 359, 'green']
+      },
+      sequence: function () { return ['source', 'method-1', 'strategy-1', 'method-2', 'strategy-2', 'method-3', 'strategy-3', 'method-4', 'strategy-4', 'release']; }
+    },
+    skills: {
+      nodes: {
+        context: [0, 62, 226, 286, 'green'], router: [272, 60, 210, 290, 'green'], design: [547, 50, 397, 62, 'green'], data: [547, 120, 397, 62, 'blue'],
+        analysis: [547, 190, 397, 62, 'amber'], writing: [547, 260, 397, 62, 'green'], review: [547, 330, 397, 62, 'amber'], pack: [1005, 91, 190, 233, 'green']
+      },
+      sequence: function () { return ['context', 'router', 'design', 'data', 'analysis', 'writing', 'review', 'pack']; }
+    },
+    brainlib: {
+      nodes: {
+        input: [0, 54, 293, 274, 'blue'], dataset: [353, 118, 133, 78, 'blue'], paradigm: [509, 118, 185, 78, 'blue'], protocol: [729, 118, 162, 78, 'blue'],
+        split: [914, 118, 162, 78, 'blue'], collator: [353, 221, 170, 78, 'blue'], model: [546, 221, 170, 78, 'blue'], trainer: [739, 221, 170, 78, 'blue'],
+        training: [932, 222, 174, 77, 'blue'], output: [1, 346, 1158, 185, 'blue']
+      },
+      sequence: function () { return ['input', 'dataset', 'paradigm', 'protocol', 'split', 'collator', 'model', 'trainer', 'training', 'output']; }
+    }
+  };
+
+  function svgElement(name, attributes) {
+    var element = document.createElementNS('http://www.w3.org/2000/svg', name);
+    Object.keys(attributes || {}).forEach(function (key) { element.setAttribute(key, String(attributes[key])); });
+    return element;
+  }
+
+  function sanitizePublishedSvg(svg) {
+    svg.querySelectorAll('script, foreignObject').forEach(function (element) { element.remove(); });
+    svg.querySelectorAll('*').forEach(function (element) {
+      Array.prototype.slice.call(element.attributes).forEach(function (attribute) {
+        var name = attribute.name.toLowerCase();
+        var value = attribute.value.trim();
+        if (name.indexOf('on') === 0 || ((name === 'href' || name === 'xlink:href') && !value.startsWith('#') && !value.startsWith('data:'))) element.removeAttribute(attribute.name);
+      });
+    });
+    return svg;
+  }
+
+  function addDiagramOverlay(svg, spec) {
+    var overlay = svgElement('g', { class: 'svg-diagram-overlay', 'aria-hidden': 'true' });
+    Object.keys(spec.nodes).forEach(function (name) {
+      var node = spec.nodes[name];
+      var group = svgElement('g', { class: 'svg-diagram-node', 'data-node': name, 'data-tone': node[4] || 'blue' });
+      group.appendChild(svgElement('rect', { x: node[0], y: node[1], width: node[2], height: node[3], rx: 10, ry: 10 }));
+      overlay.appendChild(group);
+    });
+    svg.appendChild(overlay);
+  }
+
+  function DiagramController(figure) {
+    this.figure = figure;
+    this.kind = figure.dataset.diagram;
+    this.spec = diagramSpecs[this.kind];
+    this.canvas = figure.querySelector('.svg-diagram-canvas');
+    this.viewport = figure.querySelector('.svg-diagram-viewport');
+    this.fallback = figure.querySelector('.svg-diagram-fallback');
+    this.status = figure.querySelector('.svg-diagram-status');
+    this.replay = figure.querySelector('[data-diagram-replay]');
+    this.controls = Array.prototype.slice.call(figure.querySelectorAll('[data-diagram-action]'));
+    this.svg = null;
+    this.selection = this.kind === 'workflow' ? '4' : (this.kind === 'routing' ? 'default' : null);
+    this.hasHighlight = false;
+    this.language = root.dataset.lang;
+    this.bindControls();
+    this.bindDrag();
+  }
+
+  DiagramController.prototype.message = function (zh, en) {
+    this.status.textContent = root.dataset.lang === 'zh' ? zh : en;
+  };
+
+  DiagramController.prototype.render = function (language) {
+    var self = this;
+    var source = 'assets/figures/fig' + ({ routing: 1, workflow: 2, knowledge: 3, skills: 4, brainlib: 5 }[this.kind]) + '.' + language + '.svg';
+    this.language = language;
+    this.fallback.src = source;
+    this.replay.disabled = true;
+    return fetch(source, { cache: 'force-cache' }).then(function (response) {
+      if (!response.ok) throw new Error('Unable to load ' + source);
+      return response.text();
+    }).then(function (markup) {
+      var parsed = new DOMParser().parseFromString(markup, 'image/svg+xml');
+      if (parsed.querySelector('parsererror')) throw new Error('Invalid SVG markup in ' + source);
+      var svg = sanitizePublishedSvg(parsed.documentElement);
+      svg.classList.add('svg-diagram-art');
+      svg.setAttribute('preserveAspectRatio', 'xMinYMin meet');
+      svg.setAttribute('role', 'img');
+      svg.setAttribute('aria-label', self.figure.querySelector('figcaption').textContent.trim());
+      addDiagramOverlay(svg, self.spec);
+      self.canvas.replaceChildren(svg);
+      self.svg = svg;
+      self.fallback.hidden = true;
+      self.reset();
+      self.replay.disabled = false;
+      self.message('图表已准备就绪', 'Diagram ready');
+      return true;
+    }).catch(function () {
+      self.svg = null;
+      self.fallback.hidden = false;
+      self.replay.disabled = true;
+      self.message('图表加载失败，正在显示静态版本。', 'Diagram loading failed; showing the static version.');
+      return false;
+    });
+  };
+
+  DiagramController.prototype.reset = function () {
+    if (!this.svg) return;
+    this.figure.dataset.diagramState = 'idle';
+    this.svg.querySelectorAll('.svg-diagram-node').forEach(function (element) {
+      element.classList.remove('is-active', 'is-complete', 'is-skipped');
+    });
+  };
+
+  DiagramController.prototype.node = function (name) { return this.svg && this.svg.querySelector('.svg-diagram-node[data-node="' + name + '"]'); };
+
+  DiagramController.prototype.highlight = function () {
+    if (!this.svg) return;
+    this.reset();
+    var sequence = this.spec.sequence(this.selection);
+    if (this.kind === 'knowledge') {
+      sequence = this.selection === 'method'
+        ? ['source', 'method-1', 'method-2', 'method-3', 'method-4', 'release']
+        : this.selection === 'strategy'
+          ? ['source', 'strategy-1', 'strategy-2', 'strategy-3', 'strategy-4', 'release']
+          : [];
+    }
+    var self = this;
+    sequence.forEach(function (name) {
+      var node = self.node(name);
+      if (!node) return;
+      node.classList.add(self.kind === 'skills' && name === 'writing' ? 'is-skipped' : 'is-active');
+    });
+    this.hasHighlight = true;
+    this.figure.dataset.diagramState = 'highlighted';
+    this.message('已高亮所选节点；图表未播放动画。', 'Selected nodes highlighted; no playback animation.');
+  };
+
+  DiagramController.prototype.updateControls = function () {
+    var self = this;
+    this.controls.forEach(function (control) {
+      var action = control.dataset.diagramAction;
+      var selected = (self.kind === 'routing' && action === self.selection)
+        || (self.kind === 'workflow' && action === 'revisit-' + self.selection)
+        || (self.kind === 'knowledge' && action === self.selection);
+      control.setAttribute('aria-pressed', String(selected));
+    });
+  };
+
+  DiagramController.prototype.bindControls = function () {
+    var self = this;
+    this.controls.forEach(function (control) {
+      control.addEventListener('click', function () {
+        var action = control.dataset.diagramAction;
+        self.selection = self.kind === 'workflow' ? action.replace('revisit-', '') : (self.kind === 'knowledge' && self.selection === action ? null : action);
+        self.updateControls();
+        self.highlight();
+      });
+    });
+    this.replay.addEventListener('click', function () { self.highlight(); });
+    this.updateControls();
+  };
+
+  DiagramController.prototype.bindDrag = function () {
+    var viewport = this.viewport;
+    var originX = 0;
+    var originScroll = 0;
+    var dragging = false;
+    viewport.addEventListener('pointerdown', function (event) {
+      if (event.pointerType === 'touch') return;
+      dragging = true; originX = event.clientX; originScroll = viewport.scrollLeft;
+      viewport.classList.add('is-dragging'); viewport.setPointerCapture(event.pointerId);
+    });
+    viewport.addEventListener('pointermove', function (event) {
+      if (!dragging) return;
+      viewport.scrollLeft = originScroll - (event.clientX - originX);
+    });
+    function endDrag(event) {
+      if (!dragging) return;
+      dragging = false; viewport.classList.remove('is-dragging');
+      if (viewport.hasPointerCapture(event.pointerId)) viewport.releasePointerCapture(event.pointerId);
+    }
+    viewport.addEventListener('pointerup', endDrag);
+    viewport.addEventListener('pointercancel', endDrag);
+  };
+
+  function refreshDiagramLanguage() {
+    if (!diagramControllers) return;
+    diagramControllers.forEach(function (controller) {
+      controller.render(root.dataset.lang).then(function (loaded) { if (loaded && controller.hasHighlight) controller.highlight(); });
+    });
+  }
+
+  diagramControllers = Array.prototype.slice.call(document.querySelectorAll('.svg-diagram[data-diagram]')).map(function (figure) { return new DiagramController(figure); });
+  diagramControllers.forEach(function (controller) {
+    controller.render(root.dataset.lang).then(function (loaded) {
+      if (!loaded) return;
+    });
+  });
   }
 
   /* ---------- scroll reveal ---------- */
