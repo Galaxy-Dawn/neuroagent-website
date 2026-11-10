@@ -1,0 +1,19 @@
+[
+  {
+    "title": "Acoustic and sentence-associated information differ in their temporal support and sensor recurrence in non-invasive recordings",
+    "source_repository": "https://github.com/yzz673/OwnPI",
+    "source_commit": "f2361ebcb93cb2c4f8fcfe81571e2ac41d927768",
+    "source_pdf": "https://media.githubusercontent.com/media/yzz673/OwnPI/f2361ebcb93cb2c4f8fcfe81571e2ac41d927768/docs/assets/readme/output-example-paper.pdf",
+    "paper_page": "https://github.com/yzz673/OwnPI/blob/main/docs/assets/readme/output-example-paper.pdf",
+    "pdf_sha256": "d7378f9ab481093929c4e0c555d1da6320ad15ac687a0489a8dd9f47189f6e13",
+    "page_count": 32,
+    "preview_page": 1,
+    "preview": "acoustic-sentence-meg-page-1.webp",
+    "preview_dimensions": [
+      866,
+      1120
+    ],
+    "rendering": "pdftoppm -f 1 -singlefile -scale-to 1120 -png; Pillow WebP quality=90",
+    "verified_on": "2026-11-09"
+  }
+]
